@@ -28,6 +28,7 @@ public class ElasticsearchMemoryStore : IMemoryStore
     /// <inheritdoc />
     public Task<MemoryRecord?> GetAsync(string collectionName, string key, bool withEmbedding = false, CancellationToken cancellationToken = default)
     {
+
         throw new NotImplementedException();
     }
 
