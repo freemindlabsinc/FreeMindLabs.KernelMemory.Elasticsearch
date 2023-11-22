@@ -1,4 +1,6 @@
-﻿using Microsoft.SemanticKernel.Memory;
+﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.IndexManagement;
+using Microsoft.SemanticKernel.Memory;
 
 namespace FreeMindLabs.SemanticKernel.Connectors.Elasticsearch;
 
@@ -6,23 +8,37 @@ namespace FreeMindLabs.SemanticKernel.Connectors.Elasticsearch;
 /// Elasticsearch implementation of <see cref="IMemoryStore"/>.
 /// </summary>
 public class ElasticsearchMemoryStore : IMemoryStore
-{
+{    
+    /// <summary>
+    /// Creates a memory store using the specified Elasticsearch <paramref name="settings"/>.
+    /// </summary>
+    /// <param name="settings"></param>
+    public ElasticsearchMemoryStore(IElasticsearchClientSettings settings)
+    {
+        Client = new ElasticsearchClient(settings);
+    }
+
+    ElasticsearchClient Client { get; }
+
     /// <inheritdoc />
     public Task CreateCollectionAsync(string collectionName, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return Client.Indices.CreateAsync(collectionName, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
     public Task DeleteCollectionAsync(string collectionName, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return Client.Indices.DeleteAsync(collectionName, cancellationToken: cancellationToken);
     }
 
     /// <inheritdoc />
-    public Task<bool> DoesCollectionExistAsync(string collectionName, CancellationToken cancellationToken = default)
+    public async Task<bool> DoesCollectionExistAsync(string collectionName, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var response = await Client.Indices
+            .ExistsAsync(collectionName, cancellationToken: cancellationToken)
+            .ConfigureAwait(false); // TODO: verify this is correct
+        return response.Exists;
     }
 
     /// <inheritdoc />
