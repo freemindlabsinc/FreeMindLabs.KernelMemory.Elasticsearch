@@ -1,6 +1,7 @@
 ﻿using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Microsoft.SemanticKernel.Memory;
+using System.Runtime.CompilerServices;
 
 namespace FreeMindLabs.SemanticKernel.Connectors.Elasticsearch;
 
@@ -21,9 +22,12 @@ public class ElasticsearchMemoryStore : IMemoryStore
     ElasticsearchClient Client { get; }
 
     /// <inheritdoc />
-    public Task CreateCollectionAsync(string collectionName, CancellationToken cancellationToken = default)
+    public async Task CreateCollectionAsync(string collectionName, CancellationToken cancellationToken = default)
     {
-        return Client.Indices.CreateAsync(collectionName, cancellationToken: cancellationToken);
+        var res = await Client.Indices.CreateAsync(collectionName, cancellationToken: cancellationToken)
+            .ConfigureAwait(false); // TODO: verify this is correct
+        
+        // TODO: throw exception if res is not valid?
     }
 
     /// <inheritdoc />
@@ -42,10 +46,12 @@ public class ElasticsearchMemoryStore : IMemoryStore
     }
 
     /// <inheritdoc />
-    public Task<MemoryRecord?> GetAsync(string collectionName, string key, bool withEmbedding = false, CancellationToken cancellationToken = default)
+    public async Task<MemoryRecord?> GetAsync(string collectionName, string key, bool withEmbedding = false, CancellationToken cancellationToken = default)
     {
+        var res = await Client.GetAsync<MemoryRecord>(collectionName, key, cancellationToken: cancellationToken)
+            .ConfigureAwait(false); // TODO: verify this is correct
 
-        throw new NotImplementedException();
+        return res.Source;
     }
 
     /// <inheritdoc />
@@ -55,27 +61,21 @@ public class ElasticsearchMemoryStore : IMemoryStore
     }
 
     /// <inheritdoc />
-    public IAsyncEnumerable<string> GetCollectionsAsync(CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<string> GetCollectionsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc />
-    public Task<(MemoryRecord, double)?> GetNearestMatchAsync(string collectionName, ReadOnlyMemory<float> embedding, double minRelevanceScore = 0, bool withEmbedding = false, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc />
-    public IAsyncEnumerable<(MemoryRecord, double)> GetNearestMatchesAsync(string collectionName, ReadOnlyMemory<float> embedding, int limit, double minRelevanceScore = 0, bool withEmbeddings = false, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
+        var res = await Client.Indices
+            .GetAsync(new GetIndexRequest(Indices.All), cancellationToken)
+            .ConfigureAwait(false);
+            
+        foreach (var index in res.Indices.Keys)
+            yield return index.ToString();
     }
 
     /// <inheritdoc />
     public Task RemoveAsync(string collectionName, string key, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var res = Client.DeleteAsync(collectionName, key, cancellationToken: cancellationToken);    
+        return res;
     }
 
     /// <inheritdoc />
@@ -95,4 +95,18 @@ public class ElasticsearchMemoryStore : IMemoryStore
     {
         throw new NotImplementedException();
     }
+
+    /// <inheritdoc />
+    public Task<(MemoryRecord, double)?> GetNearestMatchAsync(string collectionName, ReadOnlyMemory<float> embedding, double minRelevanceScore = 0, bool withEmbedding = false, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    public IAsyncEnumerable<(MemoryRecord, double)> GetNearestMatchesAsync(string collectionName, ReadOnlyMemory<float> embedding, int limit, double minRelevanceScore = 0, bool withEmbeddings = false, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+
 }
