@@ -1,0 +1,8 @@
+{
+  "Elasticsearch": {
+    "Url": "https://localhost:9200",
+    "CertificateFingerPrint": "...Secrets...",
+    "UserName": "elastic",
+    "Password": "...Secrets..."
+  }
+}
