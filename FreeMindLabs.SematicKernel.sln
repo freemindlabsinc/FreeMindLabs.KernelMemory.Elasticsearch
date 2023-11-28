@@ -18,9 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BC1BDDF3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KernelMemory.MemoryStorage.Elasticsearch", "src\KernelMemory.MemoryStorage.Elasticsearch\KernelMemory.MemoryStorage.Elasticsearch.csproj", "{858C47D6-9C72-49FA-B9A2-08B53F00F2D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{BB35287B-504C-498C-927B-9B78D39E7559}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serverless", "examples\Serverless\Serverless.csproj", "{AFF79840-573A-4962-9A60-F956E6B1D7F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{BB35287B-504C-498C-927B-9B78D39E7559}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,10 +34,6 @@ Global
 		{BB35287B-504C-498C-927B-9B78D39E7559}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB35287B-504C-498C-927B-9B78D39E7559}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB35287B-504C-498C-927B-9B78D39E7559}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AFF79840-573A-4962-9A60-F956E6B1D7F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFF79840-573A-4962-9A60-F956E6B1D7F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFF79840-573A-4962-9A60-F956E6B1D7F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFF79840-573A-4962-9A60-F956E6B1D7F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,7 +41,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{858C47D6-9C72-49FA-B9A2-08B53F00F2D6} = {70F6E47A-A804-41ED-8BDD-A39423B01134}
 		{BB35287B-504C-498C-927B-9B78D39E7559} = {BC1BDDF3-DA2D-47E2-A728-65D33DE8F4E9}
-		{AFF79840-573A-4962-9A60-F956E6B1D7F3} = {6DD4AD9D-C693-4094-A31C-D8665B9BBE8C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B16EA8D3-6860-4C5E-A658-81081EB9DEB2}

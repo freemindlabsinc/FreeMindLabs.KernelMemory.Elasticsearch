@@ -3,26 +3,31 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.MemoryStorage;
 using Microsoft.KernelMemory.MemoryStorage.Qdrant;
+using System;
 
 // ReSharper disable once CheckNamespace
 namespace FreeMindLabs.KernelMemory;
 
-public static class KernelMemoryBuilderExtensions2
+public static class KernelMemoryBuilderExtensions
 {
     public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder, ElasticsearchConfig config)
     {
+        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
         builder.Services.AddElasticsearchAsVectorDb(config);
         return builder;
     }
 
     public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder, string endpoint, string apiKey = "")
     {
+        ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+
         builder.Services.AddElasticsearchAsVectorDb(endpoint, apiKey);
         return builder;
     }
 }
 
-public static class DependencyInjection2
+public static class DependencyInjection
 {
     public static IServiceCollection AddElasticsearchAsVectorDb(this IServiceCollection services, ElasticsearchConfig config)
     {
