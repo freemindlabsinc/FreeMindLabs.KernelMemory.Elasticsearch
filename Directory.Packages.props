@@ -38,11 +38,11 @@
     </ItemGroup>  
     <!-- Kernel Memory -->
     <ItemGroup>
-      <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.12.231127.1-preview" />
+      <PackageVersion Include="Microsoft.KernelMemory.Core" Version="0.12.231127.1-preview" />
     </ItemGroup>
     <!-- Elasticsearch -->
     <ItemGroup>
-      <PackageReference Include="Elastic.Clients.Elasticsearch" Version="8.11.0" />
+      <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.11.0" />
     </ItemGroup>
     <!-- Code Analysis -->
     <ItemGroup>
