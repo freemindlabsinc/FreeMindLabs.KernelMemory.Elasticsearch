@@ -34,8 +34,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\FreeMindLabs.SemanticKernel.Connectors.Memory.Elasticsearch\FreeMindLabs.SemanticKernel.Connectors.Memory.Elasticsearch.csproj" />
-  </ItemGroup>
-
 </Project>
