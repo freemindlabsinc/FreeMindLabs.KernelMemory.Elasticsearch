@@ -1,4 +1,6 @@
-﻿using Microsoft.KernelMemory;
+﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
+
+using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.MemoryStorage;
 using System.Collections.Generic;
 using System.Threading;

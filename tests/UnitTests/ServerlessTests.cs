@@ -1,3 +1,5 @@
+// Copyright (c) Free Mind Labs, Inc. All rights reserved.
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using Xunit.Abstractions;

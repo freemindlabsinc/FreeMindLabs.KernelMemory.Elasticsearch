@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.KernelMemory;
 using System.Reflection;
 using FreeMindLabs.KernelMemory;

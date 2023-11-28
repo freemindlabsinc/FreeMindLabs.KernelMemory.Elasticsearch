@@ -1,11 +1,12 @@
-﻿using FreeMindLabs.KernelMemory.MemoryStorage.Elasticsearch;
+﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
+
+using FreeMindLabs.KernelMemory.MemoryStorage.Elasticsearch;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.MemoryStorage;
 using Microsoft.KernelMemory.MemoryStorage.Qdrant;
 using System;
 
-// ReSharper disable once CheckNamespace
 namespace FreeMindLabs.KernelMemory;
 
 public static class KernelMemoryBuilderExtensions
