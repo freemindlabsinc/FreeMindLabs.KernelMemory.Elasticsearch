@@ -2,20 +2,21 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.KernelMemory;
 using System.Reflection;
+using FreeMindLabs.KernelMemory;
+using FreeMindLabs.KernelMemory.MemoryStorage.Elasticsearch;
+using Microsoft.AspNetCore.Http;
 
 var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddUserSecrets(Assembly.GetExecutingAssembly())
             .Build();
 
 var openAiKey = configuration["OpenAI:ApiKey"];
-
+var esConfig = configuration.GetSection("Elasticsearch").Get<ElasticsearchConfig>();
+    
 var memory = new KernelMemoryBuilder()
-    .WithOpenAIDefaults(openAiKey)
-//    // .FromAppSettings() => read "KernelMemory" settings from appsettings.json (if available), see https://github.com/microsoft/kernel-memory/blob/main/dotnet/Service/appsettings.json as an example
-//    // .WithAzureBlobsStorage(new AzureBlobsConfig {...})                                              => use Azure Blobs
-//    // .WithAzureCognitiveSearch(Env.Var("ACS_ENDPOINT"), Env.Var("ACS_API_KEY"))                      => use Azure Cognitive Search
-//    // .WithQdrant("http://127.0.0.1:6333")                                                            => use Qdrant docker
-//    // .WithAzureFormRecognizer(Env.Var("AZURE_COG_SVCS_ENDPOINT"), Env.Var("AZURE_COG_SVCS_API_KEY")) => use Azure Form Recognizer OCR
+    .WithOpenAIDefaults(openAiKey)    
+    .WithElasticsearch(esConfig)
     .Build<MemoryServerless>();
 
 var docId = await memory.ImportTextAsync("In physics, mass–energy equivalence is the relationship between mass and energy " +
