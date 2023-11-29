@@ -57,7 +57,13 @@ This ultimately results in the following secrets.json additions:
 ```
 
 
+## Resources
 
+1. Elastic's official docs on the client.
+    1. NEST 7.17: https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/nest-getting-started.html
+    1. New client 8.9: https://www.elastic.co/guide/en/elasticsearch/client/net-api/8.9/introduction.html
+        1. This client is not yet feature complete.
+        1. In addition, the docs are not up to date. For some stuff we need to lok at NEST's docs.
 
 
 ## License

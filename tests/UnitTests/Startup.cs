@@ -6,37 +6,44 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using System.Reflection;
 using FreeMindLabs.KernelMemory;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Transport;
 
 namespace UnitTests;
 
 public class Startup
 {
-    private static IKernelMemory CreateKernelMemory()
+    readonly IConfiguration Configuration;
+    public Startup()
     {
-        var configuration = new ConfigurationBuilder()
+        Configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddUserSecrets(Assembly.GetExecutingAssembly())
-            .Build();
-
-        const string OaiKey = "OpenAI:ApiKey";
-        var openAiKey = configuration[OaiKey]
-            ?? throw new ArgumentException(OaiKey);
-
-        const string EsSection = "Elasticsearch";
-        var esConfig = configuration.GetSection(EsSection).Get<ElasticsearchConfig>()
-            ?? throw new ArgumentException(EsSection);
-
-
-        var memory = new KernelMemoryBuilder()
-            .WithOpenAIDefaults(openAiKey)
-            .WithElasticsearch(esConfig)
-            .Build<MemoryServerless>();
-
-        return memory;
+            .Build() ?? throw new ArgumentException();
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IKernelMemory>(x => CreateKernelMemory());
+        const string EsSection = "Elasticsearch";
+        var esConfig = Configuration.GetSection(EsSection).Get<ElasticsearchConfig>() ?? throw new ArgumentException(EsSection);
+        
+        using var esSettings = new ElasticsearchClientSettings(new Uri(esConfig.Endpoint!));
+
+        var auth = new BasicAuthentication(Configuration["Elasticsearch:UserName"]!, Configuration["Elasticsearch:Password"]!);
+        esSettings.Authentication(auth)
+            // TODO: Not sure why I need this. Verify configuration maybe?
+            .ServerCertificateValidationCallback((sender, certificate, chain, errors) => true)
+            .CertificateFingerprint(Configuration["Elasticsearch:CertificateFingerPrint"]!);
+
+        esSettings.DisableDirectStreaming(true);
+
+        // ElasticsearchClientSettings
+        services.AddTransient<ElasticsearchClientSettings>(x => esSettings);
+
+        // Kernel Memory with Elasticsearch
+        services.AddTransient<IKernelMemory>(x => new KernelMemoryBuilder()
+            .WithOpenAIDefaults(Configuration["OpenAI:ApiKey"]!)
+            .WithElasticsearch(esSettings)
+            .Build<MemoryServerless>());
     }
 }
