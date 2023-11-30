@@ -12,7 +12,12 @@ internal class Program
         // Concatenate our 'WithElasticsearch()' after 'WithOpenAIDefaults()' from the core nuget
         var test1 = new KernelMemoryBuilder()
             .WithOpenAIDefaults("api key")
-            .WithElasticsearch("conn string")
+            .WithElasticsearch(
+                endpoint: "https://localhost:9200",
+                userName: "elastic",
+                password: "changeme",
+                certificateFingerPrint: "1234567890"
+            )
             .Build();
 
         // Concatenate our 'WithElasticsearch()' before 'WithOpenAIDefaults()' from the core nuget

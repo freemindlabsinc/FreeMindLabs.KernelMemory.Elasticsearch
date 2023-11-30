@@ -27,9 +27,14 @@ public static partial class KernelMemoryBuilderExtensions
     /// </summary>
     /// <param name="builder">KM builder instance</param>
     /// <param name="connString">Elasticsearch connection string</param>
-    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder, string connString)
+    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder,
+        string endpoint, string userName, string password, string certificateFingerPrint)
     {
-        builder.Services.AddElasticsearchAsVectorDb(connString);
+        builder.Services.AddElasticsearchAsVectorDb(
+            endpoint: endpoint,
+            userName: userName,
+            password: password,
+            certificateFingerPrint: certificateFingerPrint);
         return builder;
     }
 }
@@ -55,10 +60,19 @@ public static partial class DependencyInjection
     /// Inject Elasticsearch as the default implementation of IVectorDb
     /// </summary>
     /// <param name="services">Service collection</param>
-    /// <param name="connString">Elasticsearch connection string</param>
-    public static IServiceCollection AddElasticsearchAsVectorDb(this IServiceCollection services, string connString)
+    /// <param name="certificateFingerPrint">Elasticsearch certificate fingerprint</param>
+    /// <param name="endpoint">Elasticsearch endpoint</param>
+    /// <param name="password">Elasticsearch password</param>
+    /// <param name="userName"
+    public static IServiceCollection AddElasticsearchAsVectorDb(this IServiceCollection services,
+        string endpoint, string userName, string password, string certificateFingerPrint)
     {
-        var config = new ElasticsearchConfig { ConnString = connString };
+        var config = new ElasticsearchConfig(
+            endpoint: endpoint,
+            userName: userName,
+            password: password,
+            certificateFingerPrint: certificateFingerPrint);
+
         return services.AddElasticsearchAsVectorDb(config);
     }
 }
