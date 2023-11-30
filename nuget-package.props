@@ -1,11 +1,11 @@
 ﻿<Project>
     <PropertyGroup>
         <!-- Central version prefix - applies to all nuget packages. -->
-        <Version>0.1.0</Version>
+        <Version>0.1.2</Version>
 
         <!-- Default description and tags. Packages can override. -->
-        <Authors>Microsoft</Authors>
-        <Company>Microsoft</Company>
+        <Authors>Alessandro Federici</Authors>
+        <Company>Free Mind Labs, Inc.</Company>
         <Product>Kernel Memory adapter for Elasticsearch</Product>
         <Description>Elasticsearch connector for Microsoft Kernel Memory, to store and search memory using Elasticsearch vector indexing and Elasticsearch features.</Description>
         <PackageTags>Copilot, Memory, RAG, Kernel Memory, Elasticsearch, AI, Artificial Intelligence, Embeddings, Vector DB, Vector Search, ETL</PackageTags>
@@ -13,9 +13,9 @@
 
         <!-- Required license, copyright, and repo information. Packages can override. -->
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-        <PackageProjectUrl>https://github.com/microsoft/kernel-memory</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/microsoft/kernel-memory</RepositoryUrl>
+        <Copyright>© Free Mind Labs, Inc. All rights reserved.</Copyright>
+        <PackageProjectUrl>https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel</RepositoryUrl>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
 
         <!-- Use icon and NUGET readme from dotnet/nuget folder -->

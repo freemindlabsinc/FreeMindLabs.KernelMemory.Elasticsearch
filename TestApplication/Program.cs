@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using Microsoft.KernelMemory;
-using Microsoft.KernelMemory.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 
 namespace TestApplication;
 

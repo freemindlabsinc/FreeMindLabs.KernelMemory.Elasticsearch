@@ -1,4 +1,4 @@
-# Contributing to Kernel Memory
+# Contributing to this project
 
 You can contribute to this project with issues and pull requests (PRs).
 Simply filing issues for problems you encounter is a great way to contribute.
@@ -12,7 +12,7 @@ few tips on how you can make reporting your issue as effective as possible.
 ### Where to Report
 
 New issues can be reported in our
-[issues page](https://github.com/microsoft/kernel-memory-Elasticsearch/issues).
+[issues page](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/issues).
 
 Before filing a new issue, please search the list of issues to make sure it does
 not already exist.
