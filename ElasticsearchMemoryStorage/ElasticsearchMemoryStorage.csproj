@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RollForward>LatestMajor</RollForward>
+        <AssemblyName>FreeMindLabs.KernelMemory.Elasticsearch</AssemblyName>
+        <RootNamespace>FreeMindLabs.KernelMemory.Elasticsearch</RootNamespace>
+        <IsPackable>true</IsPackable>
+        <PackageId>FreeMindLabs.KernelMemory.Elasticsearch</PackageId>
+        <NoWarn>CA1724,NU5104</NoWarn>
+    </PropertyGroup>
+
+    <Import Project="../nuget-package.props" />
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.KernelMemory.Abstractions" />
+    </ItemGroup>
+
+    <Import Project="../code-analysis.props" />
+
+</Project>
