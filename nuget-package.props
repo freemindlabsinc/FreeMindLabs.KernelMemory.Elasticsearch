@@ -1,11 +1,12 @@
 ﻿<Project>
     <PropertyGroup>
         <!-- Central version prefix - applies to all nuget packages. -->
-        <Version>0.1.2</Version>
+        <Version>0.1.3</Version>
 
         <!-- Default description and tags. Packages can override. -->
-        <Authors>Alessandro Federici</Authors>
-        <Company>Free Mind Labs, Inc.</Company>
+        <Authors>Free Mind Labs and contributors</Authors>
+        <Copyright>Free Mind Labs, Inc.</Copyright>
+        <Company>Free Mind Labs.</Company>
         <Product>Kernel Memory adapter for Elasticsearch</Product>
         <Description>Elasticsearch connector for Microsoft Kernel Memory, to store and search memory using Elasticsearch vector indexing and Elasticsearch features.</Description>
         <PackageTags>Copilot, Memory, RAG, Kernel Memory, Elasticsearch, AI, Artificial Intelligence, Embeddings, Vector DB, Vector Search, ETL</PackageTags>

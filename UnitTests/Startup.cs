@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using FreeMindLabs.KernelMemory.MemoryStorage.Elasticsearch;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using System.Reflection;
-using FreeMindLabs.KernelMemory;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 
 namespace UnitTests;
 
@@ -26,7 +25,7 @@ public class Startup
     {
         const string EsSection = "Elasticsearch";
         var esConfig = Configuration.GetSection(EsSection).Get<ElasticsearchConfig>() ?? throw new ArgumentException(EsSection);
-        
+
         using var esSettings = new ElasticsearchClientSettings(new Uri(esConfig.Endpoint!));
 
         var auth = new BasicAuthentication(Configuration["Elasticsearch:UserName"]!, Configuration["Elasticsearch:Password"]!);
@@ -44,7 +43,7 @@ public class Startup
         // Kernel Memory with Elasticsearch
         services.AddTransient<IKernelMemory>(x => new KernelMemoryBuilder()
             .WithOpenAIDefaults(Configuration["OpenAI:ApiKey"]!)
-            .WithElasticsearch(esSettings)
+            .WithElasticsearch(esConfig)
             .Build<MemoryServerless>());
     }
 }

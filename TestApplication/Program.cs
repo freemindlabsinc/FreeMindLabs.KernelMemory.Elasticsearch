@@ -22,14 +22,20 @@ internal class Program
 
         // Concatenate our 'WithElasticsearch()' before 'WithOpenAIDefaults()' from the core nuget
         var test2 = new KernelMemoryBuilder()
-            .WithElasticsearch("conn string")
+            .WithElasticsearch(endpoint: "https://localhost:9200",
+                userName: "elastic",
+                password: "changeme",
+                certificateFingerPrint: "1234567890")
             .WithOpenAIDefaults("api key")
             .Build();
 
         // Concatenate our 'WithElasticsearch()' before and after KM builder extension methods from the core nuget
         var test3 = new KernelMemoryBuilder()
             .WithSimpleFileStorage()
-            .WithElasticsearch("conn string")
+            .WithElasticsearch(endpoint: "https://localhost:9200",
+                userName: "elastic",
+                password: "changeme",
+                certificateFingerPrint: "1234567890")
             .WithOpenAIDefaults("api key")
             .Build();
 

@@ -63,7 +63,7 @@ public static partial class DependencyInjection
     /// <param name="certificateFingerPrint">Elasticsearch certificate fingerprint</param>
     /// <param name="endpoint">Elasticsearch endpoint</param>
     /// <param name="password">Elasticsearch password</param>
-    /// <param name="userName"
+    /// <param name="userName">Elasticsearch username</param>
     public static IServiceCollection AddElasticsearchAsVectorDb(this IServiceCollection services,
         string endpoint, string userName, string password, string certificateFingerPrint)
     {
