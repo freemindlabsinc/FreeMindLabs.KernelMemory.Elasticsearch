@@ -26,7 +26,10 @@ public static partial class KernelMemoryBuilderExtensions
     /// Kernel Memory Builder extension method to add Elasticsearch memory connector.
     /// </summary>
     /// <param name="builder">KM builder instance</param>
-    /// <param name="connString">Elasticsearch connection string</param>
+    /// <param name="certificateFingerPrint">Elasticsearch certificate fingerprint</param>
+    /// <param name="endpoint">Elasticsearch endpoint</param>
+    /// <param name="password">Elasticsearch password</param>
+    /// <param name="userName">Elasticsearch username</param>
     public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder,
         string endpoint, string userName, string password, string certificateFingerPrint)
     {

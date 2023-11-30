@@ -1,8 +1,6 @@
 ﻿using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.IndexManagement;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.MemoryStorage;
-using System.Threading;
 using Xunit.DependencyInjection;
 
 namespace UnitTests;
