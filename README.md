@@ -1,5 +1,5 @@
 # FreeMindLabs.SemanticKernel.Connectors.Elasticsearch
-Microsoft [Semantic Kernel](https://github.com/microsoft/semantic-kernel) and [Kernel Memory](https://github.com/microsoft/kernel-memory/tree/ea157ef2b837e2cd40165dc9f6a578a2e98bd3e3) connectors to use Elasticsearch as vector database.
+Microsoft [Kernel Memory](https://github.com/microsoft/kernel-memory/tree/ea157ef2b837e2cd40165dc9f6a578a2e98bd3e3) connector to use Elasticsearch as vector database.
 
 ## Goals
 1. To implement an Elasticsearch [IVectorDb](https://github.com/microsoft/kernel-memory/blob/ea157ef2b837e2cd40165dc9f6a578a2e98bd3e3/service/Core/MemoryStorage/IVectorDb.cs#L9) 	
@@ -32,9 +32,8 @@ The file is located at the root of the Tests project and it reads as follows:
 
 **Modify it as necessary and add the values for the certificate fingerprint and the password in User Secrets.**
 
-> Notice how the UserSecretsId of the test project is set to the same value of Semantic Kernel and Kernel Memory: 5ee045b0-....-....-....-32d1a6f8fed0
-> By virtue of doing this we can use the same secrets file for all projects.
-
+**Notice how the UserSecretsId of the test project is set to the same value of Semantic Kernel and Kernel Memory:** 5ee045b0-....-....-....-32d1a6f8fed0
+*By virtue of doing this we can use the same secrets file for all projects.*
 
 To add the Elasticsearch secrets either:
 1. Open the secrets file in your IDE 
@@ -56,6 +55,21 @@ This ultimately results in the following secrets.json additions:
 }
 ```
 
+## Challenges
+The new API in the Elasticsearch client is not yet feature complete and there are bugs.
+
+1. AutoMap(),etc. missing
+    1. [CreateIndexDescriptor Mappings -> Map Api usage issue #7929](https://github.com/elastic/elasticsearch-net/issues/7929)
+    1. [FEATURE - Support AutoMap to allow creation of mappings using type inference #6610](https://github.com/elastic/elasticsearch-net/issues/6610)
+        1. flobernd comment on Aug 17 suggests this:
+```
+var mapResponse = client.Indices.PutMapping("index", x => x
+    .Properties<Person>(p => p
+        .DenseVector(x => x.Data, d => d
+            .Index(true)
+            .Similarity("dot_product"))));
+```
+
 
 ## Resources
 
@@ -63,8 +77,16 @@ This ultimately results in the following secrets.json additions:
     1. NEST 7.17: https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/nest-getting-started.html
     1. New client 8.9: https://www.elastic.co/guide/en/elasticsearch/client/net-api/8.9/introduction.html
         1. This client is not yet feature complete.
+            1. Look here for details: https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/release-notes-8.0.0.html
         1. In addition, the docs are not up to date. For some stuff we need to lok at NEST's docs.
 
+1. [Elasticsearch.net Github repository](https://github.com/elastic/elasticsearch-net)
+    1.  
+
+
+1. Semantic Kernel/Memory-Kernel
+    1. [Introduction to Semantic Memory (feat. Devis Lucato) | Semantic Kernel](https://www.youtube.com/watch?v=5JYW_uAxwYM)
+    1. [11.29.2023 - Semantic Kernel Office Hours (US/Europe Region)](https://www.youtube.com/watch?v=JSca9mVUUJo)
 
 ## License
 Copyright (c) Free Mind Labs, Inc. All rights reserved.

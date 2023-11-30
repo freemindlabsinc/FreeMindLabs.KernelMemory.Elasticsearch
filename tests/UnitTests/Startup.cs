@@ -35,7 +35,8 @@ public class Startup
             .ServerCertificateValidationCallback((sender, certificate, chain, errors) => true)
             .CertificateFingerprint(Configuration["Elasticsearch:CertificateFingerPrint"]!);
 
-        esSettings.DisableDirectStreaming(true);
+        esSettings.DisableDirectStreaming(true)
+                  .ThrowExceptions(true);
 
         // ElasticsearchClientSettings
         services.AddTransient<ElasticsearchClientSettings>(x => esSettings);
