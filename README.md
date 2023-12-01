@@ -12,11 +12,6 @@ This repository contains the Elasticsearch adapter allowing to use Kernel Memory
 ## Goals
 Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening in development.
 
-<iframe
-  src="DIARY."
-  style="width:100%; height:300px;"
-></iframe>
-
 1. To implement an Elasticsearch [IMemoryDB](https://github.com/microsoft/kernel-memory/blob/adce865a472728f2549428cf6b82ca79a601582b/service/Abstractions/MemoryStorage/IMemoryDb.cs#L9) 	
     1. This allows to use Elasticsearch as vector database directly from Kernel Memory.
 	1. KM can also be used as memory store for [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
