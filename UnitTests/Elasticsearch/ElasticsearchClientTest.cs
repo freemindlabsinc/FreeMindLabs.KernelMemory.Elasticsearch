@@ -13,6 +13,7 @@ public class ElasticsearchClientTest
     [InlineData("test_index01", null, default)]
     public async Task CreatesIndexCrappyAsync(string indexName, [FromServices] ElasticsearchClientSettings settings, CancellationToken cancellationToken)
     {
+        // TODO: move this in the IVectorDb implementation
         var client = new ElasticsearchClient(settings);
 
         var delResponse = await client.Indices.DeleteAsync(indexName, cancellationToken);
