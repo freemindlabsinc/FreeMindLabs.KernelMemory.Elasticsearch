@@ -16,6 +16,7 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 /// </summary>
 public class ElasticsearchMemory : IMemoryDb
 {
+    private readonly ElasticsearchConfig _config;
     private readonly ILogger<ElasticsearchMemory> _log;
 
     /// <summary>
@@ -27,6 +28,7 @@ public class ElasticsearchMemory : IMemoryDb
         ElasticsearchConfig config,
         ILogger<ElasticsearchMemory>? log = null)
     {
+        this._config = config ?? throw new ArgumentNullException(nameof(config));
         this._log = log ?? DefaultLogger<ElasticsearchMemory>.Instance;
     }
 
