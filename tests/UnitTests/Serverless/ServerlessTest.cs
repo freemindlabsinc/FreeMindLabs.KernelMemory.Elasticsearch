@@ -2,6 +2,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace UnitTests.Serverless;
@@ -68,7 +69,7 @@ public class ServerlessTest
     }
 
     [Fact]
-    public void AllSequencesOfConfigurationsWork(string[] args)
+    public void AllSequencesOfConfigurationsWork()
     {
         // Concatenate our 'WithElasticsearch()' after 'WithOpenAIDefaults()' from the core nuget
         var test1 = new KernelMemoryBuilder()

@@ -3,6 +3,7 @@
 using Elastic.Clients.Elasticsearch;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.MemoryStorage;
+using Xunit;
 using Xunit.DependencyInjection;
 
 namespace UnitTests.Elasticsearch;
