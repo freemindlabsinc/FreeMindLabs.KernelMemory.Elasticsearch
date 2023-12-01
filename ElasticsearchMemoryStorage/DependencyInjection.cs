@@ -56,7 +56,7 @@ public static partial class DependencyInjection
     {
         return services
             .AddSingleton<ElasticsearchConfig>(config)
-            .AddSingleton<IVectorDb, ElasticsearchMemory>();
+            .AddSingleton<IMemoryDb, ElasticsearchMemory>();
     }
 
     /// <summary>
