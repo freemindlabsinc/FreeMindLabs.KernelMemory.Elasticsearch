@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ElasticsearchMemoryStorage\ElasticsearchMemoryStorage.csproj" />
+      <ProjectReference Include="..\..\src\ElasticsearchMemoryStorage\ElasticsearchMemoryStorage.csproj" />
     </ItemGroup>
 
 </Project>

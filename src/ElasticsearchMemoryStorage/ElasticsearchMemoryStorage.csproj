@@ -11,13 +11,13 @@
         <UserSecretsId>750ea0f7-073f-44fb-b791-08ce5fd978a2</UserSecretsId>
     </PropertyGroup>
 
-    <Import Project="../nuget-package.props" />
+    <Import Project="../../nuget-package.props" />
 
     <ItemGroup>
         <PackageReference Include="Microsoft.KernelMemory.Abstractions" />
         <PackageReference Include="Elastic.Clients.Elasticsearch" />
     </ItemGroup>
 
-    <Import Project="../code-analysis.props" />
+    <Import Project="../../code-analysis.props" />
 
 </Project>
