@@ -7,3 +7,5 @@ is an open-source service and plugin specialized in the efficient indexing of da
 through custom continuous data hybrid pipelines.
 
 This package contains the Elasticsearch adapter allowing to use Kernel Memory with Elasticsearch.
+
+Last update: 2021-10-19
