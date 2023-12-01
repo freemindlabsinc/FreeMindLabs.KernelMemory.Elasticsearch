@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{6EF76FD8-4
 		COMMUNITY.md = COMMUNITY.md
 		CONFIGURATION.md = CONFIGURATION.md
 		CONTRIBUTING.md = CONTRIBUTING.md
+		DIARY.md = DIARY.md
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		icon.png = icon.png
@@ -51,5 +52,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {964BE41E-E834-4596-BFDB-5F9D5BA9F048}
 	EndGlobalSection
 EndGlobal

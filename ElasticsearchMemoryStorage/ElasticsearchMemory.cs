@@ -14,8 +14,9 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 /// <summary>
 /// Elasticsearch connector for Kernel Memory.
 /// </summary>
-public class ElasticsearchMemory : IVectorDb
+public class ElasticsearchMemory : IMemoryDb
 {
+    private readonly ElasticsearchConfig _config;
     private readonly ILogger<ElasticsearchMemory> _log;
 
     /// <summary>
@@ -27,6 +28,7 @@ public class ElasticsearchMemory : IVectorDb
         ElasticsearchConfig config,
         ILogger<ElasticsearchMemory>? log = null)
     {
+        this._config = config ?? throw new ArgumentNullException(nameof(config));
         this._log = log ?? DefaultLogger<ElasticsearchMemory>.Instance;
     }
 
@@ -64,14 +66,7 @@ public class ElasticsearchMemory : IVectorDb
     }
 
     /// <inheritdoc />
-    public IAsyncEnumerable<(MemoryRecord, double)> GetSimilarListAsync(
-        string index,
-        Embedding embedding,
-        ICollection<MemoryFilter>? filters = null,
-        double minRelevance = 0,
-        int limit = 1,
-        bool withEmbeddings = false,
-        CancellationToken cancellationToken = default)
+    public IAsyncEnumerable<(MemoryRecord, double)> GetSimilarListAsync(string index, string text, ICollection<MemoryFilter>? filters = null, double minRelevance = 0, int limit = 1, bool withEmbeddings = false, CancellationToken cancellationToken = default)
     {
         if (filters != null)
         {
