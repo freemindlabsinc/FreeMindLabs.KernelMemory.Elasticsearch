@@ -1,4 +1,4 @@
-﻿// Copyright (c) Free Mind Labs. All rights reserved.
+﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
