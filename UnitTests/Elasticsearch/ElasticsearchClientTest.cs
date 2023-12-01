@@ -11,7 +11,7 @@ public class ElasticsearchClientTest
 {
     [Theory]
     [InlineData("test_index01", null, default)]
-    public async Task CreateIndexAsync(string indexName, [FromServices] ElasticsearchClientSettings settings, CancellationToken cancellationToken)
+    public async Task CreatesIndexCrappyAsync(string indexName, [FromServices] ElasticsearchClientSettings settings, CancellationToken cancellationToken)
     {
         var client = new ElasticsearchClient(settings);
 

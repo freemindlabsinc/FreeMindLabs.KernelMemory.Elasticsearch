@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
         <NoWarn>CA1303,CA1852</NoWarn>
+        <UserSecretsId>b8197e27-3af7-4ce9-9531-be4011cb6e4f</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>

@@ -18,20 +18,20 @@ public class ServerlessTest
     }
 
     [Fact]
-    public async Task KernelMemoryBasicAsync()
+    public async Task BehavesLikeMicrosoftMainExampleAsync()
     {
         IKernelMemory memory = this._services.GetRequiredService<IKernelMemory>();
 
-        var docId = await memory.ImportDocumentAsync("Docs/file1-Wikipedia-Carbon.txt", documentId: "doc001");
+        var docId = await memory.ImportDocumentAsync("file1-Wikipedia-Carbon.txt", documentId: "doc001");
         this._output.WriteLine($"Indexed {docId}");
 
         docId = await memory.ImportDocumentAsync(new Document("doc002")
-            .AddFiles(new[] { "Docs/file2-Wikipedia-Moon.txt", "Docs/file3-lorem-ipsum.docx", "Docs/file4-SK-Readme.pdf" })
+            .AddFiles(new[] { "file2-Wikipedia-Moon.txt", "file3-lorem-ipsum.docx", "file4-SK-Readme.pdf" })
             .AddTag("user", "Blake"));
         this._output.WriteLine($"Indexed {docId}");
 
         docId = await memory.ImportDocumentAsync(new Document("doc003")
-            .AddFile("Docs/file5-NASA-news.pdf")
+            .AddFile("file5-NASA-news.pdf")
             .AddTag("user", "Taylor")
             .AddTag("collection", "meetings")
             .AddTag("collection", "NASA")

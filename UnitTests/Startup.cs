@@ -12,10 +12,11 @@ namespace UnitTests;
 
 public class Startup
 {
-    readonly IConfiguration Configuration;
+    private readonly IConfiguration _configuration;
+
     public Startup()
     {
-        Configuration = new ConfigurationBuilder()
+        this._configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddUserSecrets(Assembly.GetExecutingAssembly())
             .Build() ?? throw new ArgumentException();
@@ -24,15 +25,17 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         const string EsSection = "Elasticsearch";
-        var esConfig = Configuration.GetSection(EsSection).Get<ElasticsearchConfig>() ?? throw new ArgumentException(EsSection);
+        var esConfig = this._configuration.GetSection(EsSection).Get<ElasticsearchConfig>() ?? throw new ArgumentException(EsSection);
 
         using var esSettings = new ElasticsearchClientSettings(new Uri(esConfig.Endpoint!));
 
-        var auth = new BasicAuthentication(Configuration["Elasticsearch:UserName"]!, Configuration["Elasticsearch:Password"]!);
+        var auth = new BasicAuthentication(
+            username: this._configuration["Elasticsearch:UserName"]!,
+            password: this._configuration["Elasticsearch:Password"]!);
         esSettings.Authentication(auth)
             // TODO: Not sure why I need this. Verify configuration maybe?
             .ServerCertificateValidationCallback((sender, certificate, chain, errors) => true)
-            .CertificateFingerprint(Configuration["Elasticsearch:CertificateFingerPrint"]!);
+            .CertificateFingerprint(this._configuration["Elasticsearch:CertificateFingerPrint"]!);
 
         esSettings.DisableDirectStreaming(true)
                   .ThrowExceptions(true);
@@ -42,7 +45,7 @@ public class Startup
 
         // Kernel Memory with Elasticsearch
         services.AddTransient<IKernelMemory>(x => new KernelMemoryBuilder()
-            .WithOpenAIDefaults(Configuration["OpenAI:ApiKey"]!)
+            .WithOpenAIDefaults(this._configuration["OpenAI:ApiKey"]!)
             .WithElasticsearch(esConfig)
             .Build<MemoryServerless>());
     }
