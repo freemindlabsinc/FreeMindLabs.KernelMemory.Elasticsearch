@@ -1,6 +1,6 @@
 # Elasticsearch Memory Storage 
 **By Free Mind Labs, Inc.** 
-*A proper webpage is coming soon...* :blush:)
+*A proper webpage is coming soon...* :blush: 
 
 [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE)
 Use [Elasticsearch](https://www.elastic.co/) as vector storage for [Microsoft](https://www.microsoft.ms) **[Kernel Memory](https://github.com/microsoft/semantic-memory)** (KM)
@@ -10,10 +10,16 @@ Use [Elasticsearch](https://www.elastic.co/) as vector storage for [Microsoft](h
 This repository contains the Elasticsearch adapter allowing to use Kernel Memory with Elasticsearch.
 
 ## Goals
-1. To implement an Elasticsearch [IVectorDb](https://github.com/microsoft/kernel-memory/blob/ea157ef2b837e2cd40165dc9f6a578a2e98bd3e3/service/Core/MemoryStorage/IVectorDb.cs#L9) 	
-    1. This interface might be soon renamed...
-	1. This allows to use Elasticsearch as vector database directly from Kernel Memory.
-	1. KM can also be used as IMemoryStore for SK
+Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening in development.
+
+<iframe
+  src="DIARY."
+  style="width:100%; height:300px;"
+></iframe>
+
+1. To implement an Elasticsearch [IMemoryDB](https://github.com/microsoft/kernel-memory/blob/adce865a472728f2549428cf6b82ca79a601582b/service/Abstractions/MemoryStorage/IMemoryDb.cs#L9) 	
+    1. This allows to use Elasticsearch as vector database directly from Kernel Memory.
+	1. KM can also be used as memory store for [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
 
 ## Current status
 1. The connector is currently in development and not ready for production (or any) use.
@@ -23,7 +29,6 @@ This repository contains the Elasticsearch adapter allowing to use Kernel Memory
 1. A running instance of Elasticsearch
 1. User Secrets configured as explained in [Configuration](CONFIGURATION.md)
 1. TBC
-
 
 
 ## Challenges
