@@ -36,22 +36,22 @@
     <None Update="appSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Docs\file1-Wikipedia-Carbon.txt">
+    <None Update="Serverless\Docs\file1-Wikipedia-Carbon.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Docs\file2-Wikipedia-Moon.txt">
+    <None Update="Serverless\Docs\file2-Wikipedia-Moon.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Docs\file3-lorem-ipsum.docx">
+    <None Update="Serverless\Docs\file3-lorem-ipsum.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Docs\file4-SK-Readme.pdf">
+    <None Update="Serverless\Docs\file4-SK-Readme.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Docs\file5-NASA-news.pdf">
+    <None Update="Serverless\Docs\file5-NASA-news.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Docs\file6-ANWC-image.jpg">
+    <None Update="Serverless\Docs\file6-ANWC-image.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
