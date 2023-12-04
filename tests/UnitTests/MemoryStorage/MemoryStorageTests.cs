@@ -17,11 +17,33 @@ public class MemoryStorageTests
     }
 
     [Theory]
-    [InlineData(null)]
-    public async Task CreatesIndexIndexingFirstDocumentAsync([FromServices] IKernelMemory memory)
+    [InlineData(null, null)]
+    public async Task CreatesIndexIndexingFirstDocumentAsync([FromServices] IKernelMemory memory, CancellationToken cancellationToken)
     {
-        await memory.DeleteIndexAsync();
-        var docId = await memory.ImportDocumentAsync("file1-Wikipedia-Carbon.txt", documentId: "doc001");
+        await memory.DeleteIndexAsync(
+            index: null,
+            cancellationToken: cancellationToken);
+
+        var docId = await memory.ImportDocumentAsync(
+            filePath: "file1-Wikipedia-Carbon.txt",
+            documentId: "doc001",
+            tags: null,
+            index: null,
+            steps: null,
+            cancellationToken: cancellationToken
+            );
+
         this._output.WriteLine($"Indexed {docId}");
+
+        var question = "What is carbon?";
+        var answer = await memory.AskAsync(
+            question: question,
+            index: null,
+            filter: null,
+            filters: null,
+            minRelevance: 0,
+            cancellationToken: cancellationToken);
+
+        this._output.WriteLine($"Q: {question}, A: {answer}");
     }
 }
