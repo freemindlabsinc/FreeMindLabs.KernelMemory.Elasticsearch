@@ -2,12 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.Json;
-using Microsoft.KernelMemory.MemoryStorage;
+using System.Text.Json.Serialization;
 using Microsoft.KernelMemory;
+using Microsoft.KernelMemory.MemoryStorage;
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
@@ -18,7 +17,7 @@ public sealed class ElasticsearchMemoryRecord
 {
     internal const string IdField = "id";
     internal const string VectorField = "embedding";
-    private const string TagsField = "tags";
+    public const string TagsField = "tags";
     private const string PayloadField = "payload";
 
     private static readonly JsonSerializerOptions s_jsonOptions = new()
@@ -47,7 +46,7 @@ public sealed class ElasticsearchMemoryRecord
     /// TBC
     /// </summary>
     [JsonPropertyName(TagsField)]
-    public List<string> Tags { get; set; } = new();
+    public List<ElasticsearchTag> Tags { get; set; } = new();
 
     /// <summary>
     /// TBC
@@ -55,22 +54,19 @@ public sealed class ElasticsearchMemoryRecord
     [JsonPropertyName(PayloadField)]
     public string Payload { get; set; } = string.Empty;
 
-    /// <summary>
-    /// TBC
-    /// </summary>
-    public static MemoryDbSchema GetSchema(int vectorSize)
-    {
-        return new MemoryDbSchema
-        {
-            Fields = new List<MemoryDbField>
-            {
-                new() { Name = IdField, Type = MemoryDbField.FieldType.Text, IsKey = true },
-                new() { Name = VectorField, Type = MemoryDbField.FieldType.Vector, VectorSize = vectorSize },
-                new() { Name = TagsField, Type = MemoryDbField.FieldType.ListOfStrings, IsFilterable = true },
-                new() { Name = PayloadField, Type = MemoryDbField.FieldType.Text, IsFilterable = false },
-            }
-        };
-    }
+    //public static MemoryDbSchema GetSchema(int vectorSize)
+    //{
+    //    return new MemoryDbSchema
+    //    {
+    //        Fields = new List<MemoryDbField>
+    //        {
+    //            new() { Name = IdField, Type = MemoryDbField.FieldType.Text, IsKey = true },
+    //            new() { Name = VectorField, Type = MemoryDbField.FieldType.Vector, VectorSize = vectorSize },
+    //            new() { Name = TagsField, Type = MemoryDbField.FieldType.ListOfStrings, IsFilterable = true },
+    //            new() { Name = PayloadField, Type = MemoryDbField.FieldType.Text, IsFilterable = false },
+    //        }
+    //    };
+    //}
 
     /// <summary>
     /// TBC
@@ -89,11 +85,9 @@ public sealed class ElasticsearchMemoryRecord
             result.Vector = this.Vector;
         }
 
-        foreach (string[] keyValue in this.Tags.Select(tag => tag.Split(Constants.ReservedEqualsChar, 2)))
+        foreach (var tag in this.Tags)
         {
-            string key = keyValue[0];
-            string? value = keyValue.Length == 1 ? null : keyValue[1];
-            result.Tags.Add(key, value);
+            result.Tags.Add(tag.Name, tag.Value);
         }
 
         return result;
@@ -113,9 +107,20 @@ public sealed class ElasticsearchMemoryRecord
             Payload = JsonSerializer.Serialize(record.Payload, s_jsonOptions)
         };
 
-        foreach (var tag in record.Tags.Pairs)
+        foreach (var tag in record.Tags)
         {
-            result.Tags.Add($"{tag.Key}{Constants.ReservedEqualsChar}{tag.Value}");
+            if ((tag.Value == null) || (tag.Value.Count == 0))
+            {
+                // Key only, with no values
+                result.Tags.Add(new ElasticsearchTag(name: tag.Key));
+                continue;
+            }
+
+            foreach (var value in tag.Value)
+            {
+                // Key with one or more values
+                result.Tags.Add(new ElasticsearchTag(name: tag.Key, value: value));
+            }
         }
 
         return result;
