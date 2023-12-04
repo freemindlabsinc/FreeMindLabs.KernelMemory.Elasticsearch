@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using Elastic.Clients.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
@@ -23,12 +24,19 @@ public class ElasticsearchClientTest
 
         const int Dimensions = 3;
         var mapResponse = await client.Indices.PutMappingAsync(indexName, x => x
-            .Properties<MemoryRecord>(p =>
+            .Properties<ElasticsearchMemoryRecord>(p =>
             {
                 p.Keyword(x => x.Id);
                 p.DenseVector(x => x.Vector, d => d.Index(true).Dims(Dimensions).Similarity("cosine"));
-                p.Nested(x => x.Tags);
-                p.Nested(x => x.Payload);
+                //p.Nested(x => x.Tags, pd =>
+                //{
+                //    pd.Properties(p =>
+                //    {
+                //        p.Keyword(x => x);
+                //        p.Text(x => x.Value);
+                //    }); 
+                //});
+                p.Text(x => x.Payload);
 
             }),
             cancellationToken);
