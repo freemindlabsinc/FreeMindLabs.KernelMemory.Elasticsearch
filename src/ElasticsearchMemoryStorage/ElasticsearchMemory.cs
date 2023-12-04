@@ -135,7 +135,11 @@ public class ElasticsearchMemory : IMemoryDb
     }
 
     /// <inheritdoc />
-    public IAsyncEnumerable<(MemoryRecord, double)> GetSimilarListAsync(string index, string text, ICollection<MemoryFilter>? filters = null, double minRelevance = 0, int limit = 1, bool withEmbeddings = false, CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<(MemoryRecord, double)> GetSimilarListAsync(
+        string index,
+        string text,
+        ICollection<MemoryFilter>? filters = null,
+        double minRelevance = 0, int limit = 1, bool withEmbeddings = false, CancellationToken cancellationToken = default)
     {
         if (filters != null)
         {
@@ -150,7 +154,16 @@ public class ElasticsearchMemory : IMemoryDb
             }
         }
 
-        throw new NotImplementedException();
+        var resp = await this._client.SearchAsync<ElasticsearchMemoryRecord>(s =>
+            s.Index(index)
+             .Query(q => q.MatchAll()),
+             cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (var hit in resp.Hits)
+        {
+            yield return (hit.Source!.ToMemoryRecord(), hit.Score ?? 0);
+        }
     }
 
     /// <inheritdoc />

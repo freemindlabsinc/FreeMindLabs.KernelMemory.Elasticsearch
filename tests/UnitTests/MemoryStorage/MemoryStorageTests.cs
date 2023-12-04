@@ -20,6 +20,8 @@ public class MemoryStorageTests
     [InlineData(null, null)]
     public async Task CreatesIndexIndexingFirstDocumentAsync([FromServices] IKernelMemory memory, CancellationToken cancellationToken)
     {
+        cancellationToken = CancellationToken.None;
+
         await memory.DeleteIndexAsync(
             index: null,
             cancellationToken: cancellationToken);
