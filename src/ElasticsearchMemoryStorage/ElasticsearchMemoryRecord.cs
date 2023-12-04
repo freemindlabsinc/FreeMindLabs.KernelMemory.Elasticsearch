@@ -38,13 +38,6 @@ public sealed class ElasticsearchMemoryRecord
     /// <summary>
     /// TBC
     /// </summary>
-    [JsonPropertyName(VectorField)]
-    [JsonConverter(typeof(Embedding.JsonConverter))]
-    public Embedding Vector { get; set; } = new();
-
-    /// <summary>
-    /// TBC
-    /// </summary>
     [JsonPropertyName(TagsField)]
     public List<ElasticsearchTag> Tags { get; set; } = new();
 
@@ -67,6 +60,15 @@ public sealed class ElasticsearchMemoryRecord
     //        }
     //    };
     //}
+
+    /// <summary>
+    /// TBC
+    /// </summary>
+    [JsonPropertyName(VectorField)]
+    [JsonConverter(typeof(Embedding.JsonConverter))]
+    public Embedding Vector { get; set; } = new();
+
+
 
     /// <summary>
     /// TBC

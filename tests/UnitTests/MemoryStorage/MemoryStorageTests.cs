@@ -20,6 +20,7 @@ public class MemoryStorageTests
     [InlineData(null)]
     public async Task CreatesIndexIndexingFirstDocumentAsync([FromServices] IKernelMemory memory)
     {
+        await memory.DeleteIndexAsync();
         var docId = await memory.ImportDocumentAsync("file1-Wikipedia-Carbon.txt", documentId: "doc001");
         this._output.WriteLine($"Indexed {docId}");
     }
