@@ -18,7 +18,7 @@ public class MemoryStorageTests
 
     [Theory]
     [InlineData(null, null)]
-    public async Task CreatesIndexIndexingFirstDocumentAsync([FromServices] IKernelMemory memory, CancellationToken cancellationToken)
+    public async Task CreateIndexAndSearchInDefaultIndexAsync([FromServices] IKernelMemory memory, CancellationToken cancellationToken)
     {
         cancellationToken = CancellationToken.None;
 
@@ -26,6 +26,7 @@ public class MemoryStorageTests
         await memory.DeleteIndexAsync(
             index: null,
             cancellationToken: cancellationToken).ConfigureAwait(false);
+        this._output.WriteLine($"Ensured default index is deleted.");
 
         // Imports the document into the default index
         var docId = await memory.ImportDocumentAsync(
@@ -35,11 +36,12 @@ public class MemoryStorageTests
             index: null,
             steps: null,
             cancellationToken: cancellationToken).ConfigureAwait(false);
+        this._output.WriteLine($"Indexed {docId}.");
 
-        this._output.WriteLine($"Indexed {docId}");
+        await Task.Delay(2000, CancellationToken.None); // TODO: remove. Without this the data might not be ready for read...
 
         // Asks a question on the data we just inserted
-        var question = "What is carbon?";
+        var question = "What can carbon bond to?";
         var answer = await memory.AskAsync(
             question: question,
             index: null,
@@ -50,5 +52,6 @@ public class MemoryStorageTests
             .ConfigureAwait(false);
 
         this._output.WriteLine($"Q: {question}, A: {answer.Result}");
+        Assert.NotEqual("INFO NOT FOUND", answer.Result);
     }
 }

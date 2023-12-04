@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.Diagnostics;
 using Microsoft.KernelMemory.MemoryStorage;
+using Microsoft.SemanticKernel.AI.Embeddings;
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
@@ -19,6 +20,7 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 /// </summary>
 public class ElasticsearchMemory : IMemoryDb
 {
+    private readonly ITextEmbeddingGeneration _embeddingGenerator;
     private readonly ElasticsearchConfig _config;
     private readonly ILogger<ElasticsearchMemory> _log;
     private readonly ElasticsearchClient _client;
@@ -30,8 +32,10 @@ public class ElasticsearchMemory : IMemoryDb
     /// <param name="log">Application logger</param>
     public ElasticsearchMemory(
         ElasticsearchConfig config,
+        ITextEmbeddingGeneration embeddingGenerator,
         ILogger<ElasticsearchMemory>? log = null)
     {
+        this._embeddingGenerator = embeddingGenerator ?? throw new ArgumentNullException(nameof(embeddingGenerator));
         this._config = config ?? throw new ArgumentNullException(nameof(config));
         this._client = new ElasticsearchClient(this._config.ToElasticsearchClientSettings());
         this._log = log ?? DefaultLogger<ElasticsearchMemory>.Instance;
@@ -154,9 +158,22 @@ public class ElasticsearchMemory : IMemoryDb
             }
         }
 
+        IList<string> data = new List<string>() { text };
+
+        IList<ReadOnlyMemory<float>> qembed = await this._embeddingGenerator.GenerateEmbeddingsAsync(data, cancellationToken).ConfigureAwait(false);
+        var coll = qembed.First().ToArray();
+
         var resp = await this._client.SearchAsync<ElasticsearchMemoryRecord>(s =>
             s.Index(index)
-             .Query(q => q.MatchAll()),
+             .Knn(qd =>
+             {
+                 qd.k(limit)
+                   .NumCandidates(limit + 100)
+                   .Field(x => x.Vector)
+                   .QueryVector(coll);
+
+             }),
+             //.Query(q => q.MatchAll()),
              cancellationToken)
             .ConfigureAwait(false);
 
