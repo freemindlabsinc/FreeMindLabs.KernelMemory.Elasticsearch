@@ -12,7 +12,7 @@ namespace UnitTests.Elasticsearch;
 
 public class ElasticsearchClientTest
 {
-    [Theory]
+    [Theory(Skip = "Initial tests. Will be removed.")]
     [InlineData("test_index01", null, default)]
     public async Task CreatesIndexCrappyAsync(string indexName, [FromServices] ElasticsearchClientSettings settings, CancellationToken cancellationToken)
     {

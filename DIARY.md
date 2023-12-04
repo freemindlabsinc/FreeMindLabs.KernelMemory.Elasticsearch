@@ -2,6 +2,10 @@
 
 >A bunch of notes and thoughts about the project.
 
+:calendar: 12/04/2023
+1.Version 0.3.0
+1. 
+
 :calendar: 12/01/2023
 1. Version 0.2.0
 1. Added this DIARY .md file to the project.  
