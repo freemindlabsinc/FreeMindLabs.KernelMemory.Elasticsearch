@@ -162,6 +162,7 @@ public class ElasticsearchMemory : IMemoryDb
 
         foreach (var hit in resp.Hits)
         {
+            this._log.LogTrace("Hit: {HitId}, {HitScore}", hit.Id, hit.Score);
             yield return (hit.Source!.ToMemoryRecord(), hit.Score ?? 0);
         }
     }

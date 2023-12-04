@@ -22,21 +22,23 @@ public class MemoryStorageTests
     {
         cancellationToken = CancellationToken.None;
 
+        // Deletes the default index if already present
         await memory.DeleteIndexAsync(
             index: null,
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken).ConfigureAwait(false);
 
+        // Imports the document into the default index
         var docId = await memory.ImportDocumentAsync(
             filePath: "file1-Wikipedia-Carbon.txt",
             documentId: "doc001",
             tags: null,
             index: null,
             steps: null,
-            cancellationToken: cancellationToken
-            );
+            cancellationToken: cancellationToken).ConfigureAwait(false);
 
         this._output.WriteLine($"Indexed {docId}");
 
+        // Asks a question on the data we just inserted
         var question = "What is carbon?";
         var answer = await memory.AskAsync(
             question: question,
@@ -44,8 +46,9 @@ public class MemoryStorageTests
             filter: null,
             filters: null,
             minRelevance: 0,
-            cancellationToken: cancellationToken);
+            cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
-        this._output.WriteLine($"Q: {question}, A: {answer}");
+        this._output.WriteLine($"Q: {question}, A: {answer.Result}");
     }
 }
