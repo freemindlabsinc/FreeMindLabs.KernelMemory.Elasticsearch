@@ -1,29 +1,116 @@
-# Elasticsearch Memory Storage 
-**By Free Mind Labs, Inc.** 
-*A proper webpage is coming soon...* :blush: 
+# Elasticsearch Memory Storage for Kernel Memory
+**By Free Mind Labs, Inc.** - *Dive into your Stream*
 
 [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE)
+
 Use [Elasticsearch](https://www.elastic.co/) as vector storage for [Microsoft](https://www.microsoft.ms) **[Kernel Memory](https://github.com/microsoft/semantic-memory)** (KM)
 
->*KM is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines.*
+Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines.
 
-This repository contains the Elasticsearch adapter allowing to use Kernel Memory with Elasticsearch.
+<img src="/content/images/Pipelines.jpg"/>
+
+Utilizing advanced embeddings and LLMs, the system enables Natural Language querying for obtaining answers from the indexed data, complete with citations and links to the original sources.
+
+<img src="/content/images/RAG.jpg"/>
+
+
+This repository contains the **Elasticsearch adapter** that allows KM to use Elasticsearch as vector database, thus allowing developers to perform hybrid and semantic search directly on  Elasticsearch, on-premise or in the cloud.
+
+Tokenization can be done using commercial models from OpenAI, Azure Open AI or open sourece models hosted on Hugging Face, including those used by [Sentence Transformers](https://sbert.net/)
+
+<p align="center">
+    <img src="https://sbert.net/_static/logo.png" width=200 />
+</p>
 
 ## Goals
-Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening in development.
+1. To implement an maintain an open source Elasticsearch [IMemoryDB](https://github.com/microsoft/kernel-memory/blob/adce865a472728f2549428cf6b82ca79a601582b/service/Abstractions/MemoryStorage/IMemoryDb.cs#L9) connector for Kernel Memory.
+    1. Free Mind Labs require such connector to finish developing [Videomatic](https://github.com/freemindlabsinc/videomatic).
+    1. KM can also be used as memory store for [Semantic Kernel](https://github.com/microsoft/semantic-kernel).
+    1. The basic connector (i.e. the complete implementation of IMemoryDb) will be free of charge and open source.
 
-1. To implement an Elasticsearch [IMemoryDB](https://github.com/microsoft/kernel-memory/blob/adce865a472728f2549428cf6b82ca79a601582b/service/Abstractions/MemoryStorage/IMemoryDb.cs#L9) 	
-    1. This allows to use Elasticsearch as vector database directly from Kernel Memory.
-	1. KM can also be used as memory store for [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
+1. In the future we hope to add additional features (e.g. advanced search options for pre and post filtering, analytics, ES-specific features, etc.) that could generate some revenue to support this and other projects. 
+    1. Patreon?
+    1. Github donantions?
+    1. Other?
 
-## Current status
-1. The connector is currently in development and not ready for production (or any) use.
-1. The connector is not yet available as a NuGet package.
+We'd love to hear what you think about this.
+
+Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening behind the scenes.
+
+## The .NET Solution
+
+This is a screenshot of the solution. 
+We highlighted some of the most important files for you to explore.
+
+<p align="center">
+    <img src="/content/images/Solution.jpg" width=500 />
+</p>
+
+Here are some screenshots of the tests included in the project. Look at the output window to see what they do.
+
+<p align="center">
+ <img src="/content/images/BehavesLike.jpg" width=500 />
+</p>
+
+Click [here](tests/UnitTests/MemoryStorage/MemoryStorageTests.cs) to see the source code of the test.
+
+<p align="center">
+ <img src="/content/images/CarbonBondTo.jpg" width=500 />
+</p>
+
+Click [here](tests/UnitTests/Serverless/ServerlessTest.cs) to see the source code of the test.
+
+### Mappings
+The examples uses the OpenAI's text-embedding-ada-002. 
+It is possible to use any other embedding model supported by SK (e.g. Azure Open AI and Hugging Face).
+
+<p align="center">
+ <img src="/content/images/Mappings.jpg" width=900 />
+</p>
+
+### Kibana
+Here are some screenshots of the data stored in ES, after running the tests in the solution.
+
+<p align="center">
+ <img src="/content/images/DataPageAllRows.jpg" width=600 />
+</p>
+
+<p align="center">
+ <img src="/content/images/DataPage1.jpg" width=600 />
+</p>
+
+<p align="center">
+ <img src="/content/images/DataPage2.jpg" width=600 />
+</p>
+
+### KNN Query
+Here's an example of how to run semantic search directly on ES.
+
+<p align="center">
+ <img src="/content/images/KnnQuery.jpg" width=600 />
+</p>
+
 
 ## Pre-requisites
-1. A running instance of Elasticsearch
-1. User Secrets configured as explained in [Configuration](CONFIGURATION.md)
-1. TBC
+1. A running instance of Elasticsearch 8 
+    - *Semantic search does not seem to be available in v7*.
+    - Please follow the instructions at [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/8.11/install-elasticsearch.html) to install and configure Elasticsearch.
+1. Make sure you have the following information, as they will be needed for configuration:
+    1. The **user name** and **password** to connect to ES.
+    1. The **certificate fingerprint** generated by the ES server.    
+
+## Configuration
+The configuration instructions can be found [here](CONFIGURATION.md).
+
+
+
+
+## Current status
+1. The connector is currently in development and not ready for production use yet.
+1. The connector is not yet available as a NuGet package.
+
+## Timeline
+1. We hope to complete this project and the associated documentation by the end of 2023.
 
 
 ## Challenges
@@ -40,7 +127,6 @@ var mapResponse = client.Indices.PutMapping("index", x => x
             .Index(true)
             .Similarity("dot_product"))));
 ```
-
 
 ## Resources
 

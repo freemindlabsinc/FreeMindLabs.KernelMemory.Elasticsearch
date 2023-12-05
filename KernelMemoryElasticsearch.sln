@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{6EF76FD8-4
 		.gitignore = .gitignore
 		code-analysis.props = code-analysis.props
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
-		COMMUNITY.md = COMMUNITY.md
 		CONFIGURATION.md = CONFIGURATION.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		DIARY.md = DIARY.md
@@ -35,7 +34,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElasticsearchMemoryStorage"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{A615A571-2B3A-4C2B-9B1C-371BF87D8DBE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApplication", "examples\CodeMapper\TestApplication.csproj", "{97DA4D5E-D2B1-43F0-AF0C-504033C0028A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeMapper", "examples\CodeMapper\CodeMapper.csproj", "{97DA4D5E-D2B1-43F0-AF0C-504033C0028A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
