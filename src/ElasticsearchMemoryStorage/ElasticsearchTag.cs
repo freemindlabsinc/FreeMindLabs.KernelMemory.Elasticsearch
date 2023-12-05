@@ -10,7 +10,9 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 /// </summary>
 public class ElasticsearchTag
 {
+    /// <inheritdoc/>
     public const string NameField = "name";
+    /// <inheritdoc/>
     public const string ValueField = "value";
 
     /// <summary>

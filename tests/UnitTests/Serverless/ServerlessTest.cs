@@ -18,7 +18,7 @@ public class ServerlessTest
         this._services = services ?? throw new ArgumentNullException(nameof(services));
     }
 
-    [Fact]//(Skip = "This test will throw an exception because the IMemoryDb implementation is not complete.")]
+    [Fact]//(Skip = "This test takes a while to complete.")]
     public async Task BehavesLikeMicrosoftMainExampleAsync()
     {
         IKernelMemory memory = this._services.GetRequiredService<IKernelMemory>();
@@ -71,6 +71,9 @@ public class ServerlessTest
     [Fact]
     public void AllSequencesOfConfigurationsWork()
     {
+        // This test was present in the postgressql adapter we took inspiration from.
+        // I kept it just in case.
+
         // Concatenate our 'WithElasticsearch()' after 'WithOpenAIDefaults()' from the core nuget
         var test1 = new KernelMemoryBuilder()
             .WithOpenAIDefaults("api key")

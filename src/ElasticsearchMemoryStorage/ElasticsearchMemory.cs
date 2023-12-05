@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
@@ -30,6 +31,7 @@ public class ElasticsearchMemory : IMemoryDb
     /// </summary>
     /// <param name="config">Elasticsearch configuration</param>
     /// <param name="log">Application logger</param>
+    /// <param name="embeddingGenerator">Embedding generator</param>
     public ElasticsearchMemory(
         ElasticsearchConfig config,
         ITextEmbeddingGeneration embeddingGenerator,
@@ -143,7 +145,7 @@ public class ElasticsearchMemory : IMemoryDb
         string index,
         string text,
         ICollection<MemoryFilter>? filters = null,
-        double minRelevance = 0, int limit = 1, bool withEmbeddings = false, CancellationToken cancellationToken = default)
+        double minRelevance = 0, int limit = 1, bool withEmbeddings = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         if (filters != null)
         {

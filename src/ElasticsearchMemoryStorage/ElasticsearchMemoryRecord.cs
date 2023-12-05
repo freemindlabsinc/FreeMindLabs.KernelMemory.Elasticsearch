@@ -17,6 +17,7 @@ public sealed class ElasticsearchMemoryRecord
 {
     internal const string IdField = "id";
     internal const string VectorField = "embedding";
+    /// <inheritdoc/>
     public const string TagsField = "tags";
     private const string PayloadField = "payload";
 

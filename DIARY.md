@@ -2,9 +2,15 @@
 
 >A bunch of notes and thoughts about the project.
 
+:calendar: 12/05/2023
+
+1. Working on SK Hackathon: Code Mapper project.
+
 :calendar: 12/04/2023
-1.Version 0.3.0
-1. 
+1. Version 0.3.0
+1. Implemented most of the methods of IMemoryDb
+    1. Need to finish MemoryFilter implementation
+1. General repo cleanup
 
 :calendar: 12/01/2023
 1. Version 0.2.0

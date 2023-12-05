@@ -18,7 +18,7 @@ public class MemoryStorageTests
 
     [Theory]
     [InlineData(null, null)]
-    public async Task CreateIndexAndSearchInDefaultIndexAsync(
+    public async Task CreateDefaultIndexAndSearchAsync(
         [FromServices] IKernelMemory memory,
         CancellationToken cancellationToken)
     {
@@ -59,7 +59,7 @@ public class MemoryStorageTests
 
     [Theory]
     [InlineData(null, null)]
-    public async Task IndexesAllDocumentsAsync(
+    public async Task IndexesAllDocumentsInDefaultIndexAsync(
         [FromServices] IKernelMemory memory,
         CancellationToken cancellationToken)
     {

@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{6EF76FD8-4
 		.gitignore = .gitignore
 		code-analysis.props = code-analysis.props
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
-		COMMUNITY.md = COMMUNITY.md
 		CONFIGURATION.md = CONFIGURATION.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		DIARY.md = DIARY.md
