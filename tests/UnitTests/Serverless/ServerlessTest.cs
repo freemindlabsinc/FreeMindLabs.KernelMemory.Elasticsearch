@@ -23,6 +23,13 @@ public class ServerlessTest
     {
         IKernelMemory memory = this._services.GetRequiredService<IKernelMemory>();
 
+        // Deletes the default index if already present
+        await memory.DeleteIndexAsync(
+        index: null,
+            cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        this._output.WriteLine($"Ensured default index is deleted.");
+
+        // Proceeds
         var docId = await memory.ImportDocumentAsync("file1-Wikipedia-Carbon.txt", documentId: "doc001");
         this._output.WriteLine($"Indexed {docId}");
 
@@ -40,6 +47,8 @@ public class ServerlessTest
             .AddTag("type", "news"));
 
         this._output.WriteLine($"Indexed {docId}");
+
+        await Task.Delay(2000, CancellationToken.None); // TODO: remove. Without this the data might not be ready for read...
 
         // Question without filters
         var question = "What's E = m*c^2?";

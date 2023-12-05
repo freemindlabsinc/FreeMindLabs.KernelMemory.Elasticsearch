@@ -2,31 +2,70 @@
 **By Free Mind Labs, Inc.** - *Dive into your Stream*
 
 [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE)
+
 Use [Elasticsearch](https://www.elastic.co/) as vector storage for [Microsoft](https://www.microsoft.ms) **[Kernel Memory](https://github.com/microsoft/semantic-memory)** (KM)
 
 Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines.
 
-![Pipelines](/content/images/Pipelines.jpg)
+<img src="/content/images/Pipelines.jpg"/>
 
 Utilizing advanced embeddings and LLMs, the system enables Natural Language querying for obtaining answers from the indexed data, complete with citations and links to the original sources.
 
-![RAG](/content/images/RAG.jpg)
+<img src="/content/images/RAG.jpg"/>
 
 
-This repository contains the Elasticsearch adapter that allows KM to use Elasticsearch as vector database.
+This repository contains the **Elasticsearch adapter** that allows KM to use Elasticsearch as vector database, thus allowing developers to perform hybrid and semantic search directly on  Elasticsearch, on-premise or in the cloud.
+
+Tokenization can be done using commercial models from OpenAI, Azure Open AI or open sourece models hosted on Hugging Face, including those used by [Sentence Transformers](https://sbert.net/)
+
+<p align="center">
+    <img src="https://sbert.net/_static/logo.png" width=200 />
+</p>
 
 ## Goals
-1. To implement an Elasticsearch [IMemoryDB](https://github.com/microsoft/kernel-memory/blob/adce865a472728f2549428cf6b82ca79a601582b/service/Abstractions/MemoryStorage/IMemoryDb.cs#L9) connector for Kernel Memory..
-    1. This allows to use Elasticsearch as vector database directly from Kernel Memory.
-	1. KM can also be used as memory store for [Semantic Kernel](https://github.com/microsoft/semantic-kernel).
+1. To implement an maintain an open source Elasticsearch [IMemoryDB](https://github.com/microsoft/kernel-memory/blob/adce865a472728f2549428cf6b82ca79a601582b/service/Abstractions/MemoryStorage/IMemoryDb.cs#L9) connector for Kernel Memory.
+    1. Free Mind Labs require such connector to finish developing [Videomatic](https://github.com/freemindlabsinc/videomatic).
+    1. KM can also be used as memory store for [Semantic Kernel](https://github.com/microsoft/semantic-kernel).
+    1. The basic connector (i.e. the complete implementation of IMemoryDb) will be free of charge and open source.
+
+1. In the future we hope to add additional features (e.g. advanced search options for pre and post filtering, analytics, ES-specific features, etc.) that could generate some revenue to support this and other projects. 
+    1. Patreon?
+    1. Github domantions?
+    1. Other?
+
+We'd love to hear what you think about this.
 
 Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening behind the scenes.
 
 ## Show me the money
 
 Here are some screenshots of the connector in action.
+The data was generated running the tests in the solution.
 
+![Behaves Like](/content/images/BehavesLike.jpg)
+Click [here](tests/UnitTests/MemoryStorage/MemoryStorageTests.cs) to see the source code of the test.
 
+![Carbon Bonds to](/content/images/CarbonBondTo.jpg)
+Click [here](tests/UnitTests/Serverless/ServerlessTest.cs) to see the source code of the test.
+
+### Mappings
+The examples uses the OpenAI's text-embedding-ada-002. 
+It is possible to use any other embedding model supported by SK (e.g. Azure Open AI and Hugging Face).
+
+![Mappings](/content/images/Mappings.jpg)
+
+### Kibana
+Here are some screenshots of the data stored in ES, after running the tests in the solution.
+
+![All Documents](/content/images/DataPageAllRows.jpg)
+
+![Data Page 1](/content/images/DataPage1.jpg)
+![Data Page 2](/content/images/DataPage2.jpg)
+
+### KNN Query
+Here's an example of how to run semantic search directly on ES.
+
+![KNN Query](/content/images/KnnQuery.jpg)
 
 
 ## Pre-requisites
@@ -65,7 +104,6 @@ var mapResponse = client.Indices.PutMapping("index", x => x
             .Index(true)
             .Similarity("dot_product"))));
 ```
-
 
 ## Resources
 
