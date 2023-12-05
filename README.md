@@ -30,42 +30,65 @@ Tokenization can be done using commercial models from OpenAI, Azure Open AI or o
 
 1. In the future we hope to add additional features (e.g. advanced search options for pre and post filtering, analytics, ES-specific features, etc.) that could generate some revenue to support this and other projects. 
     1. Patreon?
-    1. Github domantions?
+    1. Github donantions?
     1. Other?
 
 We'd love to hear what you think about this.
 
 Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening behind the scenes.
 
-## Show me the money
+## The .NET Solution
 
-Here are some screenshots of the connector in action.
-The data was generated running the tests in the solution.
+This is a screenshot of the solution. 
+We highlighted some of the most important files for you to explore.
 
-![Behaves Like](/content/images/BehavesLike.jpg)
+<p align="center">
+    <img src="/content/images/Solution.jpg" width=500 />
+</p>
+
+Here are some screenshots of the tests included in the project. Look at the output window to see what they do.
+
+<p align="center">
+ <img src="/content/images/BehavesLike.jpg" width=500 />
+</p>
+
 Click [here](tests/UnitTests/MemoryStorage/MemoryStorageTests.cs) to see the source code of the test.
 
-![Carbon Bonds to](/content/images/CarbonBondTo.jpg)
+<p align="center">
+ <img src="/content/images/CarbonBondTo.jpg" width=500 />
+</p>
+
 Click [here](tests/UnitTests/Serverless/ServerlessTest.cs) to see the source code of the test.
 
 ### Mappings
 The examples uses the OpenAI's text-embedding-ada-002. 
 It is possible to use any other embedding model supported by SK (e.g. Azure Open AI and Hugging Face).
 
-![Mappings](/content/images/Mappings.jpg)
+<p align="center">
+ <img src="/content/images/Mappings.jpg" width=900 />
+</p>
 
 ### Kibana
 Here are some screenshots of the data stored in ES, after running the tests in the solution.
 
-![All Documents](/content/images/DataPageAllRows.jpg)
+<p align="center">
+ <img src="/content/images/DataPageAllRows.jpg" width=600 />
+</p>
 
-![Data Page 1](/content/images/DataPage1.jpg)
-![Data Page 2](/content/images/DataPage2.jpg)
+<p align="center">
+ <img src="/content/images/DataPage1.jpg" width=600 />
+</p>
+
+<p align="center">
+ <img src="/content/images/DataPage2.jpg" width=600 />
+</p>
 
 ### KNN Query
 Here's an example of how to run semantic search directly on ES.
 
-![KNN Query](/content/images/KnnQuery.jpg)
+<p align="center">
+ <img src="/content/images/KnnQuery.jpg" width=600 />
+</p>
 
 
 ## Pre-requisites
