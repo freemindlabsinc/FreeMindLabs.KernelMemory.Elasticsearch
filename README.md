@@ -16,7 +16,7 @@ Utilizing advanced embeddings and LLMs, the system enables Natural Language quer
 
 This repository contains the **Elasticsearch adapter** that allows KM to use Elasticsearch as vector database, thus allowing developers to perform hybrid and semantic search directly on  Elasticsearch, on-premise or in the cloud.
 
-Tokenization can be done using commercial models from OpenAI, Azure Open AI or open sourece models hosted on Hugging Face, including those used by [Sentence Transformers](https://sbert.net/)
+Tokenization can be done using commercial models from OpenAI, Azure Open AI or open source models hosted on Hugging Face, including those used by [Sentence Transformers](https://sbert.net/)
 
 <p align="center">
     <img src="https://sbert.net/_static/logo.png" width=200 />
@@ -30,7 +30,7 @@ Tokenization can be done using commercial models from OpenAI, Azure Open AI or o
 
 1. In the future we hope to add additional features (e.g. advanced search options for pre and post filtering, analytics, ES-specific features, etc.) that could generate some revenue to support this and other projects. 
     1. Patreon?
-    1. Github donantions?
+    1. GitHub donations?
     1. Other?
 
 We'd love to hear what you think about this.
@@ -61,7 +61,7 @@ Click [here](tests/UnitTests/MemoryStorage/MemoryStorageTests.cs) to see the sou
 Click [here](tests/UnitTests/Serverless/ServerlessTest.cs) to see the source code of the test.
 
 ### Mappings
-The examples uses the OpenAI's text-embedding-ada-002. 
+The examples use the OpenAI's text-embedding-ada-002.
 It is possible to use any other embedding model supported by SK (e.g. Azure Open AI and Hugging Face).
 
 <p align="center">
@@ -137,8 +137,7 @@ var mapResponse = client.Indices.PutMapping("index", x => x
             1. Look here for details: https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/release-notes-8.0.0.html
         1. In addition, the docs are not up to date. For some stuff we need to lok at NEST's docs.
 
-1. [Elasticsearch.net Github repository](https://github.com/elastic/elasticsearch-net)    
-
+1. [Elasticsearch.net GitHub repository](https://github.com/elastic/elasticsearch-net)
 
 1. Semantic Kernel/Memory-Kernel
     1. [Introduction to Semantic Memory (feat. Devis Lucato) | Semantic Kernel](https://www.youtube.com/watch?v=5JYW_uAxwYM)

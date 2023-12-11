@@ -12,6 +12,7 @@ public class ElasticsearchTag
 {
     /// <inheritdoc/>
     public const string NameField = "name";
+
     /// <inheritdoc/>
     public const string ValueField = "value";
 
@@ -28,7 +29,7 @@ public class ElasticsearchTag
     }
 
     /// <summary>
-    /// The name of this tag. 
+    /// The name of this tag.
     /// </summary>
     [JsonPropertyName(NameField)]
     public string Name { get; set; } = string.Empty;

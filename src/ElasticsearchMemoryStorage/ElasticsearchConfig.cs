@@ -41,17 +41,19 @@ public class ElasticsearchConfig
     /// TBC
     /// </summary>
     public string CertificateFingerPrint { get; init; }
+
     /// <summary>
     /// TBC
     /// </summary>
     public string Endpoint { get; }
+
     /// <summary>
     /// TBC
     /// </summary>
     public string UserName { get; }
+
     /// <summary>
     /// TBC
     /// </summary>
     public string Password { get; }
-
 }
