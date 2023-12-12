@@ -36,6 +36,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeMapper", "examples\CodeMapper\CodeMapper.csproj", "{97DA4D5E-D2B1-43F0-AF0C-504033C0028A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "articles", "articles", "{029CAC69-2130-4DC2-B79C-F05FDF93EBFD}"
+	ProjectSection(SolutionItems) = preProject
+		content\IMemoryDbArticle.md = content\IMemoryDbArticle.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
