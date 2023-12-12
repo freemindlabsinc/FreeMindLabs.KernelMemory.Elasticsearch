@@ -2,9 +2,25 @@
 
 ## Introduction
 
+During the development of Videomatic, we realized that we would need several types of data stores:
+
+1. 1. A primary datastore
+    1. RDBMS or DocumentDb    
+1. Elasticsearch
+    1. Analytics, search, realtime, etc
+  
+
+
+vector database (Qdrant), and a search engine (Elasticsearch).)
+
+
+
+needed to be able to store data in a vector database, but we also needed to be able to store data in Elasticsearch.
+
 - Explain the need:
-        - We want to be able to use the RAG features of Kernel Memory, but we want to store data in Elastticsearch
-        - This allows us to use the same analytic platform as a vector database, thus reducing the learning curve, and giving us access to a whole set of features that are inherent in Elasticseearch
+    - We want to be able to use the RAG features of Kernel Memory, but we want to store data in Elastticsearch
+    - This allows us to use the same analytic platform as a vector database, thus reducing the learning curve, and giving us access to a whole set of features that are inherent in Elasticseearch
+
 
 In order to do this, we need to implement an IMemoryDb connector. This is a simple interface that allows us to connect to a vector database, and perform a handful of operations on it.
 
