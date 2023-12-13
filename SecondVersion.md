@@ -1,6 +1,7 @@
 # Introduction
 
-This article is the first in a series of articles that will lead the readers to create a custom implementation of the IMemoryDb interface so that we can use Elasticsearch as a vector database in Kernel Memory.
+This article is the first of a short series that will lead readers to create a custom implementation of the IMemoryDb interface so that we can use Elasticsearch as a vector database in Kernel Memory.
+
 Similar code can be used to target any other vector database or storage system in the market.
 
 > reference other Microsoft connectors
