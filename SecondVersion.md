@@ -23,9 +23,11 @@ The [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abs
 
 The first three methods are for **index management**. These methods allow to to create, list and delete indices:
 ```csharp
-1. CreateIndexAsync(string index, int vectorSize, CancellationToken ancellationToken)
-1. GetIndexesAsync(CancellationToken ancellationToken)
-1. DeleteIndexAsync(string index, CancellationToken ancellationToken)
+CreateIndexAsync(string index, int vectorSize, CancellationToken ancellationToken)
+
+GetIndexesAsync(CancellationToken ancellationToken)
+
+DeleteIndexAsync(string index, CancellationToken ancellationToken)
 ```
 
 The next two methods are for **data management**. They allow to update and delete the information inside indices using the data structure [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs)
