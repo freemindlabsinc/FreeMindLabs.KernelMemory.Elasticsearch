@@ -24,7 +24,66 @@ The repository associated to this article is located [here](https://www.github.c
 
 Elasticsearch supports KNN querying natively in both cloud and on-premise installations.
 
-[:hammer: TBC]
+Text embeddings produced by dense vector models can be queried using a kNN search. In the knn clause, provide the name of the dense vector field, and a query_vector_builder clause with the model ID and the query text, as in the following example:
+
+```json
+GET my-index/_search
+{
+  "knn": {
+    "field": "my_embeddings.predicted_value",
+    "k": 10,
+    "num_candidates": 100,
+    "query_vector_builder": {
+      "text_embedding": {
+        "model_id": "sentence-transformers__msmarco-minilm-l-12-v3",
+        "model_text": "the query string"
+      }
+    }
+  }
+}
+```
+
+
+
+The full documentation and examples can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html#semantic-search-search).
+
+### Beyond semantic search with hybrid search
+
+From the Elasticsearch [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html#semantic-search-hybrid-search):
+
+*In some situations, lexical search may perform better than semantic search. 
+For example, when searching for single words or IDs, like product numbers.*
+
+*Combining semantic and lexical search into one hybrid search request using reciprocal rank fusion provides the best of both worlds. Not only that, but hybrid search using reciprocal rank fusion has been shown to perform better in general.*
+
+Hybrid search between a semantic and lexical query can be achieved by providing:
+- a query clause for the full-text query.
+- a knn clause with the kNN search that queries the dense vector field.
+- a rank clause with the rrf parameter to rank documents using reciprocal rank fusion.
+```
+GET my-index/_search
+{
+  "query": {
+    "match": {
+      "my_text_field": "the query string"
+    }
+  },
+  "knn": {
+    "field": "text_embedding.predicted_value",
+    "k": 10,
+    "num_candidates": 100,
+    "query_vector_builder": {
+      "text_embedding": {
+        "model_id": "sentence-transformers__msmarco-minilm-l-12-v3",
+        "model_text": "the query string"
+      }
+    }
+  },
+  "rank": {
+    "rrf": {}
+  }
+}
+```
 
 
 # What is IMemoryDb?
