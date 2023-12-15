@@ -5,7 +5,12 @@ Similar code can be used to target any other vector database or storage system i
 
 Microsoft currently provides connectors for the following storage systems:
 
-- [Azure Open Search](https://azure.microsoft.com/products/ai-services/ai-search)
+- [Azure AI Search](https://azure.microsoft.com/products/ai-services/ai-search)
+
+<div align="center">
+  <img src="images/Connectors.jpg" width="60%" />
+</div>
+
 - [Qdrant](https://qdrant.tech)
 - Volatile, in-memory KNN records.
 
