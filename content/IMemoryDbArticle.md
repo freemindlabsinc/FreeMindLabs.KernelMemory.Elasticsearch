@@ -24,7 +24,7 @@ The repository associated to this article is located [here](https://www.github.c
 
 Elasticsearch supports KNN querying natively in both cloud and on-premise installations.
 
-[TBC]
+[:hammer: TBC]
 
 
 # What is IMemoryDb?
@@ -32,7 +32,7 @@ Elasticsearch supports KNN querying natively in both cloud and on-premise instal
 The IMemoryDb interface plays a pivotal role in Kernel Memory, serving as the gateway to store and retrieve vectors and payloads from the indices of a vector database or other storage systems capable of performing vector similarity searches.
 
 <div align="center">
-  <img src="images/Placeholder_upcoming_content.jpeg" width="20%" />
+  <img src="images/Placeholder_upcoming_content.jpeg" width="10%" />
 </div>
 
 ## The IMemoryDb interface
