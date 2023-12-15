@@ -39,7 +39,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "articles", "articles", "{029CAC69-2130-4DC2-B79C-F05FDF93EBFD}"
 	ProjectSection(SolutionItems) = preProject
 		content\IMemoryDbArticle.md = content\IMemoryDbArticle.md
-		SecondVersion.md = SecondVersion.md
 	EndProjectSection
 EndProject
 Global
