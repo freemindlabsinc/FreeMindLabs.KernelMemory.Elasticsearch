@@ -1,7 +1,19 @@
 # Introduction
 
-This article is part of a series of articles that will guide readers to create their own connectors for Kernel Memory. 
-Similar code can be used to target any other vector database or storage system in the market.
+This article is part of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will do so by showcasing how to write a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/). Similar code can be used to target any other vector database or storage system in the market.
+
+Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines. 
+
+<div align="center">
+  <img src="images/Pipelines.jpg" width="100%" />
+</div> 
+
+Utilizing advanced embeddings and LLMs, the system enables Natural Language querying for obtaining answers from the indexed data, complete with citations and links to the original sources.
+
+<div align="center">
+  <img src="images/RAG.jpg" width="100%" />
+</div>
+
 
 Microsoft currently provides connectors for the following storage systems:
 
@@ -9,9 +21,9 @@ Microsoft currently provides connectors for the following storage systems:
 - [Qdrant](https://qdrant.tech)
 - Volatile, in-memory KNN records.
 
-In this article we will begin to create a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/).
+In this article we will begin to implement a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/), so that we can use Elasticsearch's *native* vector search capabilities, alongside powerful text search and real time analytics.
 
-We will look into [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) and the related [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs). 
+The article will look into the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) and the related data structure [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs). 
 
 At the end of this article we will have an almost-complete connector that can be used to create indices and then store and retrieve vectors and payloads from Elasticsearch.
 
@@ -22,9 +34,11 @@ The repository associated to this article is located [here](https://www.github.c
 
 ## Why Elasticssearch
 
-Elasticsearch supports KNN querying natively in both cloud and on-premise installations.
+Elasticsearch supports kNN querying natively in both cloud and on-premise installations.
 
-Text embeddings produced by dense vector models can be queried using a kNN search. In the knn clause, provide the name of the dense vector field, and a query_vector_builder clause with the model ID and the query text, as in the following example:
+KNN stands for 'K nearest neighbors', and it is a search algorithm that finds the K most similar vectors to a given query vector. 
+
+Text embeddings produced by dense vector models can be queried using a kNN search. In the kNN clause, provide the name of the dense vector field, and a query_vector_builder clause with the model ID and the query text, as in the following example:
 
 ```json
 GET my-index/_search
@@ -42,8 +56,6 @@ GET my-index/_search
   }
 }
 ```
-
-
 
 The full documentation and examples can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html#semantic-search-search).
 
@@ -85,14 +97,19 @@ GET my-index/_search
 }
 ```
 
+>*We will use this hybrid search technique in the next article.*
 
 # What is IMemoryDb?
 
 The IMemoryDb interface plays a pivotal role in Kernel Memory, serving as the gateway to store and retrieve vectors and payloads from the indices of a vector database or other storage systems capable of performing vector similarity searches.
 
+This diagram shows the relationship between Kernel Memory and the IMemoryDb interface:
+
 <div align="center">
-  <img src="images/Placeholder_upcoming_content.jpeg" width="10%" />
+  <img src="images/Connectors.jpg" width="50%" />
 </div>
+
+Kernel Memory can connect to several any databases and storage system if a connector is available.
 
 ## The IMemoryDb interface
 
