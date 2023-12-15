@@ -54,7 +54,7 @@ public static class ElasticsearchConfigExtensions
         ArgumentNullException.ThrowIfNull(config, nameof(config));
 
         // TODO: figure out the Dispose issue. It does not feel right.
-        // See https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/_options_on_elasticsearchclientsettings.html         
+        // See https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/_options_on_elasticsearchclientsettings.html
 #pragma warning disable CA2000 // Dispose objects before losing scope
         return new ElasticsearchClientSettings(new Uri(config.Endpoint))
 
@@ -63,7 +63,6 @@ public static class ElasticsearchConfigExtensions
 
             // TODO: Not sure why I need this. Verify configuration maybe?
             .ServerCertificateValidationCallback((sender, certificate, chain, errors) => true)
-
             .CertificateFingerprint(config.CertificateFingerPrint)
             .ThrowExceptions(true) // Much easier to work with
 #if DEBUG

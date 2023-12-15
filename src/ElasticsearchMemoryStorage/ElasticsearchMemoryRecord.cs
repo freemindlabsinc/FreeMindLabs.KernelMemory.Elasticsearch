@@ -17,8 +17,10 @@ public sealed class ElasticsearchMemoryRecord
 {
     internal const string IdField = "id";
     internal const string VectorField = "embedding";
+
     /// <inheritdoc/>
     public const string TagsField = "tags";
+
     private const string PayloadField = "payload";
 
     private static readonly JsonSerializerOptions s_jsonOptions = new()
@@ -68,8 +70,6 @@ public sealed class ElasticsearchMemoryRecord
     [JsonPropertyName(VectorField)]
     [JsonConverter(typeof(Embedding.JsonConverter))]
     public Embedding Vector { get; set; } = new();
-
-
 
     /// <summary>
     /// TBC
