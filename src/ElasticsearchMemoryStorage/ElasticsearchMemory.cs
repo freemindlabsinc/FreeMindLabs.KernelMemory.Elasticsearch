@@ -10,9 +10,9 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
+using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.Diagnostics;
 using Microsoft.KernelMemory.MemoryStorage;
-using Microsoft.SemanticKernel.AI.Embeddings;
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
@@ -21,7 +21,7 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 /// </summary>
 public class ElasticsearchMemory : IMemoryDb
 {
-    private readonly ITextEmbeddingGeneration _embeddingGenerator;
+    private readonly ITextEmbeddingGenerator _embeddingGenerator;
     private readonly ElasticsearchConfig _config;
     private readonly ILogger<ElasticsearchMemory> _log;
     private readonly ElasticsearchClient _client;
@@ -34,7 +34,7 @@ public class ElasticsearchMemory : IMemoryDb
     /// <param name="embeddingGenerator">Embedding generator</param>
     public ElasticsearchMemory(
         ElasticsearchConfig config,
-        ITextEmbeddingGeneration embeddingGenerator,
+        ITextEmbeddingGenerator embeddingGenerator,
         ILogger<ElasticsearchMemory>? log = null)
     {
         this._embeddingGenerator = embeddingGenerator ?? throw new ArgumentNullException(nameof(embeddingGenerator));
@@ -100,7 +100,6 @@ public class ElasticsearchMemory : IMemoryDb
         var delResponse = await this._client.Indices.DeleteAsync(index, cancellationToken).ConfigureAwait(false);
     }
 
-
     /// <inheritdoc />
     public async Task DeleteAsync(
         string index,
@@ -116,7 +115,6 @@ public class ElasticsearchMemory : IMemoryDb
             },
             cancellationToken)
             .ConfigureAwait(false);
-
     }
 
     /// <inheritdoc />
@@ -160,10 +158,8 @@ public class ElasticsearchMemory : IMemoryDb
             }
         }
 
-        IList<string> data = new List<string>() { text };
-
-        IList<ReadOnlyMemory<float>> qembed = await this._embeddingGenerator.GenerateEmbeddingsAsync(data, cancellationToken).ConfigureAwait(false);
-        var coll = qembed.First().ToArray();
+        Embedding qembed = await this._embeddingGenerator.GenerateEmbeddingAsync(text, cancellationToken).ConfigureAwait(false);
+        var coll = qembed.Data.ToArray();
 
         var resp = await this._client.SearchAsync<ElasticsearchMemoryRecord>(s =>
             s.Index(index)
@@ -173,7 +169,6 @@ public class ElasticsearchMemory : IMemoryDb
                    .NumCandidates(limit + 100)
                    .Field(x => x.Vector)
                    .QueryVector(coll);
-
              }),
              //.Query(q => q.MatchAll()),
              cancellationToken)
