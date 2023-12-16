@@ -111,6 +111,8 @@ This diagram shows the relationship between Kernel Memory and the IMemoryDb inte
 
 Kernel Memory can connect to several any databases and storage system if a connector is available.
 
+>TODO: should the diagram show Application using KM directly?
+
 ## The IMemoryDb interface
 
 The [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) interface has seven methods, which can be thought as divided in three groups:
@@ -139,6 +141,14 @@ Here are some consideration on the arguments of those methods:
   - [SBERT.net](https://sbert.net)'s all-MiniLM-L6-v2 uses vectors with 384 dimensions.
 
 In addition, notice that (at the time of writing) the result of GetIndexesAsync is an ```IEnumerable<string>```, which means that the method returns the full list of indices at once. Be careful when calling this method on vector databases that contain a large number of indices.
+
+Here are some possible improvements:
+
+4. GetIndexesAsync could return an ```IAsyncEnumerable<string>``` instead of an ```IEnumerable<string>```. This would allow to return the list of indices in batches, which would be useful when there are a large number of indices.
+
+5. It would be nice if we could have some filters (wildcard at least) in GetIndexesAsync, so that we can filter the list of indices by name (e.g. 'testIndices-*')
+
+> TODO: put sample for basic index ops here
 
 ## Data manipulation
 
@@ -221,6 +231,8 @@ Say we have a large text document (e.g. 2Mb), and we want to store it in a vecto
 
 This is how a memory record structure is translated in an Elasticsearch index mapping.
 
+>TODO: change the name of the field 'embedding' to 'vector'
+
 <div align="center">
   <img src="images/Mappings.jpg" width="50%" />
 </div>
@@ -251,16 +263,29 @@ Task DeleteAsync(string index, MemoryRecord record, CancellationToken ancellatio
 
 Here are some considerations:
 
-- There is no distinction between inserting and updating a record.
-  - If the record exists, it will be updated. 
-    - The method should return the same value of ```record.Id``` of the submitted record.
-  - If it doesn't exist, it will be inserted and a new id will be generated and returned.
-    -  [TO VERIFY] what happens to record.id? Is it also updated?
+1. There is no distinction between inserting and updating a record: ```Upsert``` does both things:
+    - If the record exists, it will be updated. 
+      - The method should return the same value of ```record.Id``` of the submitted record.
+    - If it doesn't exist, it will be inserted and a new id will be generated and returned.
+      - [TO VERIFY] what happens to record.id if its null and we upsert?
+        - Q1: Does it generate a new id and return it? (preferrable)
+          - Does record.id get updated like Entity Framework would do?
+        - Q2: Or does it expect the new ```record.Id``` to be populated by the client?             
 
-Pay special consideration to the ```Id``` property of MemoryRecord. 
-Having ids that are balanced across shards is important for performance reasons.
+Possible improvements:
+
+1. Upsert and DeleteAsync should be able to accept a list of MemoryRecords to be inserted/updated/deleted. This would allow to perform batch operations and improve performance.
+
+2. It would be beneficial to have methods like ES's DeleteByQuery to speed up deletions.
+
+3. There should be a Delete that just takes the index and the id(s) of the records to be deleted. This would be useful to delete records by id without having to create a MemoryRecord object.
+
+> TODO: put sample for basic CRUD ops here
 
 ### Considerations on ids and performance 
+
+Pay special consideration to the ```Id``` property of MemoryRecord.
+Having ids that are balanced across shards is important for performance reasons.
 
 > In distributed systems like Elasticsearch, the effectiveness of data retrieval and storage operations is greatly influenced by how the data is distributed across different shards. This distribution is heavily reliant on the mechanism used for generating IDs.
 
@@ -296,26 +321,28 @@ IAsyncEnumerable<MemoryRecord> GetListAsync(
 Here are some considerations:
 
 - Both methods return an ```IAsyncEnumerable``` of MemoryRecords.
-  - The Results of a search are not returned all at once, but rather in batches, ordered by a relevance score.
+The Results of a search are not returned all at once, but rather in batches, ordered by a relevance score.
+
   - The caller can then asynchronously iterate over the results as they are returned.
-  
-  
+
+  - The caller can also stop the search at any time, and only get back the results that have been returned so far.
+
+Possible improvements:
+
+1. I would simply make the ```text``` p[roperty of the first overload to be nullable.
+  - If a ```null``` value is passed in ```text```, then the search will be performed without a text query.
 
 
-## Considerations and possible improvements to IMemoryDb
-
-1. Upsert and DeleteAsync should be able to accept a list of MemoryRecords to be inserted/updated/deleted. This would allow to perform batch operations and improve performance.
-2. It would be beneficial to have methods like ES's DeleteByQuery
-3. There should be a Delete that just takes the index and the id(s) of the records to be deleted. This would be useful to delete records by id without having to create a MemoryRecord object.
-4. GetIndexesAsync should return an ```IAsyncEnumerable<string>``` instead of an ```IEnumerable<string>```. This would allow to return the list of indices in batches, which would be useful when there are a large number of indices.
-5. It would be nice if we could have some filters (wildcard at least) in GetIndexesAsync, so that we can filter the list of indices by name.
-
+> TODO: put samples for semantic search here
 
 ## The complete implementation of the Elasticsearch connector
 
 > show [code here](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/src/ElasticsearchMemoryStorage/ElasticsearchMemory.cs)
 
+> TODO: make sure URL is good after changing repo name.
 
 ## Where do we go from here?
 
 >explain that we will add support for filters in the next article bla bla
+
+In the next article we will complete the connector by adding support for  [MemoryFilter](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/Models/MemoryFilter.cs), and we will see how we cann even extend this and other classes to support more complex filters.
