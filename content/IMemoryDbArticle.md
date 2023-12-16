@@ -148,7 +148,8 @@ Here are some possible improvements:
 
 5. It would be nice if we could have some filters (wildcard at least) in GetIndexesAsync, so that we can filter the list of indices by name (e.g. 'testIndices-*')
 
-> TODO: put sample for basic index ops here
+> TODO: put implementation code for methods here
+> TODO: put code of index mgmt tests here
 
 ## Data manipulation
 
@@ -280,7 +281,8 @@ Possible improvements:
 
 3. There should be a Delete that just takes the index and the id(s) of the records to be deleted. This would be useful to delete records by id without having to create a MemoryRecord object.
 
-> TODO: put sample for basic CRUD ops here
+> TODO: put implementation code for methods here
+> TODO: put code of CRUD tests here
 
 ### Considerations on ids and performance 
 
@@ -333,7 +335,8 @@ Possible improvements:
   - If a ```null``` value is passed in ```text```, then the search will be performed without a text query.
 
 
-> TODO: put samples for semantic search here
+> TODO: put implementation of search here
+> TODO: put code of sample for semantic search here
 
 ## The complete implementation of the Elasticsearch connector
 
