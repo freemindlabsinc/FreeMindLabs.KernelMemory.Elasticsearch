@@ -66,8 +66,9 @@ public static class ElasticsearchConfigExtensions
             .CertificateFingerprint(config.CertificateFingerPrint)
             .ThrowExceptions(true) // Much easier to work with
 #if DEBUG
-            .DisableDirectStreaming(true);
+            .DisableDirectStreaming(true)
 #endif
+            ;
 #pragma warning restore CA2000 // Dispose objects before losing scope
     }
 }
