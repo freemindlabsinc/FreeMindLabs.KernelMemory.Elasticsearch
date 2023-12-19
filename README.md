@@ -7,7 +7,7 @@ Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft **[
 
 Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines.
 
-<img src="/content/images/Pipelines.jpg"/>
+<img src="content/images/Pipelines.jpg"/>
 
 Utilizing advanced embeddings and LLMs, the system enables Natural Language querying for obtaining answers from the indexed data, complete with citations and links to the original sources.
 
