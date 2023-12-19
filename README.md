@@ -1,9 +1,9 @@
-# Elasticsearch Memory Storage for Kernel Memory
+# Kernel Memory with Elasticsearch
 **By Free Mind Labs, Inc.** - *Dive into your Stream*
 
 [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE)
 
-Use [Elasticsearch](https://www.elastic.co/) as vector storage for [Microsoft](https://www.microsoft.ms) **[Kernel Memory](https://github.com/microsoft/semantic-memory)** (KM)
+Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft **[Kernel Memory](https://github.com/microsoft/semantic-memory)** (KM)
 
 Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines.
 

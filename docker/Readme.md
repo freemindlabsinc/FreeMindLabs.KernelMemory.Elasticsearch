@@ -1,10 +1,10 @@
 # Installing the Elastic Stack using Docker Compose
 
-There are several ways to install and run the Elastic Stack on a development  machine. We will install the Elastic Stack using Docker Compose as inspired by the articles of [Edie Mitchell](https://www.elastic.co/blog/author/eddie-mitchell), in particular the second one. 
+There are several ways to install and run the Elastic Stack on a development  machine. We will install the Elastic Stack using Docker Compose as inspired by the articles of [Eddie Mitchell](https://www.elastic.co/blog/author/eddie-mitchell). 
 
-The necessary files have been copied over the ```/docker``` folder so that we can run it directly without the need to Mitchell's repository.
+The necessary files have been copied over the ```/docker``` folder so that we can run it directly without the need to Mitchell's repository, and so that we can alter them as necessary in the future.
 
-This will allow us to run the Elastic Stack on a single machine and get access to the Kibana UI, Logstash, Filebeat, and Metricbeat.
+The compose file will allow us to run the Elastic Stack on a single machine and get access to the Kibana UI, Logstash, Filebeat, and Metricbeat.
 
 ## High level overview
 
@@ -130,7 +130,7 @@ We now need to change two values:
 1. **Advanced YAML configuration**: 
     - We'll need to enter the CA certificate from the cluster, as explained in the next section.
 
-#### How to get the CA certificate from the cluster?
+### How to get the CA certificate from the cluster?
 
 Run the following command to pull the CA certificate from the cluster:
 
@@ -181,9 +181,7 @@ Your agent should now be running and reporting data to Elasticsearch correctly.
     <img src="images/GoodAgent.png" width="80%"></img>  
 </div>
 
-## Dashboards
-
-Additional dashboards are now available:
+And dashboards should work properly:
 
 <div align="center">
     <img src="images/ElasticAgentMetrics.png" width="80%"></img>
@@ -191,6 +189,7 @@ Additional dashboards are now available:
 
 ## Final considerations
 
+- 
 - These instructions have been tested on Windows, using WSL2 and Docker Desktop.
 
 ## Resources
