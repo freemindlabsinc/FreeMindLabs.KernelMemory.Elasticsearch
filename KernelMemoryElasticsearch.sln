@@ -36,7 +36,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "articles", "articles", "{029CAC69-2130-4DC2-B79C-F05FDF93EBFD}"
 	ProjectSection(SolutionItems) = preProject
+		DockerElasticsearchAndKibana.md = DockerElasticsearchAndKibana.md
 		content\IMemoryDbArticle.md = content\IMemoryDbArticle.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F8AB554F-C604-4098-B4C1-4CBAD790ADC0}"
+	ProjectSection(SolutionItems) = preProject
+		docker\docker-compose.yaml = docker\docker-compose.yaml
 	EndProjectSection
 EndProject
 Global
