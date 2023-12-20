@@ -36,7 +36,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "articles", "articles", "{029CAC69-2130-4DC2-B79C-F05FDF93EBFD}"
 	ProjectSection(SolutionItems) = preProject
-		DockerElasticsearchAndKibana.md = DockerElasticsearchAndKibana.md
 		content\IMemoryDbArticle.md = content\IMemoryDbArticle.md
 	EndProjectSection
 EndProject
@@ -49,7 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F8AB55
 		docker\kibana.yml = docker\kibana.yml
 		docker\logstash.conf = docker\logstash.conf
 		docker\metricbeat.yml = docker\metricbeat.yml
-		docker\README.md = docker\README.md
+		docker\Readme.md = docker\Readme.md
 	EndProjectSection
 EndProject
 Global

@@ -1,3 +1,5 @@
+:warning: **This article is a work in progress.** 
+
 # Introduction
 
 This article is part of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will do so by showcasing how to write a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/). Similar code can be used to target any other vector database or storage system in the market.
