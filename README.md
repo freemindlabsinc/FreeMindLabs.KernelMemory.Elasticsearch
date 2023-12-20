@@ -26,22 +26,24 @@ Tokenization can be done using commercial models from OpenAI, Azure Open AI or o
 </p>
 
 ## Goals
+
 1. To implement an maintain an open source Elasticsearch [IMemoryDB](https://github.com/microsoft/kernel-memory/blob/adce865a472728f2549428cf6b82ca79a601582b/service/Abstractions/MemoryStorage/IMemoryDb.cs#L9) connector for Kernel Memory.
 
     1. Free Mind Labs require such connector to complete [Videomatic](https://github.com/freemindlabsinc/videomatic).
         
     1. The basic connector (i.e. the complete implementation of IMemoryDb) will be free of charge and open source.
 
-1. In the future we hope to add additional features (e.g. *advanced search options for pre and post filtering, analytics, ES-specific features, etc.*) that could generate some revenue to support this and other projects. 
+2. In the future we hope to add additional features (e.g. *advanced search options for pre and post filtering, analytics, ES-specific features, etc.*) that could generate some revenue to support this and other projects. 
     1. Patreon?
     1. GitHub donations?
     1. Other?
 
-We'd love to hear what you think about this.
+*We'd love to hear what you think about this.* 
 
 ## Updates
 
-This repo is growing and right now we log our thoughts and progress in :notebook: [this diary page](DIARY.md). Check it out!
+- :notebook: This repo is growing and right now we log our thoughts and progress in  [this diary page](DIARY.md).
+- :hammer_and_wrench: An additional list of TODOs can be found [here](TODO.md).
 
 ## How to setup a running instance of Elasticsearch
 
