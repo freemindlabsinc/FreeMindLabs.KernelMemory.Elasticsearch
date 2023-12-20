@@ -25,7 +25,7 @@ public class ServerlessTest
 
         // Deletes the default index if already present
         await memory.DeleteIndexAsync(
-        index: null,
+            index: null,
             cancellationToken: CancellationToken.None).ConfigureAwait(false);
         this._output.WriteLine($"Ensured default index is deleted.");
 
