@@ -135,7 +135,7 @@ And, from inside Docker desktop, our Compose should look like this:
     <img src="images/DockerDesktop.png" width="80%"></img>
 </div>
 
-### Step 3/3: Adjust the Settings of Elastic Agent
+## Step 3/3: Adjust the Settings of Elastic Agent
 
 Now that Elasticsearch and Kibana are running we can apply our last configuration step: adjust the settings of the Elastic Agent which is currently not working as expected.
 
