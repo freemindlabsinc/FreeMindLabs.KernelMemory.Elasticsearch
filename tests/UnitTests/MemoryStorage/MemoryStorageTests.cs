@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
 namespace UnitTests.MemoryStorage;
+
 public class MemoryStorageTests
 {
     private readonly ITestOutputHelper _output;
@@ -18,15 +19,16 @@ public class MemoryStorageTests
 
     [Theory]
     [InlineData(null, null)]
-    public async Task CreateDefaultIndexAndSearchAsync(
+    public async Task CreateNonDefaultIndexAndSearchAsync(
         [FromServices] IKernelMemory memory,
         CancellationToken cancellationToken)
     {
         cancellationToken = CancellationToken.None;
+        var indexName = "nondefault";
 
         // Deletes the default index if already present
         await memory.DeleteIndexAsync(
-            index: null,
+            index: indexName,
             cancellationToken: cancellationToken).ConfigureAwait(false);
         this._output.WriteLine($"Ensured default index is deleted.");
 
@@ -35,7 +37,7 @@ public class MemoryStorageTests
             filePath: "file1-Wikipedia-Carbon.txt",
             documentId: "doc001",
             tags: null,
-            index: null,
+            index: indexName,
             steps: null,
             cancellationToken: cancellationToken).ConfigureAwait(false);
         this._output.WriteLine($"Indexed {docId}.");
@@ -46,7 +48,7 @@ public class MemoryStorageTests
         var question = "What can carbon bond to?";
         var answer = await memory.AskAsync(
             question: question,
-            index: null,
+            index: indexName,
             filter: null,
             filters: null,
             minRelevance: 0,
@@ -64,9 +66,11 @@ public class MemoryStorageTests
         CancellationToken cancellationToken)
     {
         cancellationToken = CancellationToken.None;
+        var indexName = "onemoreindex";
+
         // Deletes the default index if already present
         await memory.DeleteIndexAsync(
-            index: null,
+            index: indexName,
             cancellationToken: cancellationToken).ConfigureAwait(false);
         this._output.WriteLine($"Ensured default index is deleted.");
 

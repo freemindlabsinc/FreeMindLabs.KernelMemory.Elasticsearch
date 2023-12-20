@@ -2,6 +2,16 @@
 
 >A bunch of notes and thoughts about the project.
 
+:calendar: 12/19/2023
+
+1. Version 0.4.0
+1. Large number of changes inspired by Hackathon and Davis Lucato.
+    1. See commits and PRs for details.
+1. The issues with the local nuget repository ```local``` hardcoded should be fixed.
+1. Added ```/docker``` folder with a Docker Compose file that runs the ELK stack very easily.
+1. Added [installation instructions for Elastic Stack](/docker/README.md)
+1. Renamed the repo
+
 :calendar: 12/05/2023
 
 1. Working on SK Hackathon: Code Mapper project.
