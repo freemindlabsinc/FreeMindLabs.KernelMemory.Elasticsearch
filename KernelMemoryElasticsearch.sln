@@ -44,6 +44,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F8AB55
 	ProjectSection(SolutionItems) = preProject
 		docker\.env = docker\.env
 		docker\.env.example = docker\.env.example
+		docker\docker-compose.yml = docker\docker-compose.yml
 		docker\filebeat.yml = docker\filebeat.yml
 		docker\kibana.yml = docker\kibana.yml
 		docker\logstash.conf = docker\logstash.conf

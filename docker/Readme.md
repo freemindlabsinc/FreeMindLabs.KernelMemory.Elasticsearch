@@ -2,12 +2,42 @@
 
 There are several ways to install and run the Elastic Stack on a development  machine. We will install the Elastic Stack using Docker Compose as inspired by the articles of [Eddie Mitchell](https://www.elastic.co/blog/author/eddie-mitchell). 
 
-The necessary files have been copied over the ```/docker``` folder so that we can run it directly without the need to Mitchell's repository, and so that we can alter them as necessary in the future.
+The necessary files have been copied in the ```/docker``` folder so that we can run it directly without the need to Mitchell's repository, and so that we can alter them as necessary in the future.
 
-The file of interest are the following:
+The files we might need to access and change have also been grouped under the solution folder ```docker```:
 
+<div align="center">
+    <img src="images/DockerSolutionFolder.png" width="500px"</img>
+</div>
 
-The compose file will allow us to run the Elastic Stack on a single machine and get access to the Kibana UI, Logstash, Filebeat, and Metricbeat.
+- **.env**: this file contains the environment variables that will be used by Docker Compose. 
+    1. :warning: **The .env file needs to be created manually**, as it is not part of the repository. **Without this file, Docker Compose will not work.**
+    1. To create a valid .env file, copy the contents of the .env.example file and paste them into a new file named .env. Then, update the values of the variables as needed.
+
+- **.env.example**: [this file](/.env.example) contains a complete example of all the options available. 
+  - It is not used by Docker Compose, and it should only be used as a reference when creating the .env file. This is how such file reads:
+
+> :warning: **IMPORTANT**: the default username/password for Kibana and Elasticsearch is ```elastic```/```changeme```. You can change the password in your .env file.
+
+<div align="center">
+    <img src="images/EnvSample.png" width="500px"</img>
+</div>
+
+- **docker-compose.yml**: [this file](./docker-compose.yml) contains the configuration for Docker Compose. The compose file will allow us to run the Elastic Stack on a single machine and get access to the Elasticsearch, Kibana, Logstash, Filebeat, and Metricbeat.
+
+The remaining files allow to configure options of the individual services. It's unlikely that you will have to change any of them at the beginning.
+
+- **filebeat.yml**: This file contains the configuration for Filebeat. It is used by the Filebeat container to collect and ship logs to Elasticsearch. *It's is unlikely you will need to change this file.*
+
+- **kibana.yml**: This file contains the configuration for Kibana. It is used by the Kibana container to connect to Elasticsearch.
+
+- **logstash.yml**: This file contains the configuration for Logstash. It is used by the Logstash container to connect to Elasticsearch. *It's is unlikely you will need to change this file.*
+
+- **metricbeat.yml**: This file contains the configuration for Metricbeat. It is used by the Metricbeat container to collect and ship metrics to Elasticsearch.
+  *It's is unlikely you will need to change this file.*
+
+- **README.md**: this file.
+
 
 ## High level overview
 
@@ -40,10 +70,13 @@ The following sections will guide you through the installation process.
 
 ## The configuration files
 
+Make sure you created the **.env** file as explained above.
 
 ## Step 1/3: Ensure the vm.max_map_count setting is set to at least 262144
 
-When setting up Elasticsearch, it's essential to configure the `vm.max_map_count` kernel setting to at least `262144`. This setting is critical for Elasticsearch to startup and to function.
+When setting up Elasticsearch, it's essential to configure the `vm.max_map_count` kernel setting to at least `262144`. This setting is critical for Elasticsearch to startup and to function. 
+
+:warning: This change has to be made on the docker host, not inside the container.
 
 There are two ways to set `vm.max_map_count`:
 
