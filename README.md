@@ -1,9 +1,9 @@
 # Kernel Memory with Elasticsearch
-**By Free Mind Labs, Inc.** - *Dive into your Stream*
+by [Free Mind Labs](https://www.freemindlabs.com) - *Dive into your Stream*
 
-[![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE) 
 
-Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft **[Kernel Memory](https://github.com/microsoft/semantic-memory)** (KM)
+Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft [Kernel Memory](https://github.com/microsoft/semantic-memory).
 
 Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines.
 
@@ -13,10 +13,13 @@ Utilizing advanced embeddings and LLMs, the system enables Natural Language quer
 
 <img src="content/images/RAG.jpg"/>
 
+---
 
-This repository contains the **Elasticsearch adapter** that allows KM to use Elasticsearch as vector database, thus allowing developers to perform hybrid and semantic search directly on  Elasticsearch, on-premise or in the cloud.
+This repository contains the **Elasticsearch adapter** that allows KM to use Elasticsearch as vector database, thus allowing developers to perform [lexical and semantic search](https://www.elastic.co/search-labs/blog/articles/lexical-and-semantic-search-with-elasticsearch), in addition to hybrid, keyword and full-text search.
 
-Tokenization can be done using commercial models from OpenAI, Azure Open AI or open source models hosted on Hugging Face, including those used by [Sentence Transformers](https://sbert.net/)
+>If you want to read more about semantic search, click [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html). For more on hybrid search, click [here](https://opster.com/guides/elasticsearch/machine-learning/elasticsearch-hybrid-search/)
+
+Tokenization can be done using commercial models from OpenAI, Azure Open AI or open source models hosted on Hugging Face, including those used by [Sentence Transformers](https://sbert.net/). 
 
 <p align="center">
     <img src="https://sbert.net/_static/logo.png" width=200 />
@@ -29,20 +32,22 @@ Tokenization can be done using commercial models from OpenAI, Azure Open AI or o
         
     1. The basic connector (i.e. the complete implementation of IMemoryDb) will be free of charge and open source.
 
-1. In the future we hope to add additional features (*e.g. advanced search options for pre and post filtering, analytics, ES-specific features, etc.**) that could generate some revenue to support this and other projects. 
+1. In the future we hope to add additional features (e.g. *advanced search options for pre and post filtering, analytics, ES-specific features, etc.*) that could generate some revenue to support this and other projects. 
     1. Patreon?
     1. GitHub donations?
     1. Other?
 
 We'd love to hear what you think about this.
 
-> Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening behind the scenes.
+## Updates
+
+This repo is growing and right now we log our thoughts and progress in :notebook: [this diary page](DIARY.md). Check it out!
 
 ## How to setup a running instance of Elasticsearch
 
 You need to have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed before continuing.
 
-To simplify the setup of a running instance of Elasticsearch we created the article [Installing the Elastic Stack using Docker Compose](/docker/Readme.md) that guides you through the process. It is simple - *3 steps* - and it takes less than 5 minutes to complete.
+To simplify the setup of a running instance of Elasticsearch we created the article [Installing the Elastic Stack using Docker Compose](/docker/Readme.md) that guides you through the process.  It is a three step operation and it should take less than five minutes to complete.
 
 The following diagram shows what we will be running once we complete the installation.
 
@@ -50,19 +55,26 @@ The following diagram shows what we will be running once we complete the install
     <img src="docker/images/ELKStack.png" width="500px"</img>
 </div>
 
-
-
+More details about the individual components in the diagram can be found in [the installation article](/docker/Readme.md).
 
 ## The .NET Solution
 
 This is a screenshot of the solution. 
-We highlighted some of the most important files for you to explore.
+We highlighted some of the most important files for you to explore and look at.
 
 <p align="center">
-    <img src="content/images/Solution.jpg" width=500 />
+    <img src="content/images/Solution.png" width=500 />
 </p>
 
-Here are some screenshots of the tests included in the project. Look at the output window to see what they do.
+---
+
+Here are some screenshots of the tests included in the project. This project uses a test-first approach, so you should expect to find examples of how to use the connector in the tests themselves.
+
+:warning: Future articles will explain in better detail what the tests do.
+
+>
+
+Look at the output window to see what they do.
 
 <p align="center">
  <img src="/content/images/BehavesLike.jpg" width=500 />
@@ -133,6 +145,9 @@ var mapResponse = client.Indices.PutMapping("index", x => x
 
 ## Resources
 
+1. [A Quick Introduction to Vector Search](https://opster.com/guides/opensearch/opensearch-machine-learning/introduction-to-vector-search/)
+1. [Elasticsearch Hybrid Search](https://opster.com/guides/elasticsearch/machine-learning/elasticsearch-hybrid-search/)
+
 1. Elastic's official docs on the client.
     1. NEST 7.17: https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/nest-getting-started.html
     1. New client 8.9: https://www.elastic.co/guide/en/elasticsearch/client/net-api/8.9/introduction.html
@@ -144,4 +159,4 @@ var mapResponse = client.Indices.PutMapping("index", x => x
 
 1. Semantic Kernel/Memory-Kernel
     1. [Introduction to Semantic Memory (feat. Devis Lucato) | Semantic Kernel](https://www.youtube.com/watch?v=5JYW_uAxwYM)
-    1. [11.29.2023 - Semantic Kernel Office Hours (US/Europe Region)](https://www.youtube.com/watch?v=JSca9mVUUJo)
+    1. [11.29.2023 - Semantic Kernel Office Hours (US/Europe Region)](https://www.youtube.com/watch?v=JSca9mVUUJo)   
