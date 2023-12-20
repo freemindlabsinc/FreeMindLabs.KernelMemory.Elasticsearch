@@ -135,7 +135,7 @@ And, from inside Docker desktop, our Compose should look like this:
     <img src="images/DockerDesktop.png" width="80%"></img>
 </div>
 
-### Step 3/3: Adjust the Settings of Elastic Agent
+## Step 3/3: Adjust the Settings of Elastic Agent
 
 Now that Elasticsearch and Kibana are running we can apply our last configuration step: adjust the settings of the Elastic Agent which is currently not working as expected.
 
@@ -162,12 +162,14 @@ This should display the following. Notice the red circles.
     <img src="images/InvalidAgent3.png" width="80%"></img>
 </div>
 
-We now need to change two values:
+We now need to change three values:
 1. **Hosts**: 
     - Change the value http://elasticsearch:9200 to https://es01:9200         
 
+1. **The CA fingerprint**:
+    - We'll need to get the CA fingerprint from the cluster, as explained in the next section.
 1. **Advanced YAML configuration**: 
-    - We'll need to enter the CA certificate from the cluster, as explained in the next section.
+    - We'll need to get the CA certificate from the cluster, as explained in the next section.
 
 ### How to get the CA certificate from the cluster?
 
