@@ -4,6 +4,8 @@ There are several ways to install and run the Elastic Stack on a development  ma
 
 The necessary files have been copied over the ```/docker``` folder so that we can run it directly without the need to Mitchell's repository, and so that we can alter them as necessary in the future.
 
+
+
 The compose file will allow us to run the Elastic Stack on a single machine and get access to the Kibana UI, Logstash, Filebeat, and Metricbeat.
 
 ## High level overview
@@ -189,7 +191,6 @@ And dashboards should work properly:
 
 ## Final considerations
 
-- 
 - These instructions have been tested on Windows, using WSL2 and Docker Desktop.
 
 ## Resources
