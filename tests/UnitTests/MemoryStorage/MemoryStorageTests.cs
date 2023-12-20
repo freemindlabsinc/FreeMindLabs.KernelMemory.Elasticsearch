@@ -85,7 +85,7 @@ public class MemoryStorageTests
                 filePath: file,
                 documentId: null,
                 tags: null,
-                index: null,
+                index: indexName,
                 steps: null,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
 
