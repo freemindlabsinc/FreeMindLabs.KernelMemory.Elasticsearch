@@ -1,7 +1,7 @@
 # Kernel Memory with Elasticsearch
 by [Free Mind Labs](https://www.freemindlabs.com) - *Dive into your Stream*
 
-[![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE) 
 
 Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft [Kernel Memory](https://github.com/microsoft/semantic-memory).
 
@@ -39,7 +39,9 @@ Tokenization can be done using commercial models from OpenAI, Azure Open AI or o
 
 We'd love to hear what you think about this.
 
-> Click on :notebook: [DIARY](DIARY.md) to read daily thoughts and what is happening behind the scenes.
+## Updates
+
+This repo is growing and right now we log our thoughts and progress in :notebook: [this diary page](DIARY.md). Check it out!
 
 ## How to setup a running instance of Elasticsearch
 
@@ -58,13 +60,21 @@ More details about the individual components in the diagram can be found in [the
 ## The .NET Solution
 
 This is a screenshot of the solution. 
-We highlighted some of the most important files for you to explore.
+We highlighted some of the most important files for you to explore and look at.
 
 <p align="center">
-    <img src="content/images/Solution.jpg" width=500 />
+    <img src="content/images/Solution.png" width=500 />
 </p>
 
-Here are some screenshots of the tests included in the project. Look at the output window to see what they do.
+---
+
+Here are some screenshots of the tests included in the project. This project uses a test-first approach, so you should expect to find examples of how to use the connector in the tests themselves.
+
+:warning: Future articles will explain in better detail what the tests do.
+
+>
+
+Look at the output window to see what they do.
 
 <p align="center">
  <img src="/content/images/BehavesLike.jpg" width=500 />
