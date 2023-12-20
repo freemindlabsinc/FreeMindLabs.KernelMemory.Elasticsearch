@@ -42,8 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "articles", "articles", "{02
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F8AB554F-C604-4098-B4C1-4CBAD790ADC0}"
 	ProjectSection(SolutionItems) = preProject
-		docker\.env = docker\.env
 		docker\docker-compose.yaml = docker\docker-compose.yaml
+		docker\.env.example = docker\.env.example
 		docker\README.md = docker\README.md
 	EndProjectSection
 EndProject

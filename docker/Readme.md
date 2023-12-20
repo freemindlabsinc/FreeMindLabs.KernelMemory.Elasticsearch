@@ -4,6 +4,7 @@ There are several ways to install and run the Elastic Stack on a development  ma
 
 The necessary files have been copied over the ```/docker``` folder so that we can run it directly without the need to Mitchell's repository, and so that we can alter them as necessary in the future.
 
+The file of interest are the following:
 
 
 The compose file will allow us to run the Elastic Stack on a single machine and get access to the Kibana UI, Logstash, Filebeat, and Metricbeat.
@@ -36,6 +37,9 @@ Once you launch the docker compose file, you will have access to the Kibana, fro
 </div>
 
 The following sections will guide you through the installation process.
+
+## The configuration files
+
 
 ## Step 1/3: Ensure the vm.max_map_count setting is set to at least 262144
 
@@ -196,8 +200,10 @@ And dashboards should work properly:
 ## Resources
 
 1. [Getting started with the Elastic Stack and Docker Compose: Part 1](https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose)
+          1. The Githun repo for this article can be found [here](https://github.com/elkninja/elastic-stack-docker-part-one)
 
 2. [Getting started with the Elastic Stack and Docker Compose: Part 2](https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose-part-2)
+    1. The Github repo for this article can be found [here](https://github.com/elkninja/elastic-stack-docker-part-two)
 
 1. [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
 
