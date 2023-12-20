@@ -42,7 +42,7 @@ We'd love to hear what you think about this.
 
 You need to have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed before continuing.
 
-To simplify the setup of a running instance of Elasticsearch we created the article [Installing the Elastic Stack using Docker Compose](/docker/README.md) that guides you through the process. It is simple - *3 steps* - and it takes less than 5 minutes to complete.
+To simplify the setup of a running instance of Elasticsearch we created the article [Installing the Elastic Stack using Docker Compose](/docker/Readme.md) that guides you through the process. It is simple - *3 steps* - and it takes less than 5 minutes to complete.
 
 The following diagram shows what we will be running once we complete the installation.
 
