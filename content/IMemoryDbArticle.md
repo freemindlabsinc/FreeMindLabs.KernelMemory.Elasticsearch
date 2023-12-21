@@ -1,10 +1,30 @@
 :warning: **This article is a work in progress.** 
 
-# Introduction
+# Objective
 
-This article is part of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will do so by showcasing how to write a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/). Similar code can be used to target any other vector database or storage system in the market.
+This article is the first of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will do so by showcasing how to write a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/). 
 
-Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines. 
+At the end of this article we will have an almost-complete connector that can be used to create indices and then store and retrieve vectors and payloads from Elasticsearch.
+
+Similar code can be used to target any other vector database or storage system in the market.
+
+## A brief introduction to Kernel Memory
+
+According to [Devis Lucato](https://www.linkedin.com/in/devislucato/) (*Principal Architect at Microsoft - Semantic Kernel & Memory*) we should think about Kernel Memory mostly as a way to:
+
+1. Answer questions.
+2. Ground answers exclusively on the data ingested.
+3. Provide links and references to the original sources.
+
+To **answer questions** is the main goal of Kernel Memory and that needs to happen **after grounding the answers** on our selected data.
+
+Not only this helps avoiding [hallucinations](https://zapier.com/blog/ai-hallucinations/); Davis stated that "*we fundamentally don't trust AI in autopilot mode. We need a way to audit it.*"
+
+It's implied Kernel memory also provides the functionality to **ingest data** and **index it** in a way that makes it possible to **answer questions**.
+
+---
+
+From a technical point of view, Kernel Memory is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines. 
 
 <div align="center">
   <img src="images/Pipelines.jpg" width="100%" />
@@ -16,18 +36,27 @@ Utilizing advanced embeddings and LLMs, the system enables Natural Language quer
   <img src="images/RAG.jpg" width="100%" />
 </div>
 
+## Connectors
+In order to operate, Kernel Memory needs to connect to a vector database or storage system that is capable of performing vector similarity searches.
 
 Microsoft currently provides connectors for the following storage systems:
 
-- [Azure Open Search](https://azure.microsoft.com/products/ai-services/ai-search)
+- [Azure AI Search](https://azure.microsoft.com/products/ai-services/ai-search)
+  - See [AzureAISearchMemory.cs on Github](https://github.com/microsoft/kernel-memory/tree/main/service/Core/MemoryStorage/AzureAISearch)
 - [Qdrant](https://qdrant.tech)
+  - See [QdrantMemory on Github](https://github.com/microsoft/kernel-memory/blob/main/service/Core/MemoryStorage/Qdrant/QdrantMemory.cs)
+- [Postgres+pgvector](https://github.com/microsoft/kernel-memory-postgres)
+  - See [PostgresMemory.cs on Github](https://github.com/microsoft/kernel-memory-postgres)
 - Volatile, in-memory KNN records.
+  - See [SimpleVectordb.cs on Github](https://github.com/microsoft/kernel-memory/blob/main/service/Core/MemoryStorage/DevTools/SimpleVectorDb.cs)
+
+### A connector to Elasticsearch
 
 In this article we will begin to implement a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/), so that we can use Elasticsearch's *native* vector search capabilities, alongside powerful text search and real time analytics.
 
-The article will look into the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) and the related data structure [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs). 
+To implement a connector we need to implement the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) and to be familiar with the related data structure [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs). 
 
-At the end of this article we will have an almost-complete connector that can be used to create indices and then store and retrieve vectors and payloads from Elasticsearch.
+
 
 >*In the next article we will complete the connector by adding support for  [MemoryFilter](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/Models/MemoryFilter.cs), which will allow the connector to (pre)filter datasets in multiple ways (i.e. key-based, full-text and semantic), and will enable powerful search that extend semantic search.*
 
@@ -36,27 +65,80 @@ The repository associated to this article is located [here](https://www.github.c
 
 ## Why Elasticssearch
 
-Elasticsearch supports kNN querying natively in both cloud and on-premise installations.
+Elasticsearch supports kNN querying natively in both cloud and on-premise installations. In addition, kNN filtering options allow us to pre-filter large chunks of data before performing the kNN search, thus improving overall performance.
 
-KNN stands for 'K nearest neighbors', and it is a search algorithm that finds the K most similar vectors to a given query vector. 
+>KNN stands for 'K nearest neighbors', and it is a search algorithm that finds the K most similar vectors to a given query vector. Read more about it [here](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm).
 
-Text embeddings produced by dense vector models can be queried using a kNN search. In the kNN clause, provide the name of the dense vector field, and a query_vector_builder clause with the model ID and the query text, as in the following example:
+### An example
+
+Text embeddings produced by dense vector models can be queried using a kNN search. 
+
+Say that we wanted to get the response to the question *"What's Semantic Kernel?"* from a set of documents we imported in Kernel Memory. The vectorization of the question produces values like the following:
 
 ```json
-GET my-index/_search
+// The array size depend on the model you use to generate embeddings.
+// Open AI uses 1536 dimensions, while SBERT.net's all-MiniLM-L6-v2 uses 384 dimensions.
+[-0.00891963486,0.0110242674,-0.0150581468,-0.0392113142,-0.0102037108, ...]
+```
+
+In the kNN clause, provide the name of the dense vector field (```embedding``` in our case), and a ```query_vector``` array with the embedding generated from the user "ask".
+
+
+```json
+// Queries the index 'default' and the field 'embedding' for the 10 most similar vectors to the ask  `What's Semantic Kernel?`.
+
+GET default/_search
 {
-  "knn": {
-    "field": "my_embeddings.predicted_value",
+  "knn": {    
+    "field": "embedding",
     "k": 10,
     "num_candidates": 100,
-    "query_vector_builder": {
-      "text_embedding": {
-        "model_id": "sentence-transformers__msmarco-minilm-l-12-v3",
-        "model_text": "the query string"
-      }
-    }
+    "query_vector": [-0.00891963486,0.0110242674,-0.0150581468, ...]
   }
 }
+```
+
+T
+
+```json
+GET default/_search
+{
+  "_source": {
+    "excludes": ["embedding", "payload"]
+  },
+  "knn": {
+    "filter": {
+      "nested": {
+      "path": "tags",
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "tags.name": {
+                  "value": "__document_id"
+                }
+              }
+            },
+            {
+              "match": {
+                "tags.value": "doc001"
+              }
+            }
+          ]
+        }
+      }
+    }
+    },
+    "field": "embedding",
+    "k": 10,
+    "num_candidates": 100,
+    "query_vector": [-0.00891963486,
+      0.0110242674,
+      -0.0150581468,
+      -0.0392113142,
+      -0.0102037108,
+      ..]
 ```
 
 The full documentation and examples can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html#semantic-search-search).
@@ -71,7 +153,7 @@ For example, when searching for single words or IDs, like product numbers.*
 *Combining semantic and lexical search into one hybrid search request using reciprocal rank fusion provides the best of both worlds. Not only that, but hybrid search using reciprocal rank fusion has been shown to perform better in general.*
 
 Hybrid search between a semantic and lexical query can be achieved by providing:
-- a query clause for the full-text query.
+- a query clause that limits the dataset over which to perform kNN search.
 - a knn clause with the kNN search that queries the dense vector field.
 - a rank clause with the rrf parameter to rank documents using reciprocal rank fusion.
 ```
@@ -99,7 +181,7 @@ GET my-index/_search
 }
 ```
 
->*We will use this hybrid search technique in the next article.*
+One of the long term goals for the connector is to be able to support hybrid searches of this kind, thus allowing the efficiency 
 
 # What is IMemoryDb?
 
