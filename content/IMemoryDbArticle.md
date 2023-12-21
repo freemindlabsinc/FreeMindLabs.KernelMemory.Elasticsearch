@@ -16,11 +16,9 @@ According to [Devis Lucato](https://www.linkedin.com/in/devislucato/) (*Principa
 2. Ground answers exclusively on the data ingested.
 3. Provide links and references to the original sources.
 
-To **answer questions** is the main goal of Kernel Memory and that needs to happen **after grounding the answers** on our selected data.
+To **answer questions** is the main goal of Kernel Memory and that needs to happen **after grounding the answers** on our selected data. Not only this helps avoiding [hallucinations](https://zapier.com/blog/ai-hallucinations/): Davis stated that "*we fundamentally don't trust AI in autopilot mode. We need a way to audit it.*"
 
-Not only this helps avoiding [hallucinations](https://zapier.com/blog/ai-hallucinations/); Davis stated that "*we fundamentally don't trust AI in autopilot mode. We need a way to audit it.*"
-
-It's implied Kernel memory also provides the functionality to **ingest data** and **index it** in a way that makes it possible to **answer questions**.
+It's implied Kernel memory also provides the functionality to **ingest data** and **index it** in a way that makes it possible to *answer questions*, and that is the task of the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs), which we will discuss later in this article.
 
 ---
 
@@ -36,6 +34,8 @@ Utilizing advanced embeddings and LLMs, the system enables Natural Language quer
   <img src="images/RAG.jpg" width="100%" />
 </div>
 
+It is designed to be used as a service, but it can also be embedded in applications (i.e. serverless model), although with some limitations.
+
 ## Connectors
 In order to operate, Kernel Memory needs to connect to a vector database or storage system that is capable of performing vector similarity searches.
 
@@ -43,14 +43,17 @@ Microsoft currently provides connectors for the following storage systems:
 
 - [Azure AI Search](https://azure.microsoft.com/products/ai-services/ai-search)
   - See [AzureAISearchMemory.cs on Github](https://github.com/microsoft/kernel-memory/tree/main/service/Core/MemoryStorage/AzureAISearch)
+
 - [Qdrant](https://qdrant.tech)
   - See [QdrantMemory on Github](https://github.com/microsoft/kernel-memory/blob/main/service/Core/MemoryStorage/Qdrant/QdrantMemory.cs)
+
 - [Postgres+pgvector](https://github.com/microsoft/kernel-memory-postgres)
   - See [PostgresMemory.cs on Github](https://github.com/microsoft/kernel-memory-postgres)
+
 - Volatile, in-memory KNN records.
   - See [SimpleVectordb.cs on Github](https://github.com/microsoft/kernel-memory/blob/main/service/Core/MemoryStorage/DevTools/SimpleVectorDb.cs)
 
-### A connector to Elasticsearch
+## The connector to Elasticsearch
 
 In this article we will begin to implement a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/), so that we can use Elasticsearch's *native* vector search capabilities, alongside powerful text search and real time analytics.
 
@@ -67,25 +70,31 @@ The repository associated to this article is located [here](https://www.github.c
 
 Elasticsearch supports kNN querying natively in both cloud and on-premise installations. In addition, kNN filtering options allow us to pre-filter large chunks of data before performing the kNN search, thus improving overall performance.
 
+These two features make Elasticsearch a great candidate for a vector database and would allows to use the same search platform for both text and vector searches, and real time analytics.
+
 >KNN stands for 'K nearest neighbors', and it is a search algorithm that finds the K most similar vectors to a given query vector. Read more about it [here](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm).
 
 ### An example
 
-Text embeddings produced by dense vector models can be queried using a kNN search. 
+Say that we wanted to get the response to the question *"What do you know of carbon?"* from a set of documents we imported in Kernel Memory, such as that used by the tests in the article's repository. 
 
-Say that we wanted to get the response to the question *"What's Semantic Kernel?"* from a set of documents we imported in Kernel Memory. The vectorization of the question produces values like the following:
+The vectorization of the question will produce a value like the following:
 
 ```json
-// The array size depend on the model you use to generate embeddings.
-// Open AI uses 1536 dimensions, while SBERT.net's all-MiniLM-L6-v2 uses 384 dimensions.
+// The vector for the question 'What do you know of carbon?'.
 [-0.00891963486,0.0110242674,-0.0150581468,-0.0392113142,-0.0102037108, ...]
 ```
 
-In the kNN clause, provide the name of the dense vector field (```embedding``` in our case), and a ```query_vector``` array with the embedding generated from the user "ask".
+>*The array size depends on the model used to generate embeddings.
+>For instance: Open AI uses 1536 dimensions, while SBERT.net's [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) uses 384 dimensions.*
 
+We can now use this vector to query an index of documents we previously indexed, and get back the 10 most similar vectors to the query.
+
+This is how such search would look like:
 
 ```json
-// Queries the index 'default' and the field 'embedding' for the 10 most similar vectors to the ask  `What's Semantic Kernel?`.
+// Queries the index 'default', field 'embedding' for
+// the 10 most similar vectors to the question `What do you know of carbon?`.
 
 GET default/_search
 {
@@ -98,7 +107,85 @@ GET default/_search
 }
 ```
 
-T
+>*To gather results, the kNN search API finds a ```num_candidates number``` of approximate nearest neighbor candidates on each shard. See here for [more details on how kNN search works in Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/knn-search.html).*
+
+The results of the query would look like the following:
+
+```
+{
+  "took": 3,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 10,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "default",
+        "_id": "d=doc001//p=bbc49f28ecad49ffb0635e306528fbbd",
+        "_score": 1,
+        "_source": {
+          "id": "ZD1kb2MwMDEvL3A9YmJjNDlmMjhlY2FkNDlmZmIwNjM1ZTMwNjUyOGZiYmQ_",
+          "tags": [
+            {
+              "name": "__document_id",
+              "value": "doc001"
+            },
+            {
+              "name": "__file_type",
+              "value": "text/plain"
+            },
+            {
+              "name": "__file_id",
+              "value": "4a090cd4df8a415093830fd57bac8707"
+            },
+            {
+              "name": "__file_part",
+              "value": "5233d4655d7d45e7bb5628c80ad33413"
+            }
+          ],
+          "payload": """{"file":"file1-Wikipedia-Carbon.txt","url":"","text":"Carbon (from Latin carbo \u0027coal\u0027) is a chemical element with the symbol C and atomic number 6. It is nonmetallic and tetravalent\u2014its atom making four electrons available to form covalent chemical bonds. It belongs to group 14 of the periodic table.[14] Carbon makes up about 0.025 percent of Earth\u0027s crust.[15] Three isotopes occur naturally, 12C and 13C being stable, while 14C is a radionuclide, decaying with a half-life of about 5,730 years.[16] Carbon is one of the few elements known since antiquity.[17]\n\nCarbon is the 15th most abundant element in the Earth\u0027s crust, and the fourth most abundant element in the universe by mass after hydrogen, helium, and oxygen. Carbon\u0027s ..REDACTED.. Thus, irrespective of its allotropic form, carbon remains solid at higher temperatures than the highest-melting-point metals such as tungsten or rhenium. Although thermodynamically prone to oxidation, carbon resists oxidation more effectively than elements such as iron and copper, which are weaker reducing agents at room temperature.\n","vector_provider":"AI.OpenAI.OpenAITextEmbeddingGenerator","vector_generator":"TODO","last_update":"2023-12-20T17:25:36"}"""
+        }
+      },
+      {
+        "_index": "default",
+        "_id": "d=doc001//p=587462ffb79d4d3a9286ef8f0e7b0490",
+        "_score": 0.9582,
+        "_source": {
+          "id": "ZD1kb2MwMDEvL3A9NTg3NDYyZmZiNzlkNGQzYTkyODZlZjhmMGU3YjA0OTA_",
+          "tags": [
+            {
+              "name": "__document_id",
+              "value": "doc001"
+            },
+            {
+              "name": "__file_type",
+              "value": "text/plain"
+            },
+            {
+              "name": "__file_id",
+              "value": "4a090cd4df8a415093830fd57bac8707"
+            },
+            {
+              "name": "__file_part",
+              "value": "e0cc02df935846338664a1d850b6a6fe"
+            }
+          ],
+          "payload": """{"file":"file1-Wikipedia-Carbon.txt","url":"","text":"Carbon sublimes in a carbon arc, which has a temperature of about 5800 K (5,530 \u00B0C or 9,980 \u00B0F). Thus, irrespective of its allotropic form, carbon remains solid at higher temperatures than the highest-melting-point metals such as tungsten or rhenium. Although thermodynamically prone to oxidation, carbon resists oxidation more effectively than elements such as iron and copper, which are weaker reducing agents at room temperature.\r\nCarbon is the sixth element, with a ground-state electron configuration of 1s22s22p2, of which the four outer electrons are valence electrons. Its first four ionisation energies, 1086.5, 2352.6, 4620.5 and 6222.7 kJ/mol, are much higher than those of the heavier group-14 elements. The electronegativity of carbon is 2.5, significantly higher than the heavier group-14 elements (1.8\u20131.9), but clos..REDACTED.. high temperatures to form metallic carbides, such as the iron carbide cementite in steel and tungsten carbide, widely used as an abrasive and for making hard tips for cutting tools.","vector_provider":"AI.OpenAI.OpenAITextEmbeddingGenerator","vector_generator":"TODO","last_update":"2023-12-20T17:25:36"}"""
+        }
+      },
+```
+
+
+
 
 ```json
 GET default/_search
