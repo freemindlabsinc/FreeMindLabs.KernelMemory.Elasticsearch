@@ -63,38 +63,43 @@ To implement a connector we need to implement the interface [IMemoryDb](https://
 
 >*In the next article we will complete the connector by adding support for  [MemoryFilter](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/Models/MemoryFilter.cs), which will allow the connector to (pre)filter datasets in multiple ways (i.e. key-based, full-text and semantic), and will enable powerful search that extend semantic search.*
 
-The repository associated to this article is located [here](https://www.github.com/freemindlabsinc/FreeMindLabs.SemanticKernel).
+The repository associated to this article is located [here](https://github.com/freemindlabsinc/FreeMindLabs.KernelMemory.Elasticsearch).
 
 
 ## Why Elasticssearch
 
-Elasticsearch supports kNN querying natively in both cloud and on-premise installations. In addition, kNN filtering options allow us to pre-filter large chunks of data before performing the kNN search, thus improving overall performance.
+Elasticsearch supports kNN querying natively in both cloud and on-premise installations. kNN stands for 'K nearest neighbors', and it is a search algorithm that finds the K most similar vectors to a given query vector. 
 
-These two features make Elasticsearch a great candidate for a vector database and would allows to use the same search platform for both text and vector searches, and real time analytics.
+Read more about kNN search [here](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) if you are not familiar with it.
 
->KNN stands for 'K nearest neighbors', and it is a search algorithm that finds the K most similar vectors to a given query vector. Read more about it [here](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm).
+In addition to the sdandard parameters of a kNN query Elasticsearch kNN query has a ```filter``` option allow us to pre-filter large chunks of data before performing the kNN search, thus improving overall performance.
 
-### An example
+If you have millions of records in your index, you can use the filter to limit the search to a subset of the data, and then perform the kNN search on that subset.
+We will see an example of this below, using the data that Kernel Memory stores in vector databases.
 
-Say that we wanted to get the response to the question *"What do you know of carbon?"* from a set of documents we imported in Kernel Memory, such as that used by the tests in the article's repository. 
+kNN search and the ```filter``` option make Elasticsearch a great candidate for vector database needs and also enable hybrid search and real time analytics in one platform. If you use Elasticsearch for text (*lexical*) and key-word search, why not use it also for semantic search?
 
-The vectorization of the question will produce a value like the following:
+
+### A semantic search using Elastic Query Language
+
+Say that we wanted to get the response to the question *"What do you know of carbon?"* from a set of documents we imported in Kernel Memory, such as that used by the tests in the article's repository.
+
+>Since we used our Kernel Memory connector to ES, we know those documents will be stored in an Elasticsearch index. In the examples below it will be the ```default``` index, but it could be named anything you prefer.
+
+The *vectorization of the question* *"What do you know of carbon?"* will produce a value like the following:
 
 ```json
-// The vector for the question 'What do you know of carbon?'.
-[-0.00891963486,0.0110242674,-0.0150581468,-0.0392113142,-0.0102037108, ...]
+// The vector of 'What do you know of carbon?' 
+[-0.00891963486,0.0110242674,-0.0150581468, ...]
 ```
 
->*The array size depends on the model used to generate embeddings.
+>*Side node: the array size depends on the model used to generate embeddings.
 >For instance: Open AI uses 1536 dimensions, while SBERT.net's [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) uses 384 dimensions.*
 
-We can now use this vector to query an index of documents we previously indexed, and get back the 10 most similar vectors to the query.
-
-This is how such search would look like:
+We can now use this vector to query an index of documents we previously indexed and get back the 10 most similar vectors to the query using a EQL query like the following:
 
 ```json
-// Queries the index 'default', field 'embedding' for
-// the 10 most similar vectors to the question `What do you know of carbon?`.
+// Queries the field 'embedding' (array of float) in the index 'default' for the 10 most similar vectors to the question `What do you know of carbon?`.
 
 GET default/_search
 {
@@ -109,7 +114,7 @@ GET default/_search
 
 >*To gather results, the kNN search API finds a ```num_candidates number``` of approximate nearest neighbor candidates on each shard. See here for [more details on how kNN search works in Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/knn-search.html).*
 
-The results of the query would look like the following:
+The results of the query would look like the following (*the value of the field ```embedding``` was removed*):
 
 ```
 {
@@ -182,12 +187,25 @@ The results of the query would look like the following:
           "payload": """{"file":"file1-Wikipedia-Carbon.txt","url":"","text":"Carbon sublimes in a carbon arc, which has a temperature of about 5800 K (5,530 \u00B0C or 9,980 \u00B0F). Thus, irrespective of its allotropic form, carbon remains solid at higher temperatures than the highest-melting-point metals such as tungsten or rhenium. Although thermodynamically prone to oxidation, carbon resists oxidation more effectively than elements such as iron and copper, which are weaker reducing agents at room temperature.\r\nCarbon is the sixth element, with a ground-state electron configuration of 1s22s22p2, of which the four outer electrons are valence electrons. Its first four ionisation energies, 1086.5, 2352.6, 4620.5 and 6222.7 kJ/mol, are much higher than those of the heavier group-14 elements. The electronegativity of carbon is 2.5, significantly higher than the heavier group-14 elements (1.8\u20131.9), but clos..REDACTED.. high temperatures to form metallic carbides, such as the iron carbide cementite in steel and tungsten carbide, widely used as an abrasive and for making hard tips for cutting tools.","vector_provider":"AI.OpenAI.OpenAITextEmbeddingGenerator","vector_generator":"TODO","last_update":"2023-12-20T17:25:36"}"""
         }
       },
+      [..]
+  }
+}
 ```
 
+These documents show how Kernel Memory information looks once it's indexed in Elasticsearch.
 
+### How to pre-filter data before performing a kNN search
 
+Assume we had a large number of documents in our index, and we wanted to limit the search to a subset of the data, for instance to documents that have a specific 
+```__file_type``` such as ```text/plain```, or even just point to one document with ```__document_id``` = ```doc001```.
+
+We can do that by adding a ```filter``` clause to the query, like the following:
 
 ```json
+// Pre-filters the data by looking for documents that have 
+// a tag with name '__document_id' and value 'doc001'.
+// Then performs the kNN search on the filtered data.
+
 GET default/_search
 {
   "_source": {
@@ -228,47 +246,9 @@ GET default/_search
       ..]
 ```
 
-The full documentation and examples can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html#semantic-search-search).
+In some situations, lexical search may perform better than semantic search. For example, when searching for single words or IDs, like the document type or document id.
 
-### Beyond semantic search with hybrid search
-
-From the Elasticsearch [documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html#semantic-search-hybrid-search):
-
-*In some situations, lexical search may perform better than semantic search. 
-For example, when searching for single words or IDs, like product numbers.*
-
-*Combining semantic and lexical search into one hybrid search request using reciprocal rank fusion provides the best of both worlds. Not only that, but hybrid search using reciprocal rank fusion has been shown to perform better in general.*
-
-Hybrid search between a semantic and lexical query can be achieved by providing:
-- a query clause that limits the dataset over which to perform kNN search.
-- a knn clause with the kNN search that queries the dense vector field.
-- a rank clause with the rrf parameter to rank documents using reciprocal rank fusion.
-```
-GET my-index/_search
-{
-  "query": {
-    "match": {
-      "my_text_field": "the query string"
-    }
-  },
-  "knn": {
-    "field": "text_embedding.predicted_value",
-    "k": 10,
-    "num_candidates": 100,
-    "query_vector_builder": {
-      "text_embedding": {
-        "model_id": "sentence-transformers__msmarco-minilm-l-12-v3",
-        "model_text": "the query string"
-      }
-    }
-  },
-  "rank": {
-    "rrf": {}
-  }
-}
-```
-
-One of the long term goals for the connector is to be able to support hybrid searches of this kind, thus allowing the efficiency 
+The full documentation for Elasticsearch kNN query and examples can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html#semantic-search-search).
 
 # What is IMemoryDb?
 
