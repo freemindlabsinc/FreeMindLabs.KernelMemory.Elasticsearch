@@ -2,6 +2,9 @@
 
 >A bunch of notes and thoughts about the project.
 
+:calendar: 12/20/2023
+1. Added TODO.md file to the project
+
 :calendar: 12/19/2023
 
 1. Version 0.4.0

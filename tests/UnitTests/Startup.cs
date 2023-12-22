@@ -4,8 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using System.Reflection;
-using Elastic.Clients.Elasticsearch;
-using Elastic.Transport;
 using FreeMindLabs.KernelMemory.Elasticsearch;
 
 namespace UnitTests;
@@ -29,22 +27,16 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // ElasticsearchClientSettings
-        var esConfig = this._configuration
-            .GetSection(ElasticsearchConfig.DefaultSettingsSection)
-            .Get<ElasticsearchConfig>()
-            .Validate(); // This checks everything is in order.
-
-        services.AddTransient<ElasticsearchClientSettings>(x => esConfig.ToElasticsearchClientSettings());
+        // TODO: Uses only OpenAI API stuff for now. Make more flexible.        
 
         // Kernel Memory with Elasticsearch
-        services.AddTransient<IKernelMemory>(x => new KernelMemoryBuilder()
-            .WithOpenAIDefaults(this._configuration["OpenAI:ApiKey"] ?? throw new ElasticsearchConfigurationException("OpenAI API Key missing."))
-            // TIP: If we comment the line below we run with in-memory storage.
-            // The tests in <see cref="ServerlessTest"/> should all work.
-            .WithElasticsearch(esConfig)
-            .Build<MemoryServerless>());
+        IKernelMemoryBuilder b = new KernelMemoryBuilder(services)
+                .WithSimpleFileStorage("Data")
+                .WithElasticsearch(this._configuration)
+                .WithOpenAIDefaults(apiKey: this._configuration["OpenAI:ApiKey"] ?? throw new ArgumentException("OpenAI:ApiKey is required."));
 
-        // TODO: Uses OpenAI API Key for now. Make more flexible.
+        var kernelMemory = b.Build<MemoryServerless>();
+
+        services.AddSingleton<IKernelMemory>(kernelMemory);
     }
 }

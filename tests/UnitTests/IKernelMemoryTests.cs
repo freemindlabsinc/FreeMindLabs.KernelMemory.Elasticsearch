@@ -4,17 +4,15 @@ using Xunit;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
-namespace UnitTests.MemoryStorage;
+namespace UnitTests;
 
-public class MemoryStorageTests
+public class IKernelMemoryTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly IServiceProvider _services;
 
-    public MemoryStorageTests(ITestOutputHelper output, IServiceProvider services)
+    public IKernelMemoryTests(ITestOutputHelper output, IServiceProvider services)
     {
         this._output = output ?? throw new ArgumentNullException(nameof(output));
-        this._services = services ?? throw new ArgumentNullException(nameof(services));
     }
 
     [Theory]
@@ -34,7 +32,7 @@ public class MemoryStorageTests
 
         // Imports the document into the default index
         var docId = await memory.ImportDocumentAsync(
-            filePath: "file1-Wikipedia-Carbon.txt",
+            filePath: "Data/file1-Wikipedia-Carbon.txt",
             documentId: "doc001",
             tags: null,
             index: indexName,
@@ -42,7 +40,7 @@ public class MemoryStorageTests
             cancellationToken: cancellationToken).ConfigureAwait(false);
         this._output.WriteLine($"Indexed {docId}.");
 
-        await Task.Delay(2000, CancellationToken.None); // TODO: remove. Without this the data might not be ready for read...
+        await Task.Delay(2000, CancellationToken.None).ConfigureAwait(false); // TODO: remove. Without this the data might not be ready for read...
 
         // Asks a question on the data we just inserted
         var question = "What can carbon bond to?";
@@ -75,9 +73,9 @@ public class MemoryStorageTests
         this._output.WriteLine($"Ensured default index is deleted.");
 
         // Uploads the documents
-        var files = Directory.GetFiles(".", "*.txt").ToList();
-        files.AddRange(Directory.GetFiles(".", "*.docx"));
-        files.AddRange(Directory.GetFiles(".", "*.pdf"));
+        var files = Directory.GetFiles("Data", "*.txt").ToList();
+        files.AddRange(Directory.GetFiles("Data", "*.docx"));
+        files.AddRange(Directory.GetFiles("Data", "*.pdf"));
 
         foreach (var file in files)
         {
@@ -120,3 +118,4 @@ public class MemoryStorageTests
         //Assert.NotEqual("INFO NOT FOUND", answer.Result);
     }
 }
+
