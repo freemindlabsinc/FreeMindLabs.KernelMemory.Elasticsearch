@@ -22,6 +22,7 @@ public sealed class ElasticsearchMemoryRecord
     public const string TagsField = "tags";
 
     private const string PayloadField = "payload";
+    private const string ContentField = "content";
 
     private static readonly JsonSerializerOptions s_jsonOptions = new()
     {
@@ -50,19 +51,11 @@ public sealed class ElasticsearchMemoryRecord
     [JsonPropertyName(PayloadField)]
     public string Payload { get; set; } = string.Empty;
 
-    //public static MemoryDbSchema GetSchema(int vectorSize)
-    //{
-    //    return new MemoryDbSchema
-    //    {
-    //        Fields = new List<MemoryDbField>
-    //        {
-    //            new() { Name = IdField, Type = MemoryDbField.FieldType.Text, IsKey = true },
-    //            new() { Name = VectorField, Type = MemoryDbField.FieldType.Vector, VectorSize = vectorSize },
-    //            new() { Name = TagsField, Type = MemoryDbField.FieldType.ListOfStrings, IsFilterable = true },
-    //            new() { Name = PayloadField, Type = MemoryDbField.FieldType.Text, IsFilterable = false },
-    //        }
-    //    };
-    //}
+    /// <summary>
+    /// TBC
+    /// </summary>
+    [JsonPropertyName(ContentField)]
+    public string Content { get; set; } = string.Empty;
 
     /// <summary>
     /// TBC

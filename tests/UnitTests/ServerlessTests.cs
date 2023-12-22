@@ -21,19 +21,26 @@ public class ServerlessTests
     [Fact]//(Skip = "This test takes a while to complete.")]
     public async Task BehavesLikeMicrosoftMainExampleAsync()
     {
+        var indexName = "ms-kernel-memory-sample";
+
         // Deletes the default index if already present
         await this._kernelMemory.DeleteIndexAsync(
-            index: null,
+            index: indexName,
             cancellationToken: CancellationToken.None).ConfigureAwait(false);
         this._output.WriteLine($"Ensured default index is deleted.");
 
         // Proceeds
-        var docId = await this._kernelMemory.ImportDocumentAsync("Data/file1-Wikipedia-Carbon.txt", documentId: "doc001").ConfigureAwait(false);
+        var docId = await this._kernelMemory.ImportDocumentAsync(
+            "Data/file1-Wikipedia-Carbon.txt",
+            index: indexName,
+            documentId: "doc001").ConfigureAwait(false);
         this._output.WriteLine($"Indexed {docId}");
 
-        docId = await this._kernelMemory.ImportDocumentAsync(new Document("doc002")
-            .AddFiles(new[] { "Data/file2-Wikipedia-Moon.txt", "Data/file3-lorem-ipsum.docx", "Data/file4-SK-Readme.pdf" })
-            .AddTag("user", "Blake"))
+        docId = await this._kernelMemory.ImportDocumentAsync(
+            new Document("doc002")
+                .AddFiles(new[] { "Data/file2-Wikipedia-Moon.txt", "Data/file3-lorem-ipsum.docx", "Data/file4-SK-Readme.pdf" })
+                .AddTag("user", "Blake"),
+                index: indexName)
             .ConfigureAwait(false);
 
         this._output.WriteLine($"Indexed {docId}");
@@ -44,7 +51,8 @@ public class ServerlessTests
             .AddTag("collection", "meetings")
             .AddTag("collection", "NASA")
             .AddTag("collection", "space")
-            .AddTag("type", "news"))
+            .AddTag("type", "news"),
+            index: indexName)
             .ConfigureAwait(false);
 
         this._output.WriteLine($"Indexed {docId}");
@@ -55,7 +63,7 @@ public class ServerlessTests
         var question = "What's E = m*c^2?";
         this._output.WriteLine($"Question: {question}");
 
-        var answer = await this._kernelMemory.AskAsync(question).ConfigureAwait(false);
+        var answer = await this._kernelMemory.AskAsync(question, index: indexName).ConfigureAwait(false);
         this._output.WriteLine($"\nAnswer: {answer.Result}");
 
         foreach (var x in answer.RelevantSources)
@@ -69,7 +77,7 @@ public class ServerlessTests
         question = "What's Semantic Kernel?";
         this._output.WriteLine($"Question: {question}");
 
-        answer = await this._kernelMemory.AskAsync(question).ConfigureAwait(false);
+        answer = await this._kernelMemory.AskAsync(question, index: indexName).ConfigureAwait(false);
         this._output.WriteLine($"\nAnswer: {answer.Result}\n\n  Sources:\n");
 
         foreach (var x in answer.RelevantSources)

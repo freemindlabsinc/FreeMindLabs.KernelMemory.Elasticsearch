@@ -54,7 +54,7 @@ public class ElasticsearchMemory : IMemoryDb
         var existsResponse = await this._client.Indices.ExistsAsync(index, cancellationToken).ConfigureAwait(false);
         if (existsResponse.Exists)
         {
-            //this._log.LogInformation($"Index {index} already exists");
+            this._log.LogTrace("Index {Index} already exists.", index);
             return;
         }
 
@@ -77,9 +77,12 @@ public class ElasticsearchMemory : IMemoryDb
                 p.Keyword(x => x.Id);
                 p.Nested(ElasticsearchMemoryRecord.TagsField, np);
                 p.Text(x => x.Payload);
+                p.Text(x => x.Content);
                 p.DenseVector(x => x.Vector, d => d.Index(true).Dims(Dimensions).Similarity("cosine"));
             }),
             cancellationToken).ConfigureAwait(false);
+
+        this._log.LogTrace("Index {Index} creeated.", index);
     }
 
     /// <inheritdoc />

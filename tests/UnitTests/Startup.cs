@@ -31,9 +31,12 @@ public class Startup
 
         // Kernel Memory with Elasticsearch
         IKernelMemoryBuilder b = new KernelMemoryBuilder(services)
+                .WithSimpleFileStorage("Data")
                 .WithElasticsearch(this._configuration)
                 .WithOpenAIDefaults(apiKey: this._configuration["OpenAI:ApiKey"] ?? throw new ArgumentException("OpenAI:ApiKey is required."));
 
-        services.AddSingleton<IKernelMemory>(b.Build<MemoryServerless>());
+        var kernelMemory = b.Build<MemoryServerless>();
+
+        services.AddSingleton<IKernelMemory>(kernelMemory);
     }
 }
