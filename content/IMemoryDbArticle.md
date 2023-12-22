@@ -18,7 +18,7 @@ According to [Devis Lucato](https://www.linkedin.com/in/devislucato/) (*Principa
 
 To **answer questions** is the main goal of Kernel Memory and that needs to happen **after grounding the answers** on our selected data. Not only this helps avoiding [hallucinations](https://zapier.com/blog/ai-hallucinations/): Davis stated that "*we fundamentally don't trust AI in autopilot mode. We need a way to audit it.*"
 
-It's implied Kernel memory also provides the functionality to **ingest data** and **index it** in a way that makes it possible to *answer questions*, and that is the task of the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs), which we will discuss later in this article.
+It's implied Kernel memory also provides the functionality to **ingest data** and **index it** in a way that makes it possible to *answer questions*. That is the task of the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) which we will discuss later in this article.
 
 ---
 
@@ -45,7 +45,7 @@ Microsoft currently provides connectors for the following storage systems:
   - See [AzureAISearchMemory.cs on Github](https://github.com/microsoft/kernel-memory/tree/main/service/Core/MemoryStorage/AzureAISearch)
 
 - [Qdrant](https://qdrant.tech)
-  - See [QdrantMemory on Github](https://github.com/microsoft/kernel-memory/blob/main/service/Core/MemoryStorage/Qdrant/QdrantMemory.cs)
+  - See [QdrantMemory.cs on Github](https://github.com/microsoft/kernel-memory/blob/main/service/Core/MemoryStorage/Qdrant/QdrantMemory.cs)
 
 - [Postgres+pgvector](https://github.com/microsoft/kernel-memory-postgres)
   - See [PostgresMemory.cs on Github](https://github.com/microsoft/kernel-memory-postgres)
@@ -55,7 +55,7 @@ Microsoft currently provides connectors for the following storage systems:
 
 ## The connector to Elasticsearch
 
-In this article we will begin to implement a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/), so that we can use Elasticsearch's *native* vector search capabilities, alongside powerful text search and real time analytics.
+In this article we will begin to implement a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/), so that we can use Elasticsearch's *native* vector search capabilities alongside powerful text search and real time analytics.
 
 To implement a connector we need to implement the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) and to be familiar with the related data structure [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs). 
 
@@ -70,9 +70,9 @@ The repository associated to this article is located [here](https://github.com/f
 
 Elasticsearch supports kNN querying natively in both cloud and on-premise installations. kNN stands for 'K nearest neighbors', and it is a search algorithm that finds the K most similar vectors to a given query vector. 
 
-Read more about kNN search [here](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) if you are not familiar with it.
+>Read more about kNN search [here](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm) if you are not familiar with it.
 
-In addition to the sdandard parameters of a kNN query Elasticsearch kNN query has a ```filter``` option allow us to pre-filter large chunks of data before performing the kNN search, thus improving overall performance.
+In addition to the standard parameters of a kNN query, Elasticsearch's kNN query has a ```filter``` option allow us to pre-filter large chunks of data before performing the kNN search, thus improving overall performance.
 
 If you have millions of records in your index, you can use the filter to limit the search to a subset of the data, and then perform the kNN search on that subset.
 We will see an example of this below, using the data that Kernel Memory stores in vector databases.
