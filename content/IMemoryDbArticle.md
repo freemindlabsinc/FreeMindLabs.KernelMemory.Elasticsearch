@@ -1,12 +1,12 @@
 :warning: **This article is a work in progress.** 
 
-# Objective
+# How to building a Kernel Memory connector and use Elasticsearch as vector database - Part 1
 
 This article is the first of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will do so by showcasing how to write a connector for [Elasticsearch](https://www.elastic.co/elasticsearch/). 
 
 At the end of this article we will have an almost-complete connector that can be used to create indices and then store and retrieve vectors and payloads from Elasticsearch.
 
-Similar code can be used to target any other vector database or storage system in the market.
+Similar code can be used to target other storage systems.
 
 ## A brief introduction to Kernel Memory
 
