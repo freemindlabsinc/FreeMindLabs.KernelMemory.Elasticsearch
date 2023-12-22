@@ -260,16 +260,14 @@ This diagram shows the relationship between Kernel Memory and the IMemoryDb inte
   <img src="images/Connectors.jpg" width="50%" />
 </div>
 
-Kernel Memory can connect to several any databases and storage system if a connector is available.
-
->TODO: should the diagram show Application using KM directly?
+Kernel Memory can connect to any vector database or storage system if an IMemoryDb connector is available.
 
 ## The IMemoryDb interface
 
 The [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) interface has seven methods, which can be thought as divided in three groups:
 
 1. Index management
-2. Data manipulation
+2. Data storage
 3. Search
 
 ## Index management
@@ -302,7 +300,7 @@ Here are some possible improvements:
 > TODO: put implementation code for methods here
 > TODO: put code of index mgmt tests here
 
-## Data manipulation
+## Data storage
 
 The next two methods allow to update and delete the information inside indices using the data structure [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs).
 
