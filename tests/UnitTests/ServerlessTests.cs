@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using FreeMindLabs.KernelMemory.Elasticsearch;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using Xunit;
 using Xunit.Abstractions;
@@ -11,37 +10,35 @@ namespace UnitTests;
 public class ServerlessTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly IServiceProvider _services;
+    private readonly IKernelMemory _kernelMemory;
 
-    public ServerlessTests(ITestOutputHelper output, IServiceProvider services)
+    public ServerlessTests(ITestOutputHelper output, IKernelMemory kernelMemory)
     {
         this._output = output ?? throw new ArgumentNullException(nameof(output));
-        this._services = services ?? throw new ArgumentNullException(nameof(services));
+        this._kernelMemory = kernelMemory ?? throw new ArgumentNullException(nameof(kernelMemory));
     }
 
     [Fact]//(Skip = "This test takes a while to complete.")]
     public async Task BehavesLikeMicrosoftMainExampleAsync()
     {
-        IKernelMemory memory = this._services.GetRequiredService<IKernelMemory>();
-
         // Deletes the default index if already present
-        await memory.DeleteIndexAsync(
+        await this._kernelMemory.DeleteIndexAsync(
             index: null,
             cancellationToken: CancellationToken.None).ConfigureAwait(false);
         this._output.WriteLine($"Ensured default index is deleted.");
 
         // Proceeds
-        var docId = await memory.ImportDocumentAsync("Data/file1-Wikipedia-Carbon.txt", documentId: "doc001").ConfigureAwait(false);
+        var docId = await this._kernelMemory.ImportDocumentAsync("Data/file1-Wikipedia-Carbon.txt", documentId: "doc001").ConfigureAwait(false);
         this._output.WriteLine($"Indexed {docId}");
 
-        docId = await memory.ImportDocumentAsync(new Document("doc002")
+        docId = await this._kernelMemory.ImportDocumentAsync(new Document("doc002")
             .AddFiles(new[] { "Data/file2-Wikipedia-Moon.txt", "Data/file3-lorem-ipsum.docx", "Data/file4-SK-Readme.pdf" })
             .AddTag("user", "Blake"))
             .ConfigureAwait(false);
 
         this._output.WriteLine($"Indexed {docId}");
 
-        docId = await memory.ImportDocumentAsync(new Document("doc003")
+        docId = await this._kernelMemory.ImportDocumentAsync(new Document("doc003")
             .AddFile("Data/file5-NASA-news.pdf")
             .AddTag("user", "Taylor")
             .AddTag("collection", "meetings")
@@ -58,7 +55,7 @@ public class ServerlessTests
         var question = "What's E = m*c^2?";
         this._output.WriteLine($"Question: {question}");
 
-        var answer = await memory.AskAsync(question).ConfigureAwait(false);
+        var answer = await this._kernelMemory.AskAsync(question).ConfigureAwait(false);
         this._output.WriteLine($"\nAnswer: {answer.Result}");
 
         foreach (var x in answer.RelevantSources)
@@ -72,7 +69,7 @@ public class ServerlessTests
         question = "What's Semantic Kernel?";
         this._output.WriteLine($"Question: {question}");
 
-        answer = await memory.AskAsync(question).ConfigureAwait(false);
+        answer = await this._kernelMemory.AskAsync(question).ConfigureAwait(false);
         this._output.WriteLine($"\nAnswer: {answer.Result}\n\n  Sources:\n");
 
         foreach (var x in answer.RelevantSources)

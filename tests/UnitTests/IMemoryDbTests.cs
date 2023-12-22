@@ -1,7 +1,4 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.KernelMemory;
-using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +12,7 @@ public class IMemoryDbTests
 
     public IMemoryDbTests(ITestOutputHelper output)
     {
-        this._output = output ?? throw new ArgumentNullException(nameof(output));        
+        this._output = output ?? throw new ArgumentNullException(nameof(output));
     }
 
     [Theory]
@@ -30,7 +27,16 @@ public class IMemoryDbTests
         try
         {
             await memory.DeleteIndexAsync(indexName).ConfigureAwait(false);
+            this._output.WriteLine($"Attempted to delete index '{indexName}' successfully.");
+
             await memory.CreateIndexAsync(indexName, vectorSize).ConfigureAwait(false);
+
+            this._output.WriteLine($"Created index '{indexName}' successfully.");
+
+            if (shouldFail)
+            {
+                Assert.True(false, $"Expected exception when creating index '{indexName}'");
+            }
         }
         catch (Exception ex)
         {
