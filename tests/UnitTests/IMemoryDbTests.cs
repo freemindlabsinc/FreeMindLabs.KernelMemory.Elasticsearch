@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
+using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,12 +13,9 @@ public class IMemoryDbTests
 {
     private readonly ITestOutputHelper _output;
 
-    public IMemoryDbTests(ITestOutputHelper output, IServiceProvider sp, IKernelMemory mem)
+    public IMemoryDbTests(ITestOutputHelper output)
     {
-        this._output = output ?? throw new ArgumentNullException(nameof(output));
-
-        mem = mem ?? throw new ArgumentNullException(nameof(mem));
-        var memDb = sp.GetRequiredService<IMemoryDb>();
+        this._output = output ?? throw new ArgumentNullException(nameof(output));        
     }
 
     [Theory]

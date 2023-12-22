@@ -27,19 +27,14 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddElasticsearchAsVectorDb(this._configuration);
-
         // Kernel Memory with Elasticsearch
-        services.AddTransient<IKernelMemory>(sp =>
-        {
-            IKernelMemoryBuilder b = new KernelMemoryBuilder()
+        //services.AddElasticsearchAsVectorDb(this._configuration);
+
+        IKernelMemoryBuilder b = new KernelMemoryBuilder(services)
+                .WithElasticsearch(this._configuration)
                 .WithOpenAIDefaults(this._configuration["OpenAI:ApiKey"] ?? throw new ArgumentException("OpenAI:ApiKey is required."));
 
-            var memoryServerless = b//.WithElasticsearch(esConfig)
-                                    .Build<MemoryServerless>();
-
-            return memoryServerless;
-        });
+        services.AddSingleton<IKernelMemory>(b.Build<MemoryServerless>());
 
         // TODO: Uses OpenAI API Key for now. Make more flexible.
     }
