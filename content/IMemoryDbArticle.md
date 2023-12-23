@@ -289,7 +289,62 @@ Here are some consideration on the arguments of those methods:
   - [OpenAI](https://www.openai.com) uses vectors with 1536 dimentiones.
   - [SBERT.net](https://sbert.net)'s all-MiniLM-L6-v2 uses vectors with 384 dimensions.
 
-In addition, notice that (at the time of writing) the result of GetIndexesAsync is an ```IEnumerable<string>```, which means that the method returns the full list of indices at once. Be careful when calling this method on vector databases that contain a large number of indices.
+### Examples
+
+The unit test IMemoryDbTests contains the test ```CanDeleteCreateAndDeleteIndicesAsync``` which shows how to use these methods:
+
+```csharp
+public class IMemoryDbTests
+{
+    private readonly ITestOutputHelper _output;
+
+    public IMemoryDbTests(ITestOutputHelper output)
+    {
+        this._output = output ?? throw new ArgumentNullException(nameof(output));
+    }
+
+    [Theory]
+    [InlineData("", 1536, null)] // default index
+    [InlineData("nondefault", 1536, null)]
+    [InlineData("WithUppercase", 1536, null)]
+    [InlineData("With-Dashes", 1536, null)]
+    [InlineData("123numberfirst", 1536, null)]
+    public async Task CanDeleteCreateAndDeleteIndicesAsync(
+      string indexName,
+      int vectorSize, 
+      [FromServices] IMemoryDb memory)
+    {
+        memory = memory ?? throw new ArgumentNullException(nameof(memory));
+
+        // Delete the index if it exists
+        await memory.DeleteIndexAsync(indexName)
+                    .ConfigureAwait(false);
+
+        // Create the index
+        var actualIndexName = ElasticsearchIndexname.Validate(indexName);
+        this._output.WriteLine($"Attempted to delete index '{indexName}'('{actualIndexName}') successfully.");
+
+        await memory.CreateIndexAsync(indexName, vectorSize)
+                    .ConfigureAwait(false);
+
+        // Verifies the index exists
+
+        // TODO: verify the index is created using the ES client
+
+        this._output.WriteLine($"Created index '{indexName}'('{actualIndexName}') successfully.");
+
+        // Delete the index again to leave a clean slate
+        await memory.DeleteIndexAsync(indexName)
+                    .ConfigureAwait(false);
+
+        // TODO: verify the index is deleted using the ES client
+    }
+}
+
+```
+The source code can be found [here](../tests/UnitTests/IMemoryDbTests.cs)
+
+#### Considerations on index management methods
 
 Here are some possible improvements:
 

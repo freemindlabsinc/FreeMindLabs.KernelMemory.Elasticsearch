@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
@@ -89,10 +90,11 @@ public class ElasticsearchMemory : IMemoryDb
     public async Task<IEnumerable<string>> GetIndexesAsync(
         CancellationToken cancellationToken = default)
     {
-        Indices indices = "";
-        var resp = await this._client.Indices.GetAsync(indices, cancellationToken).ConfigureAwait(false);
+        var resp = await this._client.Indices.GetAsync(Indices.All, cancellationToken).ConfigureAwait(false);
 
-        var names = resp.Indices.Select(x => x.Key.ToString());
+        var names = resp.Indices
+            .Select(x => x.Key.ToString())
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
         return names;
     }
 
