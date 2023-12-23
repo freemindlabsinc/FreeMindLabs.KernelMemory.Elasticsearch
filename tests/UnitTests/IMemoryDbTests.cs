@@ -27,23 +27,37 @@ public class IMemoryDbTests
         memory = memory ?? throw new ArgumentNullException(nameof(memory));
 
         // Delete the index if it exists
-        await memory.DeleteIndexAsync(indexName)
-                    .ConfigureAwait(false);
+        var currIndices = await memory.GetIndexesAsync()
+                                      .ConfigureAwait(false);
 
-        // Create the index
-        var actualIndexName = ElasticsearchIndexname.Validate(indexName);
-        this._output.WriteLine($"Attempted to delete index '{indexName}'('{actualIndexName}') successfully.");
+        if (string.IsNullOrEmpty(indexName))
+        {
+            indexName = "default";
+        }
 
+        if (currIndices.Contains(indexName))
+        {
+            await memory.DeleteIndexAsync(indexName)
+                        .ConfigureAwait(false);
+
+            this._output.WriteLine($"Index '{indexName}' already exists and has been deleted.");
+        }
+
+        // Create the index using the given name ()
         await memory.CreateIndexAsync(indexName, vectorSize)
                     .ConfigureAwait(false);
 
+        // Verifies the index exists
+
         // TODO: verify the index is created using the ES client
 
-        this._output.WriteLine($"Created index '{indexName}'('{actualIndexName}') successfully.");
+        this._output.WriteLine($"Created index '{indexName}' successfully.");
 
         // Delete the index again to leave a clean slate
         await memory.DeleteIndexAsync(indexName)
                     .ConfigureAwait(false);
+
+        this._output.WriteLine($"Index '{indexName}' has been deleted.");
 
         // TODO: verify the index is deleted using the ES client
     }
