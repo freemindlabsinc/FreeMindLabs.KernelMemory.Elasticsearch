@@ -10,7 +10,7 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 /// <summary>
 /// Helper methods for Elasticsearch
 /// </summary>
-public static class ElasticsearchIndexname
+public static class Indexname
 {
     /// <summary>
     /// Attempts to convert the given index name to a valid Elasticsearch index name.
