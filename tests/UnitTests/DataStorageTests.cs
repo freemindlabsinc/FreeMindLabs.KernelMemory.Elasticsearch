@@ -84,7 +84,7 @@ public class DataStorageTests
     }
 
     [Fact]
-    public async Task CanSearchAsync()
+    public async Task CanGetSimilarListAsync()
     {
         var fileNames = new[]
         {
@@ -92,21 +92,21 @@ public class DataStorageTests
             "Data/file2-Wikipedia-Moon.txt"
         };
 
-        await this.MemoryDb.DeleteIndexAsync(index: nameof(CanSearchAsync))
+        await this.MemoryDb.DeleteIndexAsync(index: nameof(CanGetSimilarListAsync))
                       .ConfigureAwait(false);
 
-        await this.MemoryDb.CreateIndexAsync(index: nameof(CanSearchAsync), 1536)
+        await this.MemoryDb.CreateIndexAsync(index: nameof(CanGetSimilarListAsync), 1536)
                            .ConfigureAwait(false);
 
         foreach (var fileName in fileNames)
         {
-            await this.UpsertFileAsync(indexName: nameof(CanSearchAsync), fileName: fileName)
+            await this.UpsertFileAsync(indexName: nameof(CanGetSimilarListAsync), fileName: fileName)
                       .ConfigureAwait(false);
         }
 
         var foundSomething = false;
         await foreach (var para in this.MemoryDb.GetSimilarListAsync(
-            index: nameof(CanSearchAsync),
+            index: nameof(CanGetSimilarListAsync),
             text: "carbon",
             limit: 2))
         {

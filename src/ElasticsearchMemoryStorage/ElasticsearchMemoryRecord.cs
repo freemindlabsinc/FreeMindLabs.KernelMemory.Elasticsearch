@@ -74,6 +74,8 @@ public sealed class ElasticsearchMemoryRecord
             Payload = JsonSerializer.Deserialize<Dictionary<string, object>>(this.Payload, s_jsonOptions)
                       ?? new Dictionary<string, object>()
         };
+        // TODO: remove magic string
+        result.Payload["text"] = this.Content;
 
         if (withEmbedding)
         {
@@ -97,10 +99,13 @@ public sealed class ElasticsearchMemoryRecord
     {
         ArgumentNullException.ThrowIfNull(record);
 
+        // TODO: remove magic strings
         string content = record.Payload["text"]?.ToString() ?? string.Empty;
         string documentId = record.Tags["__document_id"][0] ?? string.Empty;
         string filePart = record.Tags["__file_part"][0] ?? string.Empty;
         string betterId = $"{documentId}|{filePart}";
+
+        record.Payload.Remove("text"); // We move the text to the content field. No need to index twice.
 
         ElasticsearchMemoryRecord result = new()
         {

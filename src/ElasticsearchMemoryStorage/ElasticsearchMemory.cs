@@ -79,6 +79,7 @@ public class ElasticsearchMemory : IMemoryDb
                 p.Text(x => x.Payload, pd => pd.Index(false));
                 p.Text(x => x.Content);
                 p.DenseVector(x => x.Vector, d => d.Index(true).Dims(Dimensions).Similarity("cosine"));
+                // TODO: add some kind of customization routine the user can utilize when setting up DI
             }),
             cancellationToken).ConfigureAwait(false);
 
