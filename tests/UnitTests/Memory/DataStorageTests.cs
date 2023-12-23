@@ -8,7 +8,7 @@ using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests;
+namespace UnitTests.Memory;
 
 public class DataStorageTests
 {
@@ -24,6 +24,40 @@ public class DataStorageTests
     public IMemoryDb MemoryDb { get; }
     public ITextEmbeddingGenerator TextEmbeddingGenerator { get; }
     public ElasticsearchClient Client { get; }
+
+    [Fact]
+    public async Task CanGetSimilarListAsync()
+    {
+        var fileNames = new[]
+        {
+            "Data/file1-Wikipedia-Carbon.txt",
+            "Data/file2-Wikipedia-Moon.txt"
+        };
+
+        await this.MemoryDb.DeleteIndexAsync(index: nameof(CanGetSimilarListAsync))
+                      .ConfigureAwait(false);
+
+        await this.MemoryDb.CreateIndexAsync(index: nameof(CanGetSimilarListAsync), 1536)
+                           .ConfigureAwait(false);
+
+        foreach (var fileName in fileNames)
+        {
+            await this.UpsertFileAsync(indexName: nameof(CanGetSimilarListAsync), fileName: fileName)
+                      .ConfigureAwait(false);
+        }
+
+        var foundSomething = false;
+        await foreach (var para in this.MemoryDb.GetSimilarListAsync(
+            index: nameof(CanGetSimilarListAsync),
+            text: "carbon",
+            limit: 2))
+        {
+            foundSomething = true;
+            this.Output.WriteLine($"\nFound paragraph: ({para.Item2}) {para.Item1.Id}");
+        };
+
+        Assert.True(foundSomething, "It should have found something...");
+    }
 
     private string GuidWithoutDashes() => Guid.NewGuid().ToString().Replace("-", "", StringComparison.OrdinalIgnoreCase).ToLower(CultureInfo.CurrentCulture);
 
@@ -81,39 +115,5 @@ public class DataStorageTests
             var res = await this.MemoryDb.UpsertAsync(indexName, mrec)
                                          .ConfigureAwait(false);
         }
-    }
-
-    [Fact]
-    public async Task CanGetSimilarListAsync()
-    {
-        var fileNames = new[]
-        {
-            "Data/file1-Wikipedia-Carbon.txt",
-            "Data/file2-Wikipedia-Moon.txt"
-        };
-
-        await this.MemoryDb.DeleteIndexAsync(index: nameof(CanGetSimilarListAsync))
-                      .ConfigureAwait(false);
-
-        await this.MemoryDb.CreateIndexAsync(index: nameof(CanGetSimilarListAsync), 1536)
-                           .ConfigureAwait(false);
-
-        foreach (var fileName in fileNames)
-        {
-            await this.UpsertFileAsync(indexName: nameof(CanGetSimilarListAsync), fileName: fileName)
-                      .ConfigureAwait(false);
-        }
-
-        var foundSomething = false;
-        await foreach (var para in this.MemoryDb.GetSimilarListAsync(
-            index: nameof(CanGetSimilarListAsync),
-            text: "carbon",
-            limit: 2))
-        {
-            foundSomething = true;
-            this.Output.WriteLine($"\nFound paragraph: ({para.Item2}) {para.Item1.Id}");
-        };
-
-        Assert.True(foundSomething, "It should have found something...");
     }
 }

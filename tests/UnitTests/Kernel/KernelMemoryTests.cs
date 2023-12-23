@@ -5,8 +5,7 @@ using Microsoft.KernelMemory;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests;
-
+namespace UnitTests.Kernel;
 public class KernelMemoryTests
 {
     public KernelMemoryTests(ITestOutputHelper output, IKernelMemory kernelMemory, ElasticsearchClient client)

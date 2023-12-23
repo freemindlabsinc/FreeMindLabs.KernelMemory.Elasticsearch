@@ -5,7 +5,7 @@ using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests;
+namespace UnitTests.Memory;
 
 public class IndexManagementTests
 {

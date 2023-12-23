@@ -5,7 +5,7 @@ using Microsoft.KernelMemory;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests;
+namespace UnitTests.Kernel;
 
 public class ServerlessTests
 {
@@ -21,7 +21,7 @@ public class ServerlessTests
     [Fact]//(Skip = "This test takes a while to complete.")]
     public async Task BehavesLikeMicrosoftMainExampleAsync()
     {
-        var indexName = "ms-kernel-memory-sample";
+        var indexName = nameof(BehavesLikeMicrosoftMainExampleAsync);
 
         // Deletes the default index if already present
         await this._kernelMemory.DeleteIndexAsync(
