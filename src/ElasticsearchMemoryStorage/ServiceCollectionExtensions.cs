@@ -41,9 +41,17 @@ public static partial class ServiceCollectionExtensions
         esConfig = esConfig ?? throw new ArgumentNullException(nameof(esConfig));
         esConfig.Validate(); // This checks everything is in order.
 
+        // The ElasticsearchClient type is thread-safe and can be shared and
+        // reused across multiple threads in consuming applications. 
+        // See https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/recommendations.html
+        services.AddSingleton<ElasticsearchClient>(sp =>
+        {
+            var esConfig = sp.GetRequiredService<ElasticsearchConfig>();
+            return new ElasticsearchClient(esConfig.ToElasticsearchClientSettings());
+        });
+
         return services
             .AddSingleton<ElasticsearchConfig>(esConfig)
-            .AddSingleton<ElasticsearchClientSettings>(x => esConfig.ToElasticsearchClientSettings())
             .AddSingleton<IMemoryDb, ElasticsearchMemory>();
     }
 }

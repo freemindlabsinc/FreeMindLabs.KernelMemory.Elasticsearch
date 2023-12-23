@@ -1,5 +1,4 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
-using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
 using Xunit.Abstractions;
@@ -22,7 +21,10 @@ public class IMemoryDbTests
     [InlineData("WithUppercase", 1536, null)]
     [InlineData("With-Dashes", 1536, null)]
     [InlineData("123numberfirst", 1536, null)]
-    public async Task CanDeleteCreateAndDeleteIndicesAsync(string indexName, int vectorSize, [FromServices] IMemoryDb memory)
+    public async Task CanDeleteCreateAndDeleteIndicesAsync(
+        string indexName,
+        int vectorSize,
+        [FromServices] IMemoryDb memory)
     {
         memory = memory ?? throw new ArgumentNullException(nameof(memory));
 
@@ -61,5 +63,15 @@ public class IMemoryDbTests
 
         // TODO: verify the index is deleted using the ES client
     }
-}
 
+    [Theory]
+    [InlineData("", 1536, null)] // default index
+    [InlineData("nondefault", 1536, null)]
+    [InlineData("WithUppercase", 1536, null)]
+    [InlineData("With-Dashes", 1536, null)]
+    [InlineData("123numberfirst", 1536, null)]
+    public async Task CanCreateIndexAsync(string indexName, int vectorSize, [FromServices] IMemoryDb memory)
+    {
+        memory = memory ?? throw new ArgumentNullException(nameof(memory));
+    }
+}

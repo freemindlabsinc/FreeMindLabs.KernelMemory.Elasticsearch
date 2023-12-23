@@ -10,7 +10,7 @@ public class IKernelMemoryTests
 {
     private readonly ITestOutputHelper _output;
 
-    public IKernelMemoryTests(ITestOutputHelper output, IServiceProvider services)
+    public IKernelMemoryTests(ITestOutputHelper output)
     {
         this._output = output ?? throw new ArgumentNullException(nameof(output));
     }
