@@ -16,6 +16,20 @@ public class IndexnameTests
     }
 
     [Theory]
+    [InlineData("")] // default index
+    [InlineData("nondefault")]
+    [InlineData("WithUppercase")]
+    [InlineData("With-Dashes")]
+    [InlineData("123numberfirst")]
+    public void GoodIndexNamesAreAccepted(string indexName)
+    {
+        Assert.True(Indexname.TryConvert(indexName, out var convResult));
+        Assert.Empty(convResult.Errors);
+
+        this._output.WriteLine($"The index name '{indexName}' will be translated to '{convResult.ActualIndexName}'.");
+    }
+
+    [Theory]
     // An index name cannot start with a hyphen (-) or underscore (_).
     [InlineData("-test", 1)]
     [InlineData("test_", 1)]

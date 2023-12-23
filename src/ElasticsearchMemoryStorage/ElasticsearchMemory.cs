@@ -76,7 +76,7 @@ public class ElasticsearchMemory : IMemoryDb
             {
                 p.Keyword(x => x.Id);
                 p.Nested(ElasticsearchMemoryRecord.TagsField, np);
-                p.Text(x => x.Payload);
+                p.Text(x => x.Payload, pd => pd.Index(false));
                 p.Text(x => x.Content);
                 p.DenseVector(x => x.Vector, d => d.Index(true).Dims(Dimensions).Similarity("cosine"));
             }),
@@ -130,13 +130,15 @@ public class ElasticsearchMemory : IMemoryDb
         MemoryRecord record,
         CancellationToken cancellationToken = default)
     {
+        var memRec = ElasticsearchMemoryRecord.FromMemoryRecord(record);
+
         var response = await this._client.UpdateAsync<ElasticsearchMemoryRecord, ElasticsearchMemoryRecord>(
             Indexname.Convert(index),
-            record.Id,
+            memRec.Id,
             (updateReq) =>
             {
-                var memRec = ElasticsearchMemoryRecord.FromMemoryRecord(record);
-                updateReq.Doc(memRec);
+                var memRec2 = memRec;
+                updateReq.Doc(memRec2);
                 updateReq.DocAsUpsert(true);
             },
             cancellationToken)
