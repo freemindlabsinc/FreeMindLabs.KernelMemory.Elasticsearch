@@ -1,4 +1,5 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
+using Elastic.Clients.Elasticsearch;
 using Microsoft.KernelMemory;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,6 +20,7 @@ public class IKernelMemoryTests
     [InlineData(null, null)]
     public async Task CreateNonDefaultIndexAndSearchAsync(
         [FromServices] IKernelMemory memory,
+        [FromServices] ElasticsearchClient client,
         CancellationToken cancellationToken)
     {
         cancellationToken = CancellationToken.None;
