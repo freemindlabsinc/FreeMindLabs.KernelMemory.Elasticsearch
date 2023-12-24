@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.KernelMemory;
@@ -16,7 +15,7 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 public sealed class ElasticsearchMemoryRecord
 {
     internal const string IdField = "id";
-    internal const string VectorField = "embedding";
+    internal const string EmbeddingField = "embedding";
 
     /// <inheritdoc/>
     public const string TagsField = "tags";
@@ -60,7 +59,7 @@ public sealed class ElasticsearchMemoryRecord
     /// <summary>
     /// TBC
     /// </summary>
-    [JsonPropertyName(VectorField)]
+    [JsonPropertyName(EmbeddingField)]
     [JsonConverter(typeof(Embedding.JsonConverter))]
     public Embedding Vector { get; set; } = new();
 
@@ -71,10 +70,12 @@ public sealed class ElasticsearchMemoryRecord
     {
         MemoryRecord result = new()
         {
-            Id = DecodeId(this.Id),
+            Id = this.Id,
             Payload = JsonSerializer.Deserialize<Dictionary<string, object>>(this.Payload, s_jsonOptions)
                       ?? new Dictionary<string, object>()
         };
+        // TODO: remove magic string
+        result.Payload["text"] = this.Content;
 
         if (withEmbedding)
         {
@@ -96,11 +97,22 @@ public sealed class ElasticsearchMemoryRecord
     /// <returns></returns>
     public static ElasticsearchMemoryRecord FromMemoryRecord(MemoryRecord record)
     {
+        ArgumentNullException.ThrowIfNull(record);
+
+        // TODO: remove magic strings
+        string content = record.Payload["text"]?.ToString() ?? string.Empty;
+        string documentId = record.Tags["__document_id"][0] ?? string.Empty;
+        string filePart = record.Tags["__file_part"][0] ?? string.Empty;
+        string betterId = $"{documentId}|{filePart}";
+
+        record.Payload.Remove("text"); // We move the text to the content field. No need to index twice.
+
         ElasticsearchMemoryRecord result = new()
         {
-            Id = EncodeId(record.Id),
+            Id = record.Id,
             Vector = record.Vector,
-            Payload = JsonSerializer.Serialize(record.Payload, s_jsonOptions)
+            Payload = JsonSerializer.Serialize(record.Payload, s_jsonOptions),
+            Content = content
         };
 
         foreach (var tag in record.Tags)
@@ -120,17 +132,5 @@ public sealed class ElasticsearchMemoryRecord
         }
 
         return result;
-    }
-
-    private static string EncodeId(string realId)
-    {
-        var bytes = Encoding.UTF8.GetBytes(realId);
-        return Convert.ToBase64String(bytes).Replace('=', '_');
-    }
-
-    private static string DecodeId(string encodedId)
-    {
-        var bytes = Convert.FromBase64String(encodedId.Replace('_', '='));
-        return Encoding.UTF8.GetString(bytes);
     }
 }

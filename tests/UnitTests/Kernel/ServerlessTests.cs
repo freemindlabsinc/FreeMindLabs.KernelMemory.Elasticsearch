@@ -1,51 +1,52 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
+using Elastic.Clients.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.KernelMemory;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests;
+namespace UnitTests.Kernel;
 
-public class ServerlessTests
+public class ServerlessTests : ElasticsearchTestBase
 {
-    private readonly ITestOutputHelper _output;
-    private readonly IKernelMemory _kernelMemory;
-
-    public ServerlessTests(ITestOutputHelper output, IKernelMemory kernelMemory)
+    public ServerlessTests(ITestOutputHelper output, ElasticsearchClient client, IKernelMemory kernelMemory)
+        : base(output, client)
     {
-        this._output = output ?? throw new ArgumentNullException(nameof(output));
-        this._kernelMemory = kernelMemory ?? throw new ArgumentNullException(nameof(kernelMemory));
+        this.KernelMemory = kernelMemory;
     }
+
+    public IKernelMemory KernelMemory { get; }
+
 
     [Fact]//(Skip = "This test takes a while to complete.")]
     public async Task BehavesLikeMicrosoftMainExampleAsync()
     {
-        var indexName = "ms-kernel-memory-sample";
+        var indexName = nameof(BehavesLikeMicrosoftMainExampleAsync);
 
         // Deletes the default index if already present
-        await this._kernelMemory.DeleteIndexAsync(
+        await this.KernelMemory.DeleteIndexAsync(
             index: indexName,
             cancellationToken: CancellationToken.None).ConfigureAwait(false);
-        this._output.WriteLine($"Ensured default index is deleted.");
+        this.Output.WriteLine($"Ensured default index is deleted.");
 
         // Proceeds
-        var docId = await this._kernelMemory.ImportDocumentAsync(
+        var docId = await this.KernelMemory.ImportDocumentAsync(
             "Data/file1-Wikipedia-Carbon.txt",
             index: indexName,
             documentId: "doc001").ConfigureAwait(false);
-        this._output.WriteLine($"Indexed {docId}");
+        this.Output.WriteLine($"Indexed {docId}");
 
-        docId = await this._kernelMemory.ImportDocumentAsync(
+        docId = await this.KernelMemory.ImportDocumentAsync(
             new Document("doc002")
                 .AddFiles(new[] { "Data/file2-Wikipedia-Moon.txt", "Data/file3-lorem-ipsum.docx", "Data/file4-SK-Readme.pdf" })
                 .AddTag("user", "Blake"),
                 index: indexName)
             .ConfigureAwait(false);
 
-        this._output.WriteLine($"Indexed {docId}");
+        this.Output.WriteLine($"Indexed {docId}");
 
-        docId = await this._kernelMemory.ImportDocumentAsync(new Document("doc003")
+        docId = await this.KernelMemory.ImportDocumentAsync(new Document("doc003")
             .AddFile("Data/file5-NASA-news.pdf")
             .AddTag("user", "Taylor")
             .AddTag("collection", "meetings")
@@ -55,34 +56,34 @@ public class ServerlessTests
             index: indexName)
             .ConfigureAwait(false);
 
-        this._output.WriteLine($"Indexed {docId}");
+        this.Output.WriteLine($"Indexed {docId}");
 
         await Task.Delay(2000, CancellationToken.None).ConfigureAwait(false); // TODO: remove. Without this the data might not be ready for read...
 
         // Question without filters
         var question = "What's E = m*c^2?";
-        this._output.WriteLine($"Question: {question}");
+        this.Output.WriteLine($"Question: {question}");
 
-        var answer = await this._kernelMemory.AskAsync(question, index: indexName).ConfigureAwait(false);
-        this._output.WriteLine($"\nAnswer: {answer.Result}");
+        var answer = await this.KernelMemory.AskAsync(question, index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine($"\nAnswer: {answer.Result}");
 
         foreach (var x in answer.RelevantSources)
         {
-            this._output.WriteLine($"  - {x.SourceName}  - {x.Link} [{x.Partitions.First().LastUpdate:D}]");
+            this.Output.WriteLine($"  - {x.SourceName}  - {x.Link} [{x.Partitions.First().LastUpdate:D}]");
         }
 
-        this._output.WriteLine("\n====================================\n");
+        this.Output.WriteLine("\n====================================\n");
 
         // Another question without filters
         question = "What's Semantic Kernel?";
-        this._output.WriteLine($"Question: {question}");
+        this.Output.WriteLine($"Question: {question}");
 
-        answer = await this._kernelMemory.AskAsync(question, index: indexName).ConfigureAwait(false);
-        this._output.WriteLine($"\nAnswer: {answer.Result}\n\n  Sources:\n");
+        answer = await this.KernelMemory.AskAsync(question, index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine($"\nAnswer: {answer.Result}\n\n  Sources:\n");
 
         foreach (var x in answer.RelevantSources)
         {
-            this._output.WriteLine($"  - {x.SourceName}  - {x.Link} [{x.Partitions.First().LastUpdate:D}]");
+            this.Output.WriteLine($"  - {x.SourceName}  - {x.Link} [{x.Partitions.First().LastUpdate:D}]");
         }
     }
 
@@ -122,6 +123,6 @@ public class ServerlessTests
             .WithOpenAIDefaults("api key")
             .Build();
 
-        this._output.WriteLine("Test complete");
+        this.Output.WriteLine("Test complete");
     }
 }

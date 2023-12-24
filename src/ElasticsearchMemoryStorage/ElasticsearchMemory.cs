@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
@@ -50,7 +49,7 @@ public class ElasticsearchMemory : IMemoryDb
         int vectorSize,
         CancellationToken cancellationToken = default)
     {
-        index = ElasticsearchIndexname.Validate(index);
+        index = ESIndexName.Convert(index);
 
         var existsResponse = await this._client.Indices.ExistsAsync(index, cancellationToken).ConfigureAwait(false);
         if (existsResponse.Exists)
@@ -77,9 +76,10 @@ public class ElasticsearchMemory : IMemoryDb
             {
                 p.Keyword(x => x.Id);
                 p.Nested(ElasticsearchMemoryRecord.TagsField, np);
-                p.Text(x => x.Payload);
+                p.Text(x => x.Payload, pd => pd.Index(false));
                 p.Text(x => x.Content);
                 p.DenseVector(x => x.Vector, d => d.Index(true).Dims(Dimensions).Similarity("cosine"));
+                // TODO: add some kind of customization routine the user can utilize when setting up DI
             }),
             cancellationToken).ConfigureAwait(false);
 
@@ -104,7 +104,7 @@ public class ElasticsearchMemory : IMemoryDb
         CancellationToken cancellationToken = default)
     {
         var delResponse = await this._client.Indices.DeleteAsync(
-            ElasticsearchIndexname.Validate(index),
+            ESIndexName.Convert(index),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -116,7 +116,7 @@ public class ElasticsearchMemory : IMemoryDb
     {
         record = record ?? throw new ArgumentNullException(nameof(record));
         var delResponse = await this._client.DeleteAsync<ElasticsearchMemoryRecord>(
-            ElasticsearchIndexname.Validate(index),
+            ESIndexName.Convert(index),
             record.Id,
             (delReq) =>
             {
@@ -131,13 +131,15 @@ public class ElasticsearchMemory : IMemoryDb
         MemoryRecord record,
         CancellationToken cancellationToken = default)
     {
+        var memRec = ElasticsearchMemoryRecord.FromMemoryRecord(record);
+
         var response = await this._client.UpdateAsync<ElasticsearchMemoryRecord, ElasticsearchMemoryRecord>(
-            ElasticsearchIndexname.Validate(index),
-            record.Id,
+            ESIndexName.Convert(index),
+            memRec.Id,
             (updateReq) =>
             {
-                var memRec = ElasticsearchMemoryRecord.FromMemoryRecord(record);
-                updateReq.Doc(memRec);
+                var memRec2 = memRec;
+                updateReq.Doc(memRec2);
                 updateReq.DocAsUpsert(true);
             },
             cancellationToken)
@@ -153,7 +155,7 @@ public class ElasticsearchMemory : IMemoryDb
         ICollection<MemoryFilter>? filters = null,
         double minRelevance = 0, int limit = 1, bool withEmbeddings = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        index = ElasticsearchIndexname.Validate(index);
+        index = ESIndexName.Convert(index);
 
         if (filters != null)
         {
@@ -180,12 +182,16 @@ public class ElasticsearchMemory : IMemoryDb
                    .Field(x => x.Vector)
                    .QueryVector(coll);
              }),
-             //.Query(q => q.MatchAll()),
              cancellationToken)
             .ConfigureAwait(false);
 
         foreach (var hit in resp.Hits)
         {
+            if (hit?.Source == null)
+            {
+                continue;
+            }
+
             this._log.LogTrace("Hit: {HitId}, {HitScore}", hit.Id, hit.Score);
             yield return (hit.Source!.ToMemoryRecord(), hit.Score ?? 0);
         }

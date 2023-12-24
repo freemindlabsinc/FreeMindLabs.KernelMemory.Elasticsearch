@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using System.Reflection;
 using FreeMindLabs.KernelMemory.Elasticsearch;
+using Microsoft.KernelMemory.ContentStorage.DevTools;
 
 namespace UnitTests;
 
@@ -31,7 +32,11 @@ public class Startup
 
         // Kernel Memory with Elasticsearch
         IKernelMemoryBuilder b = new KernelMemoryBuilder(services)
-                .WithSimpleFileStorage("Data")
+                .WithSimpleFileStorage(new SimpleFileStorageConfig()
+                {
+                    Directory = "ContentStorage",
+                    StorageType = Microsoft.KernelMemory.FileSystem.DevTools.FileSystemTypes.Volatile
+                })
                 .WithElasticsearch(this._configuration)
                 .WithOpenAIDefaults(apiKey: this._configuration["OpenAI:ApiKey"] ?? throw new ArgumentException("OpenAI:ApiKey is required."));
 
