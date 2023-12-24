@@ -10,20 +10,21 @@ using Xunit.Abstractions;
 
 namespace UnitTests.Memory;
 
-public class DataStorageTests
+public class DataStorageTests : ElasticsearchTestBase
 {
     public DataStorageTests(ITestOutputHelper output, IMemoryDb memoryDb, ITextEmbeddingGenerator textEmbeddingGenerator, ElasticsearchClient client)
+        : base(output, client)
     {
-        this.Output = output ?? throw new ArgumentNullException(nameof(output));
         this.MemoryDb = memoryDb ?? throw new ArgumentNullException(nameof(memoryDb));
         this.TextEmbeddingGenerator = textEmbeddingGenerator ?? throw new ArgumentNullException(nameof(textEmbeddingGenerator));
-        this.Client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public ITestOutputHelper Output { get; }
     public IMemoryDb MemoryDb { get; }
     public ITextEmbeddingGenerator TextEmbeddingGenerator { get; }
-    public ElasticsearchClient Client { get; }
+
+    //[Fact]
+    //public void Test()
+    //{ }
 
     [Fact]
     public async Task CanGetSimilarListAsync()
@@ -46,6 +47,10 @@ public class DataStorageTests
                       .ConfigureAwait(false);
         }
 
+        // TODO: waits for the indexing to complete. This is a temporary hack.
+        await Task.Delay(1000)
+                  .ConfigureAwait(false);
+
         var foundSomething = false;
         await foreach (var para in this.MemoryDb.GetSimilarListAsync(
             index: nameof(CanGetSimilarListAsync),
@@ -53,6 +58,14 @@ public class DataStorageTests
             limit: 2))
         {
             foundSomething = true;
+            if (para.Item1 == null)
+            {
+                throw new InvalidOperationException("It should not be null.");
+            }
+            if (para.Item2 <=0)
+            {
+                throw new InvalidOperationException("It should be greater than zero.");
+            }
             this.Output.WriteLine($"\nFound paragraph: ({para.Item2}) {para.Item1.Id}");
         };
 

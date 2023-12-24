@@ -6,18 +6,15 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace UnitTests.Kernel;
-public class KernelMemoryTests
+public class KernelMemoryTests : ElasticsearchTestBase
 {
     public KernelMemoryTests(ITestOutputHelper output, IKernelMemory kernelMemory, ElasticsearchClient client)
+        : base(output, client)
     {
-        this.Output = output ?? throw new ArgumentNullException(nameof(output));
         this.KernelMemory = kernelMemory ?? throw new ArgumentNullException(nameof(kernelMemory));
-        this.Client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public ITestOutputHelper Output { get; }
     public IKernelMemory KernelMemory { get; }
-    public ElasticsearchClient Client { get; }
 
     [Fact]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>")]

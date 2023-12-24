@@ -7,18 +7,15 @@ using Xunit.Abstractions;
 
 namespace UnitTests.Memory;
 
-public class IndexManagementTests
+public class IndexManagementTests : ElasticsearchTestBase
 {
     public IndexManagementTests(ITestOutputHelper output, IMemoryDb memoryDb, ElasticsearchClient client)
+        : base(output, client)
     {
-        this.Output = output ?? throw new ArgumentNullException(nameof(output));
         this.MemoryDb = memoryDb ?? throw new ArgumentNullException(nameof(memoryDb));
-        this.Client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public ITestOutputHelper Output { get; }
     public IMemoryDb MemoryDb { get; }
-    public ElasticsearchClient Client { get; }
 
     [Theory]
     [InlineData("", 1536)] // default index

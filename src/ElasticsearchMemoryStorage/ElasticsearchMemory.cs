@@ -182,12 +182,16 @@ public class ElasticsearchMemory : IMemoryDb
                    .Field(x => x.Vector)
                    .QueryVector(coll);
              }),
-             //.Query(q => q.MatchAll()),
              cancellationToken)
             .ConfigureAwait(false);
 
         foreach (var hit in resp.Hits)
         {
+            if (hit?.Source == null)
+            {
+                continue;
+            }
+
             this._log.LogTrace("Hit: {HitId}, {HitScore}", hit.Id, hit.Score);
             yield return (hit.Source!.ToMemoryRecord(), hit.Score ?? 0);
         }
