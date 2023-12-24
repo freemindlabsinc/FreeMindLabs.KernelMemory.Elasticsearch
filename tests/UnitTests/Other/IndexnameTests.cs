@@ -23,7 +23,7 @@ public class IndexnameTests
     [InlineData("123numberfirst")]
     public void GoodIndexNamesAreAccepted(string indexName)
     {
-        Assert.True(Indexname.TryConvert(indexName, out var convResult));
+        Assert.True(ESIndexName.TryConvert(indexName, out var convResult));
         Assert.Empty(convResult.Errors);
 
         this._output.WriteLine($"The index name '{indexName}' will be translated to '{convResult.ActualIndexName}'.");
@@ -61,7 +61,7 @@ public class IndexnameTests
         // Creates the index using IMemoryDb
         var exception = Assert.Throws<InvalidIndexNameException>(() =>
         {
-            Indexname.Convert(indexName);
+            ESIndexName.Convert(indexName);
         });
 
         this._output.WriteLine(
@@ -78,7 +78,7 @@ public class IndexnameTests
         var indexName = new string('a', 256);
         var exception = Assert.Throws<InvalidIndexNameException>(() =>
         {
-            Indexname.Convert(indexName);
+            ESIndexName.Convert(indexName);
         });
 
         Assert.Equal(1, exception.Errors.Count());

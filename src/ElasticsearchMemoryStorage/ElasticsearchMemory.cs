@@ -49,7 +49,7 @@ public class ElasticsearchMemory : IMemoryDb
         int vectorSize,
         CancellationToken cancellationToken = default)
     {
-        index = Indexname.Convert(index);
+        index = ESIndexName.Convert(index);
 
         var existsResponse = await this._client.Indices.ExistsAsync(index, cancellationToken).ConfigureAwait(false);
         if (existsResponse.Exists)
@@ -104,7 +104,7 @@ public class ElasticsearchMemory : IMemoryDb
         CancellationToken cancellationToken = default)
     {
         var delResponse = await this._client.Indices.DeleteAsync(
-            Indexname.Convert(index),
+            ESIndexName.Convert(index),
             cancellationToken).ConfigureAwait(false);
     }
 
@@ -116,7 +116,7 @@ public class ElasticsearchMemory : IMemoryDb
     {
         record = record ?? throw new ArgumentNullException(nameof(record));
         var delResponse = await this._client.DeleteAsync<ElasticsearchMemoryRecord>(
-            Indexname.Convert(index),
+            ESIndexName.Convert(index),
             record.Id,
             (delReq) =>
             {
@@ -134,7 +134,7 @@ public class ElasticsearchMemory : IMemoryDb
         var memRec = ElasticsearchMemoryRecord.FromMemoryRecord(record);
 
         var response = await this._client.UpdateAsync<ElasticsearchMemoryRecord, ElasticsearchMemoryRecord>(
-            Indexname.Convert(index),
+            ESIndexName.Convert(index),
             memRec.Id,
             (updateReq) =>
             {
@@ -155,7 +155,7 @@ public class ElasticsearchMemory : IMemoryDb
         ICollection<MemoryFilter>? filters = null,
         double minRelevance = 0, int limit = 1, bool withEmbeddings = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        index = Indexname.Convert(index);
+        index = ESIndexName.Convert(index);
 
         if (filters != null)
         {

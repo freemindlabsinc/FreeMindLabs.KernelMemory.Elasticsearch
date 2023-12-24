@@ -21,7 +21,7 @@ public class KernelMemoryTests : ElasticsearchTestBase
     public async Task CanImportOneDocumentAndAskAsync()
     {
         // Cleans up the index if it exists
-        var actualIndexName = Indexname.Convert(nameof(CanImportOneDocumentAndAskAsync));
+        var actualIndexName = FreeMindLabs.KernelMemory.Elasticsearch.ESIndexName.Convert(nameof(CanImportOneDocumentAndAskAsync));
         var delResp = await this.Client.Indices.DeleteAsync(indices: actualIndexName).ConfigureAwait(false);
         Assert.True(delResp.IsSuccess());
 

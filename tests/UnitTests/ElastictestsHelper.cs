@@ -28,7 +28,7 @@ internal static class ElastictestsHelper
 
         foreach (var method in methods)
         {
-            var indexName = Indexname.Convert(method.Name);
+            var indexName = FreeMindLabs.KernelMemory.Elasticsearch.ESIndexName.Convert(method.Name);
             var delResp = await client.Indices.DeleteAsync(indices: indexName)
                                       .ConfigureAwait(false);
 

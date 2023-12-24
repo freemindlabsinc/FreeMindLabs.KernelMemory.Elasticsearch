@@ -25,7 +25,7 @@ public class IndexManagementTests : ElasticsearchTestBase
         int vectorSize)
     {
         // Verifies the index name passes Elasticsearch validation
-        Assert.True(Indexname.TryConvert(indexName, out var convResult));
+        Assert.True(FreeMindLabs.KernelMemory.Elasticsearch.ESIndexName.TryConvert(indexName, out var convResult));
         this.Output.WriteLine($"The index name '{indexName}' will be translated to '{convResult.ActualIndexName}'.");
 
         // Clean up: Deletes the default index if already present using the ES client.
@@ -53,7 +53,7 @@ public class IndexManagementTests : ElasticsearchTestBase
         // Creates the index using IMemoryDb
         var indexName = nameof(CanDeleteIndexAsync);
         var vectorSize = 1536;
-        Assert.True(Indexname.TryConvert(indexName, out var convResult));
+        Assert.True(FreeMindLabs.KernelMemory.Elasticsearch.ESIndexName.TryConvert(indexName, out var convResult));
 
         await this.MemoryDb.CreateIndexAsync(indexName, vectorSize)
                            .ConfigureAwait(false);
