@@ -17,12 +17,12 @@ public class IndexManagementTests : ElasticsearchTestBase
 
     public IMemoryDb MemoryDb { get; }
 
-    [Theory]
-    [InlineData(nameof(CanCreateAndDeleteIndexAsync), 1536)]
-    public async Task CanCreateAndDeleteIndexAsync(
-        string indexName,
-        int vectorSize)
+    [Fact]
+    public async Task CanCreateAndDeleteIndexAsync()
     {
+        var indexName = nameof(CanCreateAndDeleteIndexAsync);
+        var vectorSize = 1536;
+
         // Creates the index using IMemoryDb
         await this.MemoryDb.CreateIndexAsync(indexName, vectorSize)
                            .ConfigureAwait(false);
