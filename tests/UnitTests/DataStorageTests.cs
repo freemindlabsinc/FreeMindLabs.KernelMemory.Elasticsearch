@@ -101,12 +101,12 @@ public class DataStorageTests : ElasticsearchTestBase
             string fullText = await File.ReadAllTextAsync(fileName)
                                         .ConfigureAwait(false);
 
-            // Splits the text into paragraphs
+            // Splits the text into lines of up to 1000 tokens each
             var lines = TextChunker.SplitPlainTextLines(fullText,
                 maxTokensPerLine: 1000,
                 tokenCounter: null);
 
-            // Splits the paragraphs into chunks
+            // Splits the line into paragraphs
             var paragraphs = TextChunker.SplitPlainTextParagraphs(lines,
                 maxTokensPerParagraph: 1000,
                 overlapTokens: 100);
@@ -162,3 +162,4 @@ public class DataStorageTests : ElasticsearchTestBase
         return results;
     }
 }
+
