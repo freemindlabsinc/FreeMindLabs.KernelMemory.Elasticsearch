@@ -647,6 +647,6 @@ The Results of a search are not returned all at once, but rather in batches, ord
 
 # Conclusion
 
-I hope this article has been helpful and that it has given you a good understanding of how to build a connector for Kernel Memory.
+I hope this article has been helpful and that it has given you a good understanding of how to build a mostly functioning IMemoryDb connector for Kernel Memory.
 
-In the next article we will complete the connector by adding support for [MemoryFilter](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/Models/MemoryFilter.cs), and we will explore ways to use the ```filter``` option of Elasticsearch kNN query.
+In the next article we will dive deeper in search, and we will add support for [MemoryFilter](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/Models/MemoryFilter.cs) while exploring ways to use the ```filter``` option of Elasticsearch kNN query.
