@@ -1,5 +1,3 @@
-:warning: **This article is a work in progress.** 
-
 # How to build a Kernel Memory connector and use Elasticsearch as vector database - Part 1
 
 **TL;DR:** This article is the first of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will showcase how to write a basic connector for [Elasticsearch](https://www.elastic.co/elasticsearch/) by implementing the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs). At the end of this article we will have an almost-complete connector that can be used to create indices and then store and retrieve vectors and payloads from Elasticsearch. Similar code can be used to target other storage systems.
@@ -546,17 +544,7 @@ public async Task CanUpsertOneTextDocumentAndDeleteAsync()
 }
 ```
 
-> [TBC or TO REMOVE]
-There is no distinction between inserting and updating a record: ```Upsert``` does both things:
-    - If the record exists, it will be updated. 
-      - The method should return the same value of ```record.Id``` of the submitted record.
-    - If it doesn't exist, it will be inserted and a new id will be generated and returned.
-      - [TO VERIFY] what happens to record.id if its null and we upsert?
-        - Q1: Does it generate a new id and return it? (preferrable)
-          - Does record.id get updated like Entity Framework would do?
-        - Q2: Or does it expect the new ```record.Id``` to be populated by the client?             
-
-Possible improvements:
+#### Possible improvements
 
 1. Upsert and DeleteAsync should be able to accept a list of MemoryRecords to be inserted/updated/deleted. This would allow to perform batch operations and improve performance.
 
@@ -650,3 +638,6 @@ The Results of a search are not returned all at once, but rather in batches, ord
 I hope this article has been helpful and that it has given you a good understanding of how to build a mostly functioning IMemoryDb connector for Kernel Memory.
 
 In the next article we will dive deeper in search, and we will add support for [MemoryFilter](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/Models/MemoryFilter.cs) while exploring ways to use the ```filter``` option of Elasticsearch kNN query.
+
+
+*Alessandro Federici**
