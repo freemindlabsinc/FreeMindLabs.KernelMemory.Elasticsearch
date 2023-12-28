@@ -1,8 +1,8 @@
 # How to build a Kernel Memory connector and use Elasticsearch as vector database - Part 1
 
-**TL;DR:** This article is the first of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will showcase how to write a basic connector for [Elasticsearch](https://www.elastic.co/elasticsearch/) by implementing the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs). At the end of this article we will have an almost-complete connector that can be used to create indices and then store and retrieve vectors and payloads from Elasticsearch. Similar code can be used to target other storage systems.
+**TL;DR:** This article is the first of a series of articles that will guide readers to create their own connectors for [Kernel Memory](https://github.com/microsoft/kernel-memory). It will introduce the reader to fundamental concepts of Kernel Memory and Elasticsearch, and will show some practical use-cases of how to use the the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs).
 
-*The source code for this article is located [here](https://github.com/freemindlabsinc/FreeMindLabs.KernelMemory.Elasticsearch).*
+*The complete source code for the connector is located [on Free Mind Lab's repository](https://github.com/freemindlabsinc/FreeMindLabs.KernelMemory.Elasticsearch).* 
 
 ## A brief introduction to Kernel Memory
 
@@ -635,9 +635,8 @@ The Results of a search are not returned all at once, but rather in batches, ord
 
 # Conclusion
 
-I hope this article has been helpful and that it has given you a good understanding of how to build a mostly functioning IMemoryDb connector for Kernel Memory.
+I hope this article has been helpful and that it has given you a good understanding of why IMemoryDb exists and how it works.
 
-In the next article we will dive deeper in search, and we will add support for [MemoryFilter](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/Models/MemoryFilter.cs) while exploring ways to use the ```filter``` option of Elasticsearch kNN query.
+In the next article we will go through [the code of the connector](../src/ElasticsearchMemoryStorage/ElasticsearchMemory.cs) and see its implementation details.
 
-
-*Alessandro Federici**
+*Alessandro Federici* - [Free Mind Labs Inc.](https://www.freemindlabs.com)
