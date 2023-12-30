@@ -2,7 +2,9 @@
 by [Free Mind Labs](https://www.freemindlabs.com) - *Dive into your Stream*
 
 [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE) 
-*Version 5.0.2*
+*Version 7.0.1*
+
+ [NuGet](https://www.nuget.org/packages/FreeMindLabs.KernelMemory.Elasticsearch)
 
 Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft [Kernel Memory](https://github.com/microsoft/semantic-memory).
 
@@ -121,30 +123,6 @@ Here's an example of how to run semantic search directly on ES.
  <img src="/content/images/KnnQuery.jpg" width=600 />
 </p>
 
-
-
-## Current status
-1. The connector is currently in development and not ready for production use yet.
-1. The connector is not yet available as a NuGet package.
-
-## Timeline
-1. We hope to complete this project and the associated documentation by the end of 2023.
-
-
-## Challenges
-The new API in the Elasticsearch client is not yet feature complete and there are bugs.
-
-1. AutoMap(),etc. missing
-    1. [CreateIndexDescriptor Mappings -> Map Api usage issue #7929](https://github.com/elastic/elasticsearch-net/issues/7929)
-    1. [FEATURE - Support AutoMap to allow creation of mappings using type inference #6610](https://github.com/elastic/elasticsearch-net/issues/6610)
-        1. flobernd comment on Aug 17 suggests this:
-```
-var mapResponse = client.Indices.PutMapping("index", x => x
-    .Properties<Person>(p => p
-        .DenseVector(x => x.Data, d => d
-            .Index(true)
-            .Similarity("dot_product"))));
-```
 
 ## Resources
 
