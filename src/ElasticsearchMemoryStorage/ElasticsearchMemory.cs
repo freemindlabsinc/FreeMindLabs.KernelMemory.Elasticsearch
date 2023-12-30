@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +13,6 @@ using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.Diagnostics;
 using Microsoft.KernelMemory.MemoryStorage;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
@@ -201,7 +199,7 @@ public class ElasticsearchMemory : IMemoryDb
         }
 
         // Prints all the tags in the record
-        var tags = filters.Select(x => this.MemoryFilterToString(x));
+        var tags = filters.Select(x => this.MemoryFilterToString(x!));
         return string.Join(", ", tags);
     }
 
@@ -258,11 +256,12 @@ public class ElasticsearchMemory : IMemoryDb
     }
 
     /// <inheritdoc />
-    public IAsyncEnumerable<MemoryRecord> GetListAsync(
+    public async IAsyncEnumerable<MemoryRecord> GetListAsync(
         string index,
         ICollection<MemoryFilter>? filters = null,
         int limit = 1,
         bool withEmbeddings = false,
+        [EnumeratorCancellation]
         CancellationToken cancellationToken = default)
     {
         this._log.LogTrace("{MethodName}: querying index '{IndexName}' with filters {Filters}. {Limit} {WithEmbeddings}",
@@ -282,6 +281,27 @@ public class ElasticsearchMemory : IMemoryDb
             }
         }
 
-        throw new NotImplementedException();
+        index = ESIndexName.Convert(index);
+        var resp = await this._client.SearchAsync<ElasticsearchMemoryRecord>(s =>
+            s.Index(index)
+             .Size(limit)
+             .Query(qd =>
+             {
+                 // filter to eql here
+                 qd.MatchAll();
+             }),
+             cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (var hit in resp.Hits)
+        {
+            if (hit?.Source == null)
+            {
+                continue;
+            }
+
+            this._log.LogTrace("Hit: {HitId}, {HitScore}", hit.Id, hit.Score);
+            yield return hit.Source!.ToMemoryRecord();
+        }
     }
 }

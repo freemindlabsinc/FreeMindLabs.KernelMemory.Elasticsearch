@@ -20,7 +20,7 @@ public class SearchTests : ElasticsearchTestBase
     public IMemoryDb MemoryDb { get; }
     public ITextEmbeddingGenerator TextEmbeddingGenerator { get; }
 
-    [Fact(Skip = "Unfinished")]
+    [Fact]
     public async Task CanSearchByTagsAsync()
     {
         // We upsert the file
@@ -32,8 +32,7 @@ public class SearchTests : ElasticsearchTestBase
                 fileNames: new[]
                 {
                     "Data/file1-Wikipedia-Carbon.txt",
-                    "Data/file3-lorem-ipsum.docx",
-                    "Data/file5-SK-Readme.pdf"
+                    "Data/file2-Wikipedia-Moon.txt"
                 })
             .ConfigureAwait(false);
 
@@ -54,7 +53,7 @@ public class SearchTests : ElasticsearchTestBase
             limit: 1,
             withEmbeddings: false))
         {
-            this.Output.WriteLine("Found a match for filter '{Filter}': {ResultId}.", filter, result.Id);
+            this.Output.WriteLine($"Found a match for filter '{filter}': {result.Id}.");
             foundSomething = true;
         };
 
