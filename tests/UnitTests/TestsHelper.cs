@@ -9,7 +9,7 @@ namespace UnitTests;
 /// <summary>
 /// Extension methods for tests on Elasticsearch.
 /// </summary>
-internal static class ElastictestsHelper
+internal static class TestsHelper
 {
     /// <summary>
     /// Deletes all indices that are created by all test methods of the given class.

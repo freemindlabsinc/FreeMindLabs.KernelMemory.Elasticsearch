@@ -9,6 +9,7 @@
         <PackageId>FreeMindLabs.KernelMemory.Elasticsearch</PackageId>
         <NoWarn>CA1724,NU5104</NoWarn>
         <UserSecretsId>750ea0f7-073f-44fb-b791-08ce5fd978a2</UserSecretsId>
+        <DebugType>portable</DebugType>
     </PropertyGroup>
 
     <Import Project="../../nuget-package.props" />

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.Diagnostics;
 using Microsoft.KernelMemory.MemoryStorage;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
@@ -54,7 +56,7 @@ public class ElasticsearchMemory : IMemoryDb
         var existsResponse = await this._client.Indices.ExistsAsync(index, cancellationToken).ConfigureAwait(false);
         if (existsResponse.Exists)
         {
-            this._log.LogTrace("Index {Index} already exists.", index);
+            this._log.LogTrace("{MethodName}: Index {Index} already exists.", nameof(CreateIndexAsync), index);
             return;
         }
 
@@ -67,7 +69,7 @@ public class ElasticsearchMemory : IMemoryDb
             Properties = new Properties()
             {
                 { ElasticsearchTag.NameField, new KeywordProperty() },
-                { ElasticsearchTag.ValueField, new TextProperty() }
+                { ElasticsearchTag.ValueField, new KeywordProperty() }
             }
         };
 
@@ -83,7 +85,7 @@ public class ElasticsearchMemory : IMemoryDb
             }),
             cancellationToken).ConfigureAwait(false);
 
-        this._log.LogTrace("Index {Index} creeated.", index);
+        this._log.LogTrace("{MethodName}: Index {Index} creeated.", nameof(CreateIndexAsync), index);
     }
 
     /// <inheritdoc />
@@ -95,6 +97,9 @@ public class ElasticsearchMemory : IMemoryDb
         var names = resp.Indices
             .Select(x => x.Key.ToString())
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        this._log.LogTrace("{MethodName}: Returned {IndexCount} indices: {Indices}.", nameof(GetIndexesAsync), names.Count, string.Join(", ", names));
+
         return names;
     }
 
@@ -106,6 +111,15 @@ public class ElasticsearchMemory : IMemoryDb
         var delResponse = await this._client.Indices.DeleteAsync(
             ESIndexName.Convert(index),
             cancellationToken).ConfigureAwait(false);
+
+        if (delResponse.IsSuccess())
+        {
+            this._log.LogTrace("{MethodName}: Index {Index} deleted.", nameof(DeleteIndexAsync), index);
+        }
+        else
+        {
+            this._log.LogWarning("{MethodName}: Index {Index} delete failed.", nameof(DeleteIndexAsync), index);
+        }
     }
 
     /// <inheritdoc />
@@ -115,6 +129,7 @@ public class ElasticsearchMemory : IMemoryDb
         CancellationToken cancellationToken = default)
     {
         record = record ?? throw new ArgumentNullException(nameof(record));
+
         var delResponse = await this._client.DeleteAsync<ElasticsearchMemoryRecord>(
             ESIndexName.Convert(index),
             record.Id,
@@ -123,6 +138,15 @@ public class ElasticsearchMemory : IMemoryDb
             },
             cancellationToken)
             .ConfigureAwait(false);
+
+        if (delResponse.IsSuccess())
+        {
+            this._log.LogTrace("{MethodName}: Record {RecordId} deleted.", nameof(DeleteAsync), record.Id);
+        }
+        else
+        {
+            this._log.LogWarning("{MethodName}: Record {RecordId} delete failed.", nameof(DeleteAsync), record.Id);
+        }
     }
 
     /// <inheritdoc />
@@ -145,7 +169,40 @@ public class ElasticsearchMemory : IMemoryDb
             cancellationToken)
             .ConfigureAwait(false);
 
+        if (response.IsSuccess())
+        {
+            this._log.LogTrace("{MethodName}: Record {RecordId} upserted.", nameof(UpsertAsync), memRec.Id);
+        }
+        else
+        {
+            this._log.LogError("{MethodName}: Record {RecordId} upsert failed.", nameof(UpsertAsync), memRec.Id);
+        }
+
         return response.Id;
+    }
+
+    private string MemoryFilterToString(MemoryFilter record)
+    {
+        if (record == null)
+        {
+            return string.Empty;
+        }
+
+        // Prints all the tags in the record
+        var tags = record.Select(x => $"{x.Key}={x.Value}");
+        return string.Join(", ", tags);
+    }
+
+    private string MemoryFiltersToString(IEnumerable<MemoryFilter?>? filters)
+    {
+        if (filters == null)
+        {
+            return string.Empty;
+        }
+
+        // Prints all the tags in the record
+        var tags = filters.Select(x => this.MemoryFilterToString(x));
+        return string.Join(", ", tags);
     }
 
     /// <inheritdoc />
@@ -156,6 +213,9 @@ public class ElasticsearchMemory : IMemoryDb
         double minRelevance = 0, int limit = 1, bool withEmbeddings = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         index = ESIndexName.Convert(index);
+
+        this._log.LogTrace("{MethodName}: Searching for '{Text}' on index '{IndexName}' with filters {Filters}. {MinRelevance} {Limit} {WithEmbeddings}",
+                           nameof(GetSimilarListAsync), text, index, this.MemoryFiltersToString(filters), minRelevance, limit, withEmbeddings);
 
         if (filters != null)
         {
@@ -205,6 +265,10 @@ public class ElasticsearchMemory : IMemoryDb
         bool withEmbeddings = false,
         CancellationToken cancellationToken = default)
     {
+        this._log.LogTrace("{MethodName}: querying index '{IndexName}' with filters {Filters}. {Limit} {WithEmbeddings}",
+                nameof(GetListAsync), index, this.MemoryFiltersToString(filters), limit, withEmbeddings);
+
+
         if (filters != null)
         {
             foreach (MemoryFilter filter in filters)
