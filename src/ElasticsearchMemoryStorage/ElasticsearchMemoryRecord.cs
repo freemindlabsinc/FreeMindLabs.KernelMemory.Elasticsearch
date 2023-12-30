@@ -19,6 +19,11 @@ public sealed class ElasticsearchMemoryRecord
 
     /// <inheritdoc/>
     public const string TagsField = "tags";
+    /// <inheritdoc/>
+    internal static readonly string Tags_Name = TagsField + "." + nameof(ElasticsearchTag.Name).ToLower();
+    /// <inheritdoc/>
+    internal static readonly string Tags_Value = TagsField + "." + nameof(ElasticsearchTag.Value).ToLower();
+
 
     private const string PayloadField = "payload";
     private const string ContentField = "content";

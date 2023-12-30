@@ -5,7 +5,7 @@ using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests.Memory;
+namespace UnitTests;
 
 public class IndexManagementTests : ElasticsearchTestBase
 {

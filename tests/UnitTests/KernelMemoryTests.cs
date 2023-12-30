@@ -5,7 +5,7 @@ using Microsoft.KernelMemory;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests.Kernel;
+namespace UnitTests;
 public class KernelMemoryTests : ElasticsearchTestBase
 {
     private const string NoAnswer = "INFO NOT FOUND";
@@ -19,7 +19,6 @@ public class KernelMemoryTests : ElasticsearchTestBase
     public IKernelMemory KernelMemory { get; }
 
     [Fact]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "<Pending>")]
     public async Task CanImportOneDocumentAndAskAsync()
     {
         var indexName = nameof(CanImportOneDocumentAndAskAsync);

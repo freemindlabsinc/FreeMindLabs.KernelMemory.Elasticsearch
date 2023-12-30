@@ -8,7 +8,7 @@ using Microsoft.KernelMemory.MemoryStorage;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests.Memory;
+namespace UnitTests;
 
 public class DataStorageTests : ElasticsearchTestBase
 {
@@ -26,7 +26,10 @@ public class DataStorageTests : ElasticsearchTestBase
     public async Task CanUpsertOneTextDocumentAndDeleteAsync()
     {
         // We upsert the file
-        var docIds = await this.UpsertTextFilesAsync(
+        var docIds = await DataStorageTests.UpsertTextFilesAsync(
+           memoryDb: this.MemoryDb,
+           textEmbeddingGenerator: this.TextEmbeddingGenerator,
+           output: this.Output,
            indexName: nameof(CanUpsertOneTextDocumentAndDeleteAsync),
            fileNames: new[]
            {
@@ -57,7 +60,10 @@ public class DataStorageTests : ElasticsearchTestBase
     [Fact]
     public async Task CanUpsertTwoTextFilesAndGetSimilarListAsync()
     {
-        await this.UpsertTextFilesAsync(
+        await DataStorageTests.UpsertTextFilesAsync(
+           memoryDb: this.MemoryDb,
+           textEmbeddingGenerator: this.TextEmbeddingGenerator,
+           output: this.Output,
            indexName: nameof(CanUpsertTwoTextFilesAndGetSimilarListAsync),
            fileNames: new[]
            {
@@ -86,13 +92,24 @@ public class DataStorageTests : ElasticsearchTestBase
         Assert.True(foundSomething, "It should have found something...");
     }
 
-    private string GuidWithoutDashes() => Guid.NewGuid().ToString().Replace("-", "", StringComparison.OrdinalIgnoreCase).ToLower(CultureInfo.CurrentCulture);
+    public static string GuidWithoutDashes() => Guid.NewGuid().ToString().Replace("-", "", StringComparison.OrdinalIgnoreCase).ToLower(CultureInfo.CurrentCulture);
 
-    private async Task<IEnumerable<string>> UpsertTextFilesAsync(string indexName, IEnumerable<string> fileNames)
+    public static async Task<IEnumerable<string>> UpsertTextFilesAsync(
+        IMemoryDb memoryDb,
+        ITextEmbeddingGenerator textEmbeddingGenerator,
+        ITestOutputHelper output,
+        string indexName,
+        IEnumerable<string> fileNames)
     {
+        ArgumentNullException.ThrowIfNull(memoryDb);
+        ArgumentNullException.ThrowIfNull(textEmbeddingGenerator);
+        ArgumentNullException.ThrowIfNull(output);
+        ArgumentNullException.ThrowIfNull(indexName);
+        ArgumentNullException.ThrowIfNull(fileNames);
+
         // IMemoryDb does not create the index automatically.
-        await this.MemoryDb.CreateIndexAsync(indexName, 1536)
-                           .ConfigureAwait(false);
+        await memoryDb.CreateIndexAsync(indexName, 1536)
+                      .ConfigureAwait(false);
 
         var results = new List<string>();
         foreach (var fileName in fileNames)
@@ -111,21 +128,21 @@ public class DataStorageTests : ElasticsearchTestBase
                 maxTokensPerParagraph: 1000,
                 overlapTokens: 100);
 
-            this.Output.WriteLine($"File '{fileName}' contains {paragraphs.Count} paragraphs.");
+            output.WriteLine($"File '{fileName}' contains {paragraphs.Count} paragraphs.");
 
             // Indexes each paragraph as a separate document
             var paraIdx = 0;
-            var documentId = this.GuidWithoutDashes() + this.GuidWithoutDashes();
-            var fileId = this.GuidWithoutDashes();
+            var documentId = GuidWithoutDashes() + GuidWithoutDashes();
+            var fileId = GuidWithoutDashes();
 
             foreach (var paragraph in paragraphs)
             {
-                var embedding = await this.TextEmbeddingGenerator.GenerateEmbeddingAsync(paragraph)
+                var embedding = await textEmbeddingGenerator.GenerateEmbeddingAsync(paragraph)
                                                                  .ConfigureAwait(false);
 
-                this.Output.WriteLine($"Indexed paragraph {++paraIdx}/{paragraphs.Count}. {paragraph.Length} characters.");
+                output.WriteLine($"Indexed paragraph {++paraIdx}/{paragraphs.Count}. {paragraph.Length} characters.");
 
-                var filePartId = this.GuidWithoutDashes();
+                var filePartId = GuidWithoutDashes();
 
                 var esId = $"d={documentId}//p={filePartId}";
 
@@ -136,10 +153,10 @@ public class DataStorageTests : ElasticsearchTestBase
                     {
                         { "file", fileName },
                         { "text", paragraph },
-                        { "vector_provider", this.TextEmbeddingGenerator.GetType().Name },
+                        { "vector_provider", textEmbeddingGenerator.GetType().Name },
                         { "vector_generator", "TODO" },
                         { "last_update", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss") },
-                        { "text_embedding_generator", this.TextEmbeddingGenerator.GetType().Name }
+                        { "text_embedding_generator", textEmbeddingGenerator.GetType().Name }
                     },
                     Tags = new TagCollection()
                     {
@@ -152,11 +169,13 @@ public class DataStorageTests : ElasticsearchTestBase
                     Vector = embedding
                 };
 
-                var res = await this.MemoryDb.UpsertAsync(indexName, mrec)
+                var res = await memoryDb.UpsertAsync(indexName, mrec)
                                              .ConfigureAwait(false);
 
                 results.Add(res);
             }
+
+            output.WriteLine("");
         }
 
         return results;

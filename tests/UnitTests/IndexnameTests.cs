@@ -4,7 +4,7 @@ using FreeMindLabs.KernelMemory.Elasticsearch.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTests.Other;
+namespace UnitTests;
 
 public class IndexnameTests
 {
