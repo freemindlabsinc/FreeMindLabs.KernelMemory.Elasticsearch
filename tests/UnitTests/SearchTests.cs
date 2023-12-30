@@ -36,6 +36,11 @@ public class SearchTests : ElasticsearchTestBase
                 })
             .ConfigureAwait(false);
 
+        // docsIds is a list of values like "d=3ed7b0787d484496ab25d50b2a887f8cf63193954fc844689116766434c11887//p=b84ee5e4841c4ab2877e30293752f7cc"
+        // Extract the d= portion, exclusing the = part
+        docIds = docIds.Select(x => x.Split("//")[0].Split("=")[1]).Distinct().ToList();
+
+
         // Waits for indexing to complete
         await this.Client.WaitForDocumentsAsync(nameof(CanSearchByTagsAsync), expectedDocuments: 3)
                          .ConfigureAwait(false);
@@ -45,12 +50,13 @@ public class SearchTests : ElasticsearchTestBase
 
         var filter = new MemoryFilter();
         filter.Add("__file_type", "text/plain");
+        filter.Add("__document_id", docIds.Select(x => (string?)x).ToList());
 
         //var textToMatch = "carbon";
         await foreach (var result in this.MemoryDb.GetListAsync(
             index: nameof(CanSearchByTagsAsync),
             filters: new[] { filter },
-            limit: 1,
+            limit: 100,
             withEmbeddings: false))
         {
             this.Output.WriteLine($"Found a match for filter '{filter}': {result.Id}.");

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
@@ -266,29 +267,47 @@ public class ElasticsearchMemory : IMemoryDb
     {
         this._log.LogTrace("{MethodName}: querying index '{IndexName}' with filters {Filters}. {Limit} {WithEmbeddings}",
                 nameof(GetListAsync), index, this.MemoryFiltersToString(filters), limit, withEmbeddings);
-
-
-        if (filters != null)
-        {
-            foreach (MemoryFilter filter in filters)
-            {
-                if (filter is ElasticsearchMemoryFilter extendedFilter)
-                {
-                    // use ElasticsearchMemoryFilter filtering logic
-                }
-
-                // use MemoryFilter filtering logic
-            }
-        }
+       
 
         index = ESIndexName.Convert(index);
+
         var resp = await this._client.SearchAsync<ElasticsearchMemoryRecord>(s =>
             s.Index(index)
              .Size(limit)
              .Query(qd =>
              {
-                 // filter to eql here
-                 qd.MatchAll();
+                 if (filters?.Count == 0)
+                 {
+                     qd.MatchAll();
+                     return;
+                 }
+
+                 qd.Nested(nqd =>
+                 {
+                     nqd.Path(ElasticsearchMemoryRecord.TagsField);
+                     nqd.Query(nq =>
+                     {
+                         // Each filter is a tag collection.
+                         foreach (MemoryFilter filter in filters!)
+                         {
+                             // Each tag collection is an element of a List<string, List<string?>>>
+                             foreach (var tagName in filter.Keys)
+                             {
+                                 nq.Bool(bq =>
+                                 {
+                                     List<string?> tagValues = filter[tagName];
+                                     List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
+                                                                       .ToList();
+
+                                     bq.Must(
+                                         t => t.Term(c => c.Field(ElasticsearchMemoryRecord.Tags_Name).Value(tagName)),
+                                         t => t.Terms(c => c.Field(ElasticsearchMemoryRecord.Tags_Value).Terms(new TermsQueryField(terms)))
+                                     );
+                                 });
+                             }
+                         }
+                     });
+                 });
              }),
              cancellationToken)
             .ConfigureAwait(false);
