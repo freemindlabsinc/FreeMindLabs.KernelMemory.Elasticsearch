@@ -61,7 +61,7 @@ public class ElasticsearchMemory : IMemoryDb
 
         var createIdxResponse = await this._client.Indices.CreateAsync(index, cancellationToken).ConfigureAwait(false);
 
-        const int Dimensions = 1536;
+        const int Dimensions = 1536; // TODO: make not hardcoded
 
         var np = new NestedProperty()
         {
@@ -180,30 +180,6 @@ public class ElasticsearchMemory : IMemoryDb
         return response.Id;
     }
 
-    private string MemoryFilterToString(MemoryFilter record)
-    {
-        if (record == null)
-        {
-            return string.Empty;
-        }
-
-        // Prints all the tags in the record
-        var tags = record.Select(x => $"{x.Key}={x.Value}");
-        return string.Join(", ", tags);
-    }
-
-    private string MemoryFiltersToString(IEnumerable<MemoryFilter?>? filters)
-    {
-        if (filters == null)
-        {
-            return string.Empty;
-        }
-
-        // Prints all the tags in the record
-        var tags = filters.Select(x => this.MemoryFilterToString(x!));
-        return string.Join(", ", tags);
-    }
-
     /// <inheritdoc />
     public async IAsyncEnumerable<(MemoryRecord, double)> GetSimilarListAsync(
         string index,
@@ -214,20 +190,7 @@ public class ElasticsearchMemory : IMemoryDb
         index = ESIndexName.Convert(index);
 
         this._log.LogTrace("{MethodName}: Searching for '{Text}' on index '{IndexName}' with filters {Filters}. {MinRelevance} {Limit} {WithEmbeddings}",
-                           nameof(GetSimilarListAsync), text, index, this.MemoryFiltersToString(filters), minRelevance, limit, withEmbeddings);
-
-        if (filters != null)
-        {
-            foreach (MemoryFilter filter in filters)
-            {
-                if (filter is ElasticsearchMemoryFilter extendedFilter)
-                {
-                    // use ElasticsearchMemoryFilter filtering logic
-                }
-
-                // use MemoryFilter filtering logic
-            }
-        }
+                           nameof(GetSimilarListAsync), text, index, filters.ToDebugString(), minRelevance, limit, withEmbeddings);
 
         Embedding qembed = await this._embeddingGenerator.GenerateEmbeddingAsync(text, cancellationToken).ConfigureAwait(false);
         var coll = qembed.Data.ToArray();
@@ -237,6 +200,7 @@ public class ElasticsearchMemory : IMemoryDb
              .Knn(qd =>
              {
                  qd.k(limit)
+                   .Filter(q => this.ConvertTagFilters(q, limit, filters))
                    .NumCandidates(limit + 100)
                    .Field(x => x.Vector)
                    .QueryVector(coll);
@@ -251,7 +215,7 @@ public class ElasticsearchMemory : IMemoryDb
                 continue;
             }
 
-            this._log.LogTrace("Hit: {HitId}, {HitScore}", hit.Id, hit.Score);
+            this._log.LogTrace("{MethodName} Hit: {HitScore}, {HitId}", nameof(GetSimilarListAsync), hit.Score, hit.Id);
             yield return (hit.Source!.ToMemoryRecord(), hit.Score ?? 0);
         }
     }
@@ -266,8 +230,7 @@ public class ElasticsearchMemory : IMemoryDb
         CancellationToken cancellationToken = default)
     {
         this._log.LogTrace("{MethodName}: querying index '{IndexName}' with filters {Filters}. {Limit} {WithEmbeddings}",
-                nameof(GetListAsync), index, this.MemoryFiltersToString(filters), limit, withEmbeddings);
-       
+                nameof(GetListAsync), index, filters.ToDebugString(), limit, withEmbeddings);
 
         index = ESIndexName.Convert(index);
 
@@ -276,38 +239,7 @@ public class ElasticsearchMemory : IMemoryDb
              .Size(limit)
              .Query(qd =>
              {
-                 if (filters?.Count == 0)
-                 {
-                     qd.MatchAll();
-                     return;
-                 }
-
-                 qd.Nested(nqd =>
-                 {
-                     nqd.Path(ElasticsearchMemoryRecord.TagsField);
-                     nqd.Query(nq =>
-                     {
-                         // Each filter is a tag collection.
-                         foreach (MemoryFilter filter in filters!)
-                         {
-                             // Each tag collection is an element of a List<string, List<string?>>>
-                             foreach (var tagName in filter.Keys)
-                             {
-                                 nq.Bool(bq =>
-                                 {
-                                     List<string?> tagValues = filter[tagName];
-                                     List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
-                                                                       .ToList();
-
-                                     bq.Must(
-                                         t => t.Term(c => c.Field(ElasticsearchMemoryRecord.Tags_Name).Value(tagName)),
-                                         t => t.Terms(c => c.Field(ElasticsearchMemoryRecord.Tags_Value).Terms(new TermsQueryField(terms)))
-                                     );
-                                 });
-                             }
-                         }
-                     });
-                 });
+                 this.ConvertTagFilters(qd, limit, filters);
              }),
              cancellationToken)
             .ConfigureAwait(false);
@@ -319,8 +251,49 @@ public class ElasticsearchMemory : IMemoryDb
                 continue;
             }
 
-            this._log.LogTrace("Hit: {HitId}, {HitScore}", hit.Id, hit.Score);
+            this._log.LogTrace("{MethodName} Hit: {HitScore}, {HitId}", nameof(GetListAsync), hit.Score, hit.Id);
             yield return hit.Source!.ToMemoryRecord();
         }
+    }
+
+    private QueryDescriptor<ElasticsearchMemoryRecord> ConvertTagFilters(
+        QueryDescriptor<ElasticsearchMemoryRecord> qd,
+        int limit,
+        ICollection<MemoryFilter>? filters = null)
+    {
+        if ((filters == null) || (filters.Count == 0))
+        {
+            qd.MatchAll();
+            return qd;
+        }
+
+        qd.Nested(nqd =>
+        {
+            nqd.Path(ElasticsearchMemoryRecord.TagsField);
+            nqd.Query(nq =>
+            {
+                // Each filter is a tag collection.
+                foreach (MemoryFilter filter in filters)
+                {
+                    // Each tag collection is an element of a List<string, List<string?>>>
+                    foreach (var tagName in filter.Keys)
+                    {
+                        nq.Bool(bq =>
+                        {
+                            List<string?> tagValues = filter[tagName];
+                            List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
+                                                              .ToList();
+
+                            bq.Must(
+                                t => t.Term(c => c.Field(ElasticsearchMemoryRecord.Tags_Name).Value(tagName)),
+                                t => t.Terms(c => c.Field(ElasticsearchMemoryRecord.Tags_Value).Terms(new TermsQueryField(terms)))
+                            );
+                        });
+                    }
+                }
+            });
+        });
+
+        return qd;
     }
 }

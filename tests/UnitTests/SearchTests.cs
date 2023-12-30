@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 using Elastic.Clients.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.MemoryStorage;
@@ -23,6 +24,8 @@ public class SearchTests : ElasticsearchTestBase
     [Fact]
     public async Task CanSearchByTagsAsync()
     {
+        const int ExpectedTotalParagraphs = 4;
+
         // We upsert the file
         var docIds = await DataStorageTests.UpsertTextFilesAsync(
             memoryDb: this.MemoryDb,
@@ -37,33 +40,36 @@ public class SearchTests : ElasticsearchTestBase
             .ConfigureAwait(false);
 
         // docsIds is a list of values like "d=3ed7b0787d484496ab25d50b2a887f8cf63193954fc844689116766434c11887//p=b84ee5e4841c4ab2877e30293752f7cc"
-        // Extract the d= portion, exclusing the = part
+        Assert.Equal(expected: ExpectedTotalParagraphs, actual: docIds.Count());
         docIds = docIds.Select(x => x.Split("//")[0].Split("=")[1]).Distinct().ToList();
 
+        this.Output.WriteLine($"Indexed returned the following ids:\n{string.Join("\n", docIds)}");
+
+        var expectedDocs = docIds.Count();
 
         // Waits for indexing to complete
-        await this.Client.WaitForDocumentsAsync(nameof(CanSearchByTagsAsync), expectedDocuments: 3)
+        await this.Client.WaitForDocumentsAsync(nameof(CanSearchByTagsAsync), expectedDocuments: ExpectedTotalParagraphs)
                          .ConfigureAwait(false);
 
         // Gets documents that are similar to the word "carbon" .
-        var foundSomething = false;
-
         var filter = new MemoryFilter();
         filter.Add("__file_type", "text/plain");
         filter.Add("__document_id", docIds.Select(x => (string?)x).ToList());
 
-        //var textToMatch = "carbon";
+        var idx = 0;
+        this.Output.WriteLine($"Filter: {filter.ToDebugString()}.\n");
+
         await foreach (var result in this.MemoryDb.GetListAsync(
             index: nameof(CanSearchByTagsAsync),
             filters: new[] { filter },
             limit: 100,
             withEmbeddings: false))
         {
-            this.Output.WriteLine($"Found a match for filter '{filter}': {result.Id}.");
-            foundSomething = true;
+            var fileName = result.Payload["file"];
+            this.Output.WriteLine($"Match #{idx++}: {fileName}");
         };
 
-        Assert.True(foundSomething, "It should have found something...");
+        Assert.Equal(expected: ExpectedTotalParagraphs, actual: idx);
     }
 }
 

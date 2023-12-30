@@ -174,6 +174,8 @@ public class DataStorageTests : ElasticsearchTestBase
 
                 results.Add(res);
             }
+
+            output.WriteLine("");
         }
 
         return results;
