@@ -19,8 +19,11 @@ This repository contains the **Elasticsearch adapter** that allows KM to use Ela
 
 >If you want to read more about semantic search, click [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html). For more on hybrid search, click [here](https://opster.com/guides/elasticsearch/machine-learning/elasticsearch-hybrid-search/)
 
+## Pre-requisites
 
-
+1. A running instance of Elasticsearch    
+    1. You can install a local instance of Elasticsearch using Docker. See *[How to install the Elastic Stack using Docker Compose](/docker/README2.md)*.
+  1. 
 
 ## Goals
 

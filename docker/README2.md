@@ -1,4 +1,4 @@
-# Installing the Elastic Stack using Docker Compose
+# How to install the Elastic Stack using Docker Compose
 
 There are several ways to install and run the Elastic Stack on a development  machine. We will install the Elastic Stack using Docker Compose as inspired by the articles of [Eddie Mitchell](https://www.elastic.co/blog/author/eddie-mitchell). 
 
