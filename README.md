@@ -2,7 +2,7 @@
 by [Free Mind Labs](https://www.freemindlabs.com) - *Dive into your Stream*
 
 [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE) 
-*Version 7.0.1*
+*Version 7.0.2*
 
  [NuGet](https://www.nuget.org/packages/FreeMindLabs.KernelMemory.Elasticsearch)
 

@@ -10,6 +10,10 @@
         <NoWarn>CA1724,NU5104,CA1304,CA1311</NoWarn>
         <UserSecretsId>750ea0f7-073f-44fb-b791-08ce5fd978a2</UserSecretsId>
         <DebugType>portable</DebugType>
+        <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
 
     <Import Project="../../nuget-package.props" />

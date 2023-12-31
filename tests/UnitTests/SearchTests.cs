@@ -22,7 +22,7 @@ public class SearchTests : ElasticsearchTestBase
     public ITextEmbeddingGenerator TextEmbeddingGenerator { get; }
 
     [Fact]
-    public async Task CanSearchByTagsAsync()
+    public async Task CanGetListWithTagsAsync()
     {
         const int ExpectedTotalParagraphs = 4;
 
@@ -31,7 +31,7 @@ public class SearchTests : ElasticsearchTestBase
             memoryDb: this.MemoryDb,
             textEmbeddingGenerator: this.TextEmbeddingGenerator,
             output: this.Output,
-            indexName: nameof(CanSearchByTagsAsync),
+            indexName: nameof(CanGetListWithTagsAsync),
                 fileNames: new[]
                 {
                     "Data/file1-Wikipedia-Carbon.txt",
@@ -48,7 +48,7 @@ public class SearchTests : ElasticsearchTestBase
         var expectedDocs = docIds.Count();
 
         // Waits for indexing to complete
-        await this.Client.WaitForDocumentsAsync(nameof(CanSearchByTagsAsync), expectedDocuments: ExpectedTotalParagraphs)
+        await this.Client.WaitForDocumentsAsync(nameof(CanGetListWithTagsAsync), expectedDocuments: ExpectedTotalParagraphs)
                          .ConfigureAwait(false);
 
         // Gets documents that are similar to the word "carbon" .
@@ -60,7 +60,7 @@ public class SearchTests : ElasticsearchTestBase
         this.Output.WriteLine($"Filter: {filter.ToDebugString()}.\n");
 
         await foreach (var result in this.MemoryDb.GetListAsync(
-            index: nameof(CanSearchByTagsAsync),
+            index: nameof(CanGetListWithTagsAsync),
             filters: new[] { filter },
             limit: 100,
             withEmbeddings: false))
