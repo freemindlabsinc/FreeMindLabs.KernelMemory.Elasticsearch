@@ -115,12 +115,29 @@ In order to add the Elasticsearch adapter to your project you first need to add 
 > dotnet add package Freemindlabs.KernelMemory.Elasticsearch
 ```
 
-Then you need to add the following code to your Startup.cs file:
+Then you can chose to use one of the ```WithElasticsearch``` extensions methods of the interface IKernelMemoryBuilder.
 
 ```csharp
+// From Program.cs of the Service project of the Kernel Memory repository. Line 86.
 
+[..]
+// Loads the Elasticsearch configuration
+var esConfig = config.GetServiceConfig<ElasticsearchConfig>(appBuilder.Configuration, "ElasticsearchVectorDb");
+
+// Inject memory client and its dependencies
+// Note: pass the current service collection to the builder, in order to start the pipeline handlers
+IKernelMemory memory = new KernelMemoryBuilder(appBuilder.Services)
+    .FromAppSettings()
+    // .With...() // in case you need to set something not already defined by `.FromAppSettings()`
+    .WithElasticsearch(esConfig) // <--- this
+    .Build();
+
+appBuilder.Services.AddSingleton(memory);
+
+// Build .NET web app as usual
+var app = appBuilder.Build();
+[..]
 ```
-
 
 
 ## Resources
