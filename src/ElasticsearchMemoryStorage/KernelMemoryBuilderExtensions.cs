@@ -37,6 +37,15 @@ public static partial class KernelMemoryBuilderExtensions
     /// <summary>
     /// Kernel Memory Builder extension method to add the Elasticsearch memory connector.
     /// </summary>
+    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder, ElasticsearchConfig config)
+    {
+        builder.Services.AddElasticsearchAsVectorDb(config);
+        return builder;
+    }
+
+    /// <summary>
+    /// Kernel Memory Builder extension method to add the Elasticsearch memory connector.
+    /// </summary>
     /// <param name="builder">The IKernelMemoryBuilder instance</param>
     /// <param name="configuration">The application configuration</param>"
     public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder, IConfiguration configuration)
