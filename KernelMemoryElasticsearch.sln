@@ -49,7 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F8AB55
 		docker\kibana.yml = docker\kibana.yml
 		docker\logstash.conf = docker\logstash.conf
 		docker\metricbeat.yml = docker\metricbeat.yml
-		docker\Readme.md = docker\Readme.md
+		docker\README.md = docker\README.md
 	EndProjectSection
 EndProject
 Global

@@ -1,4 +1,5 @@
 # Configuration
+
 The xUnit project UnitTests contains an [appSettings.json](tests/UnitTests/appSettings.json) file that lists all available options. The file reads as follows:
 
 ```

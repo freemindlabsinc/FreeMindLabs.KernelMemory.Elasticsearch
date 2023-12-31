@@ -1,4 +1,9 @@
-# Installing the Elastic Stack using Docker Compose
+# How to install the Elastic Stack using Docker Compose
+
+## Prerequisites
+You need to have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed before continuing.
+
+## The installation
 
 There are several ways to install and run the Elastic Stack on a development  machine. We will install the Elastic Stack using Docker Compose as inspired by the articles of [Eddie Mitchell](https://www.elastic.co/blog/author/eddie-mitchell). 
 
@@ -17,11 +22,12 @@ The files we might need to access and change have also been grouped under the so
 - **.env.example**: [this file](/.env.example) contains a complete example of all the options available. 
   - It is not used by Docker Compose, and it should only be used as a reference when creating the .env file. This is how such file reads:
 
-> :warning: **IMPORTANT**: the default username/password for Kibana and Elasticsearch is ```elastic```/```changeme```. You can change the password in your .env file.
-
 <div align="center">
     <img src="images/EnvSample.png" width="500px"</img>
 </div>
+
+
+> :warning: The default username/password for Kibana and Elasticsearch is ```elastic```/```changeme```. You can change such values in your .env file.
 
 - **docker-compose.yml**: [this file](./docker-compose.yml) contains the configuration for Docker Compose. The compose file will allow us to run the Elastic Stack on a single machine and get access to the Elasticsearch, Kibana, Logstash, Filebeat, and Metricbeat.
 
