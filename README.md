@@ -1,14 +1,11 @@
 # Kernel Memory with Elasticsearch
-by [Free Mind Labs](https://www.freemindlabs.com) - *Dive into your Stream*
-
-[![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE) 
-*Version 7.0.2*
-
- [NuGet](https://www.nuget.org/packages/FreeMindLabs.KernelMemory.Elasticsearch)
 
 Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft [Kernel Memory](https://github.com/microsoft/semantic-memory).
 
-Kernel Memory (KM) is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines.
+[![NuGet](https://img.shields.io/nuget/v/Freemindlabs.KernelMemory.Elasticsearch.svg)](https://www.nuget.org/packages/Freemindlabs.KernelMemory.Elasticsearch) [![NuGet](https://img.shields.io/nuget/dt/Freemindlabs.KernelMemory.Elasticsearch.svg)](https://www.nuget.org/packages/Freemindlabs.KernelMemory.Elasticsearch) [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE) 
+
+
+**Kernel Memory** (KM) is a **multi-modal [AI Service](service/Service/README.md)** specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines, with support for **[Retrieval Augmented eneration](https://en.wikipedia.org/wiki/Prompt_engineering#Retrieval-augmented_generation)** (RAG), synthetic memory, prompt engineering, and custom semantic memory processing.
 
 <img src="content/images/Pipelines.jpg"/>
 
@@ -22,11 +19,8 @@ This repository contains the **Elasticsearch adapter** that allows KM to use Ela
 
 >If you want to read more about semantic search, click [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/semantic-search.html). For more on hybrid search, click [here](https://opster.com/guides/elasticsearch/machine-learning/elasticsearch-hybrid-search/)
 
-Tokenization can be done using commercial models from OpenAI, Azure Open AI or open source models hosted on Hugging Face, including those used by [Sentence Transformers](https://sbert.net/). 
 
-<p align="center">
-    <img src="https://sbert.net/_static/logo.png" width=200 />
-</p>
+
 
 ## Goals
 
