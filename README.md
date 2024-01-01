@@ -22,7 +22,7 @@ This repository contains the **Elasticsearch adapter** that allows KM to use Ela
 1. A running instance of Elasticsearch
 
     1. You can install a **local instance** of Elasticsearch using Docker.
-    To simplify the setup of a running instance of Elasticsearch we prepared the article [Installing the Elastic Stack using Docker Compose](/docker/Readme.md) that guides you through the process. *The following diagram shows what will be running once the installation is complete.*
+    To simplify the setup of a running instance of Elasticsearch we prepared the article [Installing the Elastic Stack using Docker Compose](/docker/README.md) that guides you through the process. *The following diagram shows what will be running once the installation is complete.*
 <div align="center">
     <img src="docker/images/ELKStack.png" width="500px"</img>
 </div>
