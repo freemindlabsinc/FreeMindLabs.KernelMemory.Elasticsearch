@@ -18,7 +18,7 @@ public static class ElasticsearchConfigExtensions
     /// <exception cref="ElasticsearchConfigurationException">If configuration values are invalid.</exception>
     public static ElasticsearchConfig Validate(this ElasticsearchConfig? config)
     {
-        // again
+        // again 2
         ArgumentNullException.ThrowIfNull(config, nameof(config));
 
         if (string.IsNullOrWhiteSpace(config.Endpoint))
