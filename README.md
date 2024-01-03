@@ -1,10 +1,19 @@
 # Kernel Memory with Elasticsearch
 
+
 Use [Elasticsearch](https://www.elastic.co/) as vector storage for Microsoft [Kernel Memory](https://github.com/microsoft/semantic-memory).
+
+<div align="center">
+<img src="content/images/FMLLogo.png" width="400px" >
+</div>
+
+<div align="center">
 
 [![NuGet](https://img.shields.io/nuget/v/Freemindlabs.KernelMemory.Elasticsearch.svg)](https://www.nuget.org/packages/Freemindlabs.KernelMemory.Elasticsearch) [![NuGet](https://img.shields.io/nuget/dt/Freemindlabs.KernelMemory.Elasticsearch.svg)](https://www.nuget.org/packages/Freemindlabs.KernelMemory.Elasticsearch) [![License: MIT](https://img.shields.io/github/license/microsoft/kernel-memory)](https://github.com/freemindlabsinc/FreeMindLabs.SemanticKernel/blob/main/LICENSE) 
 
+</div>
 
+---
 **Kernel Memory** (KM) is a **multi-modal [AI Service](service/Service/README.md)** specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines, with support for **[Retrieval Augmented Generation](https://en.wikipedia.org/wiki/Prompt_engineering#Retrieval-augmented_generation)** (RAG), synthetic memory, prompt engineering, and custom semantic memory processing.
 
 <img src="content/images/Pipelines.jpg"/>
