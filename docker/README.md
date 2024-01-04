@@ -1,11 +1,20 @@
 # How to install the Elastic Stack using Docker Compose
 
 ## Prerequisites
-You need to have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed before continuing.
+
+You need to have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) running on a Linux box.
+
+If you are on a Windows 10/11 machine, such Linux box can be a [WSL2](https://learn.microsoft.com/en-us/windows/wsl/about) instance.
+
+> *See [this article :green_book:](https://www.windowscentral.com/how-install-wsl2-windows-10) to see how to install WSL2 on Windows 10/11, if you are not familiar with the procedure.*
+
+The remainder of this document shows how to install the Elastic Stack on Windows 11 using WSL2 and Docker Desktop running on it.
 
 ## The installation
 
 There are several ways to install and run the Elastic Stack on a development  machine. We will install the Elastic Stack using Docker Compose as inspired by the articles of [Eddie Mitchell](https://www.elastic.co/blog/author/eddie-mitchell). 
+
+The environment used for this installation is a Windows 11 machine with [WSL2](https://www.windowscentral.com/how-install-wsl2-windows-10) and [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/) installed. Please read the
 
 The necessary files have been copied in the ```/docker``` folder so that we can run it directly without the need to Mitchell's repository, and so that we can alter them as necessary in the future.
 
@@ -17,7 +26,7 @@ The files we might need to access and change have also been grouped under the so
 
 - **.env**: this file contains the environment variables that will be used by Docker Compose. 
     1. :warning: **The .env file needs to be created manually**, as it is not part of the repository. **Without this file, Docker Compose will not work.**
-    1. To create a valid .env file, copy the contents of the .env.example file and paste them into a new file named .env. Then, update the values of the variables as needed.
+    1. To create a valid .env file, copy the contents of the ```.env.example``` file and paste them into a new file named ```.env```. Then, update the values of the variables as needed.
 
 - **.env.example**: [this file](/.env.example) contains a complete example of all the options available. 
   - It is not used by Docker Compose, and it should only be used as a reference when creating the .env file. This is how such file reads:
@@ -80,9 +89,11 @@ Make sure you created the **.env** file as explained above.
 
 ## Step 1/3: Ensure the vm.max_map_count setting is set to at least 262144
 
-When setting up Elasticsearch, it's essential to configure the `vm.max_map_count` kernel setting to at least `262144`. This setting is critical for Elasticsearch to startup and to function. 
+As explained at the beginning of this document, in these instructions we are using Docker Desktop on top of WSL2. Elasticsearch will run in a container on the Linux host, not on Windows.
 
-:warning: This change has to be made on the docker host, not inside the container.
+When setting up Elasticsearch on Linux, it's essential to configure the `vm.max_map_count` kernel setting on the Linux host to at least `262144`. This setting is critical for Elasticsearch to startup and to function.
+
+:warning: Once again: this change has to be made on the Linux machine running Docker, not inside the container nor on Windows.
 
 There are two ways to set `vm.max_map_count`:
 
@@ -91,7 +102,7 @@ There are two ways to set `vm.max_map_count`:
 
    ```bash
    # Set vm.max_map_count temporarily
-   sysctl -w vm.max_map_count=262144
+   $ sysctl -w vm.max_map_count=262144
    ```
 
    *This approach is ideal when you need to quickly set up Elasticsearch for short-term use or testing, without the need for the setting to persist after a reboot.*
@@ -101,10 +112,10 @@ There are two ways to set `vm.max_map_count`:
 
    ```bash
    # Edit the sysctl configuration file for persistent changes
-   echo 'vm.max_map_count=262144' >> /etc/sysctl.conf
+   $ echo 'vm.max_map_count=262144' >> /etc/sysctl.conf
    
    # Apply the changes without rebooting
-   sysctl -p
+   $ sysctl -p
    ```
 
 Additional information can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html) and in Eddie Mitchell's [original article](https://www.elastic.co/blog/getting-started-with-the-elastic-stack-and-docker-compose-part-2).
@@ -115,7 +126,7 @@ Launch a terminal and navigate to the `docker` directory of this repo.
 Then run the following command:
 
 ```bash
-docker-compose up
+$ docker-compose up
 ```
 
 Be prepared to wait a minute or two for the containers to start up.
