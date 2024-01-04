@@ -12,7 +12,7 @@ According to [Devis Lucato](https://www.linkedin.com/in/devislucato/) (*Principa
 2. Ground answers exclusively on the data ingested.
 3. Provide links and references to the original sources.
 
-Grounding answers on the ingested data helps avoid [hallucinations](https://zapier.com/blog/ai-hallucinations/): Davis stated that "*we fundamentally don't trust AI in autopilot mode. We need a way to audit it.*".
+Grounding answers on the ingested data helps avoid [hallucinations](https://zapier.com/blog/ai-hallucinations/): Devis stated that "*we fundamentally don't trust AI in autopilot mode. We need a way to audit it.*".
 
 Kernel memory provides the functionality to *ingest and index data* in a way that makes it possible to *answer questions* later. The interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs) and the data structure [MemoryRecord](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/MemoryRecord.cs) are the means by which Kernel Memory connects to vector databases and storage systems capable of performing vector similarity searches.
 
@@ -275,7 +275,7 @@ The methods are pretty self-explanatory, but here are some consideration on the 
 - **index**: is the name of the index/collection to create. The name is unique and can be case sensitive in some vector databases. Pay attention when picking names for your indices. Elasticsearch has some [restrictions on index names](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html#indices-create-api-path-params).
 
 - **vectorSize**: the size of the vectors to be stored in the index/collection. The size of the vectors is determined by the vectorization algorithm used to convert text into vectors. 
-  - [OpenAI](https://www.openai.com) uses vectors with 1536 dimentiones.
+  - [OpenAI](https://www.openai.com) uses vectors with 1536 dimensions.
   - [SBERT.net](https://sbert.net)'s all-MiniLM-L6-v2 uses vectors with 384 dimensions.
 
 The unit test [*IndexManagementTests.cs*](../tests/UnitTests/IndexManagementTests.cs) contains the test *CanCreateAndDeleteIndexAsync* which shows how to use *CreateIndexAsync* and *DeleteIndexAsync*.
