@@ -18,21 +18,22 @@ Kernel memory provides the functionality to *ingest and index data* in a way tha
 
 ---
 
-From a technical point of view, Kernel Memory is an open-source service and plugin specialized in the efficient indexing of datasets through custom continuous data hybrid pipelines. 
+From a technical point of view, Kernel Memory is an open-source multi-modal AI service specialized in the efficient indexing of documents and information through custom continuous data pipelines, with support for Retrieval Augmented Generation (RAG), synthetic memory, prompt engineering, and custom semantic memory processing. 
 
 <div align="center">
   <img src="images/Pipelines.jpg" width="100%" />
 </div> 
 
-Utilizing advanced embeddings and LLMs, the system enables Natural Language querying for obtaining answers from the indexed data, complete with citations and links to the original sources.
+Utilizing advanced embeddings, LLMs and prompt engineering, the system enables Natural Language querying for obtaining answers from the information stored, complete with citations and links to the original sources.
 
 <div align="center">
   <img src="images/RAG.jpg" width="100%" />
 </div>
 
-It is designed to be used as a service, but it can also be embedded in applications (i.e. serverless model), although with some limitations.
+It is designed for seamless integration with any programming language, providing a web service, but it can also be embedded in applications (i.e. "serverless mode"), although with some limitations.
 
 ## Connectors
+
 In order to use a vector database or storage system, Kernel Memory needs a connector that implements the interface [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/MemoryStorage/IMemoryDb.cs). Microsoft currently provides connectors for the following storage systems:
 
 - [Azure AI Search](https://azure.microsoft.com/products/ai-services/ai-search)
@@ -92,7 +93,7 @@ GET your_index_name/_search
 
 The results of the query would look like the following (*the value of the field ```embedding``` was truncated*):
 
-```
+```json
 {
   "took": 0,
   "timed_out": false,
@@ -260,6 +261,7 @@ The [IMemoryDb](https://github.com/microsoft/kernel-memory/blob/main/service/Abs
 3. Search
 
 ## Index management
+
 These three methods allow to create, list and delete indices where we can store our data.
 
 ```csharp
@@ -388,7 +390,6 @@ public class MemoryRecord
 - The property ```Id``` is a unique identifier for the record.
   - Ids are currently formatted like ```d=doc001//p=904d05afeeb24c2b99c9ad73fd97e690``` where the ```d``` part is the document id and the ```p``` part is the id of the document partition (chunk). 
 
-
 - The property ```Vector``` is the vector to be stored in the index. See the type [Embedding](https://github.com/microsoft/kernel-memory/blob/main/service/Abstractions/AI/Embedding.cs).
 
 - The property ```Tags``` is a collection of key-value pairs that can be used to filter the data when performing searches. 
@@ -417,7 +418,7 @@ You can see an example of how to create a MemoryRecord in the method *UpsertText
 
 This is how a memory record structure is translated in an Elasticsearch index mapping.
 
-```
+```json
 {
   "your_index_name_": {
     "mappings": {
@@ -457,7 +458,7 @@ This is how a memory record structure is translated in an Elasticsearch index ma
 
 And this is the data stored in one of such memory record:
 
-```
+```json
 {
     "_index": "your_index_name",
     "_id": "d=doc001//p=904d05afeeb24c2b99c9ad73fd97e690",
@@ -510,7 +511,7 @@ Task DeleteAsync(string index, MemoryRecord record, CancellationToken ancellatio
 
 An example of how to use UpsertAsync and DeleteAsync is in the unit test [DataStorageTests.cs](../tests/UnitTests/DataStorageTests.cs).
 
-```
+```csharp
 [Fact]
 public async Task CanUpsertOneTextDocumentAndDeleteAsync()
 {
