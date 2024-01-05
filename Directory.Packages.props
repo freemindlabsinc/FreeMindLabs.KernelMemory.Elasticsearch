@@ -4,8 +4,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.11.0" />
-    <PackageVersion Include="Microsoft.KernelMemory.Abstractions" Version="0.25.240103.1" />
-    <PackageVersion Include="Microsoft.KernelMemory.Core" Version="0.25.240103.1" />
+    <PackageVersion Include="Microsoft.KernelMemory.Abstractions" Version="0.26.240104.1" />
+    <PackageVersion Include="Microsoft.KernelMemory.Core" Version="0.26.240104.1" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
   </ItemGroup>
   <!-- Sources -->
