@@ -107,7 +107,7 @@ There are two ways to set `vm.max_map_count`:
 
    *This approach is ideal when you need to quickly set up Elasticsearch for short-term use or testing, without the need for the setting to persist after a reboot.*
 
-1. Permanent (reccommended):
+1. Permanent (recommended):
    - For long-term use, especially in containerized environments like Docker, you'll want this setting to be permanent. This requires editing a system configuration file to ensure the setting persists across reboots and container restarts. Follow these steps:
 
    ```bash
