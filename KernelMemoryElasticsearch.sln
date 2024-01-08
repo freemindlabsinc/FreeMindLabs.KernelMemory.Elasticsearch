@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F8AB55
 		docker\README.md = docker\README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ElasticsearchMemoryPlugins", "src\ElasticsearchMemoryPlugins\ElasticsearchMemoryPlugins.csproj", "{38B07945-345C-40B1-89A9-408112850D54}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,10 @@ Global
 		{A615A571-2B3A-4C2B-9B1C-371BF87D8DBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A615A571-2B3A-4C2B-9B1C-371BF87D8DBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A615A571-2B3A-4C2B-9B1C-371BF87D8DBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38B07945-345C-40B1-89A9-408112850D54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38B07945-345C-40B1-89A9-408112850D54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38B07945-345C-40B1-89A9-408112850D54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38B07945-345C-40B1-89A9-408112850D54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{BE8D8957-8A6F-4879-BAAE-0462A118DFD3} = {98E1758C-113A-41F4-85A3-1C8EFFA6CEC2}
 		{A615A571-2B3A-4C2B-9B1C-371BF87D8DBE} = {A455710B-0D10-4200-AB39-DB5ECC457FAC}
+		{38B07945-345C-40B1-89A9-408112850D54} = {9532FF95-6D14-43E7-B554-F5289C605172}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {964BE41E-E834-4596-BFDB-5F9D5BA9F048}

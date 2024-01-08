@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>5ee045b0-aea3-4f08-8d31-32d1a6f8fed0</UserSecretsId>
+    <AssemblyName>FreeMindLabs.AI.ElasticsearchMemoryPlugins</AssemblyName>
+    <RootNamespace>FreeMindLabs.AI.ElasticsearchMemoryPlugins</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="Microsoft.KernelMemory.Abstractions" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" />
+    <PackageReference Include="Microsoft.CodeAnalysis" />
+    <PackageReference Include="Microsoft.CodeAnalysis" />
+
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+
+    <PackageReference Include="Microsoft.SemanticKernel" />
+    <PackageReference Include="Microsoft.SemanticKernel.Plugins.OpenApi" />
+    <PackageReference Include="Microsoft.SemanticKernel.Plugins.Core" />
+    <PackageReference Include="Microsoft.SemanticKernel.Planners.Handlebars" />
+    <PackageReference Include="Microsoft.SemanticKernel.PromptTemplates.Handlebars" />
+    <PackageReference Include="Microsoft.SemanticKernel.Yaml" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="PrivacyPolicy.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
