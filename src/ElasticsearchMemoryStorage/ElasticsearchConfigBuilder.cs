@@ -1,0 +1,122 @@
+﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
+
+namespace FreeMindLabs.KernelMemory.Elasticsearch;
+
+/// <summary>
+/// The builder for ElasticsearchConfig.
+/// </summary>
+public class ElasticsearchConfigBuilder
+{
+    /// <summary>
+    /// The default Elasticsearch endpoint.
+    /// </summary>
+    public const string DefaultEndpoint = "https://localhost:9200";
+
+    /// <summary>
+    /// The default Elasticsearch username.
+    /// </summary>
+    public const string DefaultUserName = "elastic";
+
+    /// <summary>
+    /// The name of the section that will contain the configuration for Elasticsearch
+    /// (e.g. appSettings.json, user secrets, etc.).
+    /// </summary>
+    public const string DefaultSettingsSection = "Elasticsearch";
+
+    private ElasticsearchConfig _config;
+
+    /// <summary>
+    /// The default constructor.
+    /// </summary>
+    public ElasticsearchConfigBuilder()
+    {
+        this._config = new ElasticsearchConfig();
+
+        this.WithEndpoint(DefaultEndpoint)
+            .WithCertificateFingerPrint(string.Empty)
+            .WithUserNameAndPassword(DefaultUserName, string.Empty);
+    }
+
+    /// <summary>
+    /// Sets Elasticsearch endpoint to connect to.
+    /// </summary>
+    /// <param name="endpoint"></param>
+    /// <returns></returns>
+    public ElasticsearchConfigBuilder WithEndpoint(string endpoint)
+    {
+        this._config.Endpoint = endpoint;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the username and password used to connect to Elasticsearch.
+    /// </summary>
+    /// <param name="userName"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    public ElasticsearchConfigBuilder WithUserNameAndPassword(string userName, string password)
+    {
+        this._config.UserName = userName;
+        this._config.Password = password;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the certificate fingerprint used to communicate with Elasticsearch.
+    /// See <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/configuring-stack-security.html#_use_the_ca_fingerprint_5"/>.
+    /// </summary>
+    /// <param name="certificateFingerPrint"></param>
+    /// <returns></returns>
+    public ElasticsearchConfigBuilder WithCertificateFingerPrint(string certificateFingerPrint)
+    {
+        this._config.CertificateFingerPrint = certificateFingerPrint;
+        return this;
+    }
+
+    /// <summary>
+    /// Validates the Elasticsearch configuration.
+    /// </summary>
+    /// <returns></returns>
+    public ElasticsearchConfigBuilder Validate()
+    {
+        // TODO: improve this at some point
+        const string Prefix = "Invalid Elasticsearch configuration: missing ";
+
+        if (string.IsNullOrWhiteSpace(this._config.Endpoint))
+        {
+            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.Endpoint)}.");
+        }
+
+        if (string.IsNullOrWhiteSpace(this._config.UserName))
+        {
+            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.UserName)}.");
+        }
+
+        if (string.IsNullOrWhiteSpace(this._config.Password))
+        {
+            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.Password)}.");
+        }
+
+        if (string.IsNullOrWhiteSpace(this._config.CertificateFingerPrint))
+        {
+            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.CertificateFingerPrint)}");
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Builds the ElasticsearchConfig.
+    /// </summary>
+    /// <param name="skipValidation">Indicates if validation should be skipped.</param>
+    /// <returns></returns>
+    public ElasticsearchConfig Build(bool skipValidation = false)
+    {
+        if (!skipValidation)
+        {
+            this.Validate();
+        }
+
+        return this._config;
+    }
+}
