@@ -72,4 +72,20 @@ public static class ElasticsearchConfigExtensions
             ;
 #pragma warning restore CA2000 // Dispose objects before losing scope
     }
+
+    /// <summary>
+    /// TBC
+    /// </summary>
+    /// <param name="cfg"></param>
+    /// <param name="userName"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    public static ElasticsearchConfig UserNameAndPassword(this ElasticsearchConfig cfg, string userName, string password)
+    {
+        ArgumentNullException.ThrowIfNull(cfg, nameof(cfg));
+
+        // TODO:
+
+        return cfg;
+    }
 }

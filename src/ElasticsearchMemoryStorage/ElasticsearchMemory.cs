@@ -73,14 +73,15 @@ public class ElasticsearchMemory : IMemoryDb
         };
 
         var mapResponse = await this._client.Indices.PutMappingAsync(index, x => x
-            .Properties<ElasticsearchMemoryRecord>(p =>
+            .Properties<ElasticsearchMemoryRecord>(propDesc =>
             {
-                p.Keyword(x => x.Id);
-                p.Nested(ElasticsearchMemoryRecord.TagsField, np);
-                p.Text(x => x.Payload, pd => pd.Index(false));
-                p.Text(x => x.Content);
-                p.DenseVector(x => x.Vector, d => d.Index(true).Dims(Dimensions).Similarity("cosine"));
-                // TODO: add some kind of customization routine the user can utilize when setting up DI
+                propDesc.Keyword(x => x.Id);
+                propDesc.Nested(ElasticsearchMemoryRecord.TagsField, np);
+                propDesc.Text(x => x.Payload, pd => pd.Index(false));
+                propDesc.Text(x => x.Content);
+                propDesc.DenseVector(x => x.Vector, d => d.Index(true).Dims(Dimensions).Similarity("cosine"));
+
+                this._config.ConfigureProperties?.Invoke(propDesc);
             }),
             cancellationToken).ConfigureAwait(false);
 

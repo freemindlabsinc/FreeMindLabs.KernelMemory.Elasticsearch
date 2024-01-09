@@ -24,7 +24,7 @@ public static partial class ServiceCollectionExtensions
 
         // Reads the configuration from IConfiguration and validates it.
         var esConfig = configuration
-            .GetRequiredSection(ElasticsearchConfig.DefaultSettingsSection)
+            .GetRequiredSection(ElasticsearchConfigBuilder.DefaultSettingsSection)
             .Get<ElasticsearchConfig>();
 
         return AddElasticsearchAsVectorDb(services, esConfig!);

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.KernelMemory;
 
@@ -24,11 +25,12 @@ public static partial class KernelMemoryBuilderExtensions
     public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder,
         string endpoint, string userName, string password, string certificateFingerPrint)
     {
-        var cfg = new ElasticsearchConfig(
-            endpoint: endpoint,
-            userName: userName,
-            password: password,
-            certificateFingerPrint: certificateFingerPrint);
+        var cfg = new ElasticsearchConfigBuilder()
+            .WithEndpoint(endpoint)
+            .WithUserNameAndPassword(userName, password)
+            .WithCertificateFingerPrint(certificateFingerPrint)
+            .Validate() // Explicit call to validate
+            .Build(skipValidation: true);
 
         builder.Services.AddElasticsearchAsVectorDb(cfg);
         return builder;
@@ -43,12 +45,22 @@ public static partial class KernelMemoryBuilderExtensions
         return builder;
     }
 
+    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder,
+        Action<ElasticsearchConfig> configure)
+    {
+        var cfg = new ElasticsearchConfig();
+
+        builder.Services.AddElasticsearchAsVectorDb(cfg);
+        return builder;
+    }
+
     /// <summary>
     /// Kernel Memory Builder extension method to add the Elasticsearch memory connector.
     /// </summary>
     /// <param name="builder">The IKernelMemoryBuilder instance</param>
     /// <param name="configuration">The application configuration</param>"
-    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder, IConfiguration configuration)
+    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder,
+        IConfiguration configuration)
     {
         builder.Services.AddElasticsearchAsVectorDb(configuration);
 

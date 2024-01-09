@@ -37,7 +37,12 @@ public class Startup
                     Directory = "ContentStorage",
                     StorageType = Microsoft.KernelMemory.FileSystem.DevTools.FileSystemTypes.Volatile
                 })
-                .WithElasticsearch(this._configuration)
+                //.WithElasticsearch(this._configuration)
+                .WithElasticsearch(esCfg =>
+                {
+                    esCfg.UserNameAndPassword("", "");
+
+                })
                 .WithOpenAIDefaults(apiKey: this._configuration["OpenAI:ApiKey"] ?? throw new ArgumentException("OpenAI:ApiKey is required."));
 
         var kernelMemory = b.Build<MemoryServerless>();
