@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<ElasticsearchMemoryPlugin>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -25,6 +26,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(builder => builder
+ .AllowAnyOrigin()
+ .AllowAnyMethod()
+ .AllowAnyHeader()
+);
 
 app.MapPost("/store", (
     string topic,
@@ -108,7 +114,7 @@ app.MapGet("/.well-known/ai-plugin.json", (HttpRequest req) =>
     settings.Auth.Type = "none";
     settings.Api = new AIPluginSettings.ApiModel();
     settings.Api.Type = "openapi";
-    settings.Api.Url = $"https://{baseUrl}/swagger/v1/swagger.json";
+    settings.Api.Url = $"{baseUrl}swagger/v1/swagger.json";
     settings.LogoUrl = "https://avatars.githubusercontent.com/u/89085173?s=200&v=4";
     settings.ContactEmail = "alef@freemindlabs.com";
     settings.LegalInfoUrl = "https://localhost:7106/legal";
