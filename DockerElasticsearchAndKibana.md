@@ -75,7 +75,7 @@ sudo sysctl -w vm.max_map_count=262144
 
 This command sets `vm.max_map_count` to `262144` temporarily.
 
-#### Permanently (reccomended):
+#### Permanently (recommended):
 To make this change permanent, you need to add it to your system's configuration file.
 
 1. Edit the `/etc/sysctl.conf` file on your host machine:
