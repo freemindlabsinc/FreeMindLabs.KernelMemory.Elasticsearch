@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System;
-using System.Collections.Generic;
-
-namespace FreeMindLabs.KernelMemory.Elasticsearch.Exceptions;
+namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
 /// <summary>
 /// Exception thrown when an index name does pass Elasticsearch validation.
 /// </summary>
-public class InvalidIndexNameException : Exception
+public class InvalidIndexNameException : ElasticsearchException
 {
     /// <inheritdoc/>
     public InvalidIndexNameException(string indexName, IEnumerable<string> errors, Exception? innerException = default)

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 using System.Globalization;
 using Elastic.Clients.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.DataFormats.Text;
@@ -12,11 +13,12 @@ namespace UnitTests;
 
 public class DataStorageTests : ElasticsearchTestBase
 {
-    public DataStorageTests(ITestOutputHelper output, IMemoryDb memoryDb, ITextEmbeddingGenerator textEmbeddingGenerator, ElasticsearchClient client)
-        : base(output, client)
+    public DataStorageTests(ITestOutputHelper output, IMemoryDb memoryDb, ITextEmbeddingGenerator textEmbeddingGenerator, ElasticsearchClient client,
+        IIndexNameHelper indexNameHelper)
+        : base(output, client, indexNameHelper)
     {
         this.MemoryDb = memoryDb ?? throw new ArgumentNullException(nameof(memoryDb));
-        this.TextEmbeddingGenerator = textEmbeddingGenerator ?? throw new ArgumentNullException(nameof(textEmbeddingGenerator));
+        this.TextEmbeddingGenerator = textEmbeddingGenerator ?? throw new ArgumentNullException(nameof(textEmbeddingGenerator));        
     }
 
     public IMemoryDb MemoryDb { get; }
@@ -37,7 +39,8 @@ public class DataStorageTests : ElasticsearchTestBase
            }).ConfigureAwait(false);
 
         // Waits for indexing to complete
-        await this.Client.WaitForDocumentsAsync(nameof(CanUpsertOneTextDocumentAndDeleteAsync), expectedDocuments: 3)
+        var indexName = this.IndexNameHelper.Convert(nameof(CanUpsertOneTextDocumentAndDeleteAsync));
+        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 3)
                          .ConfigureAwait(false);
 
         // Deletes the document
@@ -72,7 +75,8 @@ public class DataStorageTests : ElasticsearchTestBase
            }).ConfigureAwait(false);
 
         // Waits for the indexing to complete.
-        await this.Client.WaitForDocumentsAsync(nameof(CanUpsertTwoTextFilesAndGetSimilarListAsync), expectedDocuments: 4)
+        var indexName = this.IndexNameHelper.Convert(nameof(CanUpsertTwoTextFilesAndGetSimilarListAsync));
+        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 4)
                          .ConfigureAwait(false);
 
 

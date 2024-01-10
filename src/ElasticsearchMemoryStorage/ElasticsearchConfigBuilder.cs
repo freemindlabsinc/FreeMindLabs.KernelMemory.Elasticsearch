@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
+using Microsoft.Extensions.Configuration;
+
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
 /// <summary>
@@ -23,6 +25,11 @@ public class ElasticsearchConfigBuilder
     /// </summary>
     public const string DefaultSettingsSection = "Elasticsearch";
 
+    /// <summary>
+    /// The default prefix to be prepend to the index names in Elasticsearch.
+    /// </summary>
+    public const string DefaultIndexPrefix = "km.";
+
     private ElasticsearchConfig _config;
 
     /// <summary>
@@ -31,8 +38,8 @@ public class ElasticsearchConfigBuilder
     public ElasticsearchConfigBuilder()
     {
         this._config = new ElasticsearchConfig();
-
         this.WithEndpoint(DefaultEndpoint)
+            .WithIndexPrefix(DefaultIndexPrefix)
             .WithCertificateFingerPrint(string.Empty)
             .WithUserNameAndPassword(DefaultUserName, string.Empty);
     }
@@ -44,6 +51,7 @@ public class ElasticsearchConfigBuilder
     /// <returns></returns>
     public ElasticsearchConfigBuilder WithEndpoint(string endpoint)
     {
+        // TODO: validate URL
         this._config.Endpoint = endpoint;
         return this;
     }
@@ -70,6 +78,17 @@ public class ElasticsearchConfigBuilder
     public ElasticsearchConfigBuilder WithCertificateFingerPrint(string certificateFingerPrint)
     {
         this._config.CertificateFingerPrint = certificateFingerPrint;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the prefix to be prepend to the index names in Elasticsearch.
+    /// </summary>
+    /// <param name="indexPrefix"></param>
+    /// <returns></returns>
+    public ElasticsearchConfigBuilder WithIndexPrefix(string indexPrefix)
+    {
+        this._config.IndexPrefix = indexPrefix;
         return this;
     }
 
@@ -101,6 +120,29 @@ public class ElasticsearchConfigBuilder
         {
             throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.CertificateFingerPrint)}");
         }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Reads the Elasticsearch configuration from the Services section of KernelMemory's configuration.
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
+    public ElasticsearchConfigBuilder WithConfiguration(IConfiguration configuration)
+    {
+        const string SectionPath = "KernelMemory:Services:Elasticsearch";
+
+        var kmSvcEsSection = configuration.GetSection(SectionPath);
+        if (!kmSvcEsSection.Exists())
+        {
+            throw new ElasticsearchConfigurationException($"Missing configuration section {SectionPath}.");
+        }
+
+        this._config = new ElasticsearchConfig();
+        kmSvcEsSection.Bind(this._config);
+
+        configuration.Bind(SectionPath, this._config);
 
         return this;
     }

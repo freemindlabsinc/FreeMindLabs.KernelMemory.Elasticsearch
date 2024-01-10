@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using System.Reflection;
-using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.KernelMemory.ContentStorage.DevTools;
+using FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
+using FreeMindLabs.KernelMemory.Elasticsearch;
+using Microsoft.KernelMemory.FileSystem.DevTools;
 
 namespace UnitTests;
 
@@ -28,24 +30,34 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        // TODO: Uses only OpenAI API stuff for now. Make more flexible.        
+        // We use the same OpenAI API key as in Kernel Memory.
+        const string OpenAIKeyPath = "KernelMemory:Services:OpenAI:APIKey";
+
+        // TODO: Uses only OpenAI API stuff for now. Make more flexible.
+        var openApiKey = this._configuration[OpenAIKeyPath] ?? throw new ElasticsearchConfigurationException($"OpenAI API key is required. [path: {OpenAIKeyPath}]");
 
         // Kernel Memory with Elasticsearch
-        IKernelMemoryBuilder b = new KernelMemoryBuilder(services)
+        IKernelMemoryBuilder kmBldr = new KernelMemoryBuilder(services)
                 .WithSimpleFileStorage(new SimpleFileStorageConfig()
                 {
                     Directory = "ContentStorage",
-                    StorageType = Microsoft.KernelMemory.FileSystem.DevTools.FileSystemTypes.Volatile
+                    StorageType = FileSystemTypes.Volatile
                 })
-                //.WithElasticsearch(this._configuration)
-                .WithElasticsearch(esCfg =>
+                .WithElasticsearch(esBldr =>
                 {
-                    esCfg.UserNameAndPassword("", "");
+                    esBldr.WithConfiguration(this._configuration);
+
+                    // Alternatively we can use the other builder methods:                    
+                    //esBldr.WithEndpoint(ElasticsearchConfigBuilder.DefaultEndpoint)
+                    //      .WithIndexPrefix(ElasticsearchConfigBuilder.DefaultIndexPrefix)
+                    //      .WithCertificateFingerPrint(string.Empty)
+                    //      .WithUserNameAndPassword(ElasticsearchConfigBuilder.DefaultUserName, string.Empty)
+                    //      .WithIndexPrefix("km.");
 
                 })
-                .WithOpenAIDefaults(apiKey: this._configuration["OpenAI:ApiKey"] ?? throw new ArgumentException("OpenAI:ApiKey is required."));
+                .WithOpenAIDefaults(apiKey: openApiKey);
 
-        var kernelMemory = b.Build<MemoryServerless>();
+        var kernelMemory = kmBldr.Build<MemoryServerless>();
 
         services.AddSingleton<IKernelMemory>(kernelMemory);
     }

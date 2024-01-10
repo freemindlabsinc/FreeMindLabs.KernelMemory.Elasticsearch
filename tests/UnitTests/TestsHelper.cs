@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Elastic.Clients.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 
 namespace UnitTests;
 
@@ -15,10 +17,11 @@ internal static class TestsHelper
     /// Deletes all indices that are created by all test methods of the given class.
     /// Indices must have the same name of a test method to be automatically deleted.
     /// </summary>
-    public static async Task<IEnumerable<string>> DeleteIndicesOfTestAsync(this ElasticsearchClient client, Type unitTestType)
+    public static async Task<IEnumerable<string>> DeleteIndicesOfTestAsync(this ElasticsearchClient client, Type unitTestType, IIndexNameHelper indexNameHelper)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(unitTestType);
+        ArgumentNullException.ThrowIfNull(indexNameHelper);
 
         // Iterates thru all method names of the test class and deletes the indice with the same name
         var methods = unitTestType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
@@ -36,7 +39,7 @@ internal static class TestsHelper
         var result = new List<string>();
         foreach (var method in methods)
         {
-            var indexName = FreeMindLabs.KernelMemory.Elasticsearch.ESIndexName.Convert(method.Name);
+            var indexName = indexNameHelper.Convert(method.Name);
             var delResp = await client.Indices.DeleteAsync(indices: indexName)
                                       .ConfigureAwait(false);
 
@@ -54,10 +57,10 @@ internal static class TestsHelper
     /// or the max number of retries is reached.
     /// It throws an exception if the expected number of documents is not found.
     /// </summary>
-    public static async Task WaitForDocumentsAsync(this ElasticsearchClient client, string indexName, int expectedDocuments, int maxRetries = 3, int msDelay = 500)
+    public static async Task WaitForDocumentsAsync(this ElasticsearchClient client, string realIndexName, int expectedDocuments, int maxRetries = 3, int msDelay = 500)
     {
         ArgumentNullException.ThrowIfNull(client);
-        ArgumentNullException.ThrowIfNull(indexName);
+        ArgumentNullException.ThrowIfNull(realIndexName);
 
         var foundCount = 0;
         for (int i = 0; i < maxRetries; i++)
@@ -66,12 +69,12 @@ internal static class TestsHelper
             var results = await client
                 .SearchAsync<ElasticsearchMemoryRecord>(sr =>
                 {
-                    sr.Index(ESIndexName.Convert(indexName))
+                    sr.Index(realIndexName)
                       .Query(q => q.MatchAll());
                 })
                 .ConfigureAwait(false);
 
-            foundCount = results?.Hits?.Count ?? 0;
+            foundCount = results?.HitsMetadata?.Hits?.Count ?? 0;
 
             // If we found all documents, we can return
             if ((expectedDocuments == 0) && (foundCount == 0))

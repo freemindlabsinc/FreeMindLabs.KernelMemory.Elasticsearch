@@ -1,6 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 using Elastic.Clients.Elasticsearch;
-using FreeMindLabs.KernelMemory.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 using Microsoft.KernelMemory;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,8 +10,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
 {
     private const string NoAnswer = "INFO NOT FOUND";
 
-    public KernelMemoryTests(ITestOutputHelper output, IKernelMemory kernelMemory, ElasticsearchClient client)
-        : base(output, client)
+    public KernelMemoryTests(ITestOutputHelper output, IKernelMemory kernelMemory, ElasticsearchClient client, IIndexNameHelper indexNameHelper)
+        : base(output, client, indexNameHelper)
     {
         this.KernelMemory = kernelMemory ?? throw new ArgumentNullException(nameof(kernelMemory));
     }
@@ -37,7 +37,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
         this.Output.WriteLine($"Indexed document with id '{id}'.");
 
         // Waits for the documents to be saved
-        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 2)
+        var actualIndexName = this.IndexNameHelper.Convert(indexName);
+        await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 2)
                   .ConfigureAwait(false);
 
         // Asks a question on the data we just inserted
@@ -84,7 +85,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
         this.Output.WriteLine($"Indexed {docId}");
 
         // Waits for the documents to be saved
-        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 10)
+        var actualIndexName = this.IndexNameHelper.Convert(indexName);
+        await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 10)
                          .ConfigureAwait(false);
 
         // This should return a citation to doc001
@@ -127,7 +129,6 @@ public class KernelMemoryTests : ElasticsearchTestBase
     private async Task<MemoryAnswer?> TryToGetTopAnswerAsync(string indexName, string question)
     {
         MemoryAnswer? answer = null;
-        var actualIndexName = ESIndexName.Convert(indexName);
 
         // We need to wait a bit for the indexing to complete, so this is why we retry a few times with a delay.
         // TODO: add Polly.
@@ -135,7 +136,7 @@ public class KernelMemoryTests : ElasticsearchTestBase
         {
             answer = await this.KernelMemory.AskAsync(
                 question: question,
-                index: actualIndexName,
+                index: indexName,
                 filter: null,
                 filters: null,
                 minRelevance: 0)

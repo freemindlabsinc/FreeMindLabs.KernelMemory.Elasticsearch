@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System;
 using Elastic.Clients.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory.MemoryStorage;
 
-namespace FreeMindLabs.KernelMemory.Elasticsearch;
+namespace FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
 
 /// <summary>
 /// Extensions for KernelMemoryBuilder and generic DI
@@ -27,7 +27,7 @@ public static partial class ServiceCollectionExtensions
             .GetRequiredSection(ElasticsearchConfigBuilder.DefaultSettingsSection)
             .Get<ElasticsearchConfig>();
 
-        return AddElasticsearchAsVectorDb(services, esConfig!);
+        return services.AddElasticsearchAsVectorDb(esConfig!);
     }
 
     /// <summary>
@@ -39,19 +39,19 @@ public static partial class ServiceCollectionExtensions
         ElasticsearchConfig esConfig)
     {
         esConfig = esConfig ?? throw new ArgumentNullException(nameof(esConfig));
-        esConfig.Validate(); // This checks everything is in order.
 
         // The ElasticsearchClient type is thread-safe and can be shared and
         // reused across multiple threads in consuming applications. 
         // See https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/recommendations.html
-        services.AddSingleton<ElasticsearchClient>(sp =>
+        services.AddSingleton(sp =>
         {
             var esConfig = sp.GetRequiredService<ElasticsearchConfig>();
             return new ElasticsearchClient(esConfig.ToElasticsearchClientSettings());
         });
 
         return services
-            .AddSingleton<ElasticsearchConfig>(esConfig)
+            .AddSingleton<IIndexNameHelper, IndexNameHelper>()
+            .AddSingleton(esConfig)
             .AddSingleton<IMemoryDb, ElasticsearchMemory>();
     }
 }

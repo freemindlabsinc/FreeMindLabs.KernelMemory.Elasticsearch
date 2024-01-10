@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
+using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
@@ -23,6 +20,7 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 public class ElasticsearchMemory : IMemoryDb
 {
     private readonly ITextEmbeddingGenerator _embeddingGenerator;
+    private readonly IIndexNameHelper _indexNameHelper;
     private readonly ElasticsearchConfig _config;
     private readonly ILogger<ElasticsearchMemory> _log;
     private readonly ElasticsearchClient _client;
@@ -33,12 +31,15 @@ public class ElasticsearchMemory : IMemoryDb
     /// <param name="config">Elasticsearch configuration</param>
     /// <param name="log">Application logger</param>
     /// <param name="embeddingGenerator">Embedding generator</param>
+    /// <param name="indexNameHelper">Index name helper</param>
     public ElasticsearchMemory(
         ElasticsearchConfig config,
         ITextEmbeddingGenerator embeddingGenerator,
+        IIndexNameHelper indexNameHelper,
         ILogger<ElasticsearchMemory>? log = null)
     {
         this._embeddingGenerator = embeddingGenerator ?? throw new ArgumentNullException(nameof(embeddingGenerator));
+        this._indexNameHelper = indexNameHelper ?? throw new ArgumentNullException(nameof(indexNameHelper));
         this._config = config ?? throw new ArgumentNullException(nameof(config));
         this._client = new ElasticsearchClient(this._config.ToElasticsearchClientSettings());
         this._log = log ?? DefaultLogger<ElasticsearchMemory>.Instance;
@@ -50,7 +51,7 @@ public class ElasticsearchMemory : IMemoryDb
         int vectorSize,
         CancellationToken cancellationToken = default)
     {
-        index = ESIndexName.Convert(index);
+        index = this._indexNameHelper.Convert(index);
 
         var existsResponse = await this._client.Indices.ExistsAsync(index, cancellationToken).ConfigureAwait(false);
         if (existsResponse.Exists)
@@ -92,10 +93,10 @@ public class ElasticsearchMemory : IMemoryDb
     public async Task<IEnumerable<string>> GetIndexesAsync(
         CancellationToken cancellationToken = default)
     {
-        var resp = await this._client.Indices.GetAsync(Indices.All, cancellationToken).ConfigureAwait(false);
+        var resp = await this._client.Indices.GetAsync(this._config.IndexPrefix + "*", cancellationToken).ConfigureAwait(false);
 
         var names = resp.Indices
-            .Select(x => x.Key.ToString())
+            .Select(x => x.Key.ToString().Replace(this._config.IndexPrefix, string.Empty, StringComparison.Ordinal))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         this._log.LogTrace("{MethodName}: Returned {IndexCount} indices: {Indices}.", nameof(GetIndexesAsync), names.Count, string.Join(", ", names));
@@ -108,8 +109,10 @@ public class ElasticsearchMemory : IMemoryDb
         string index,
         CancellationToken cancellationToken = default)
     {
+        index = this._indexNameHelper.Convert(index);
+
         var delResponse = await this._client.Indices.DeleteAsync(
-            ESIndexName.Convert(index),
+            index,
             cancellationToken).ConfigureAwait(false);
 
         if (delResponse.IsSuccess())
@@ -128,10 +131,12 @@ public class ElasticsearchMemory : IMemoryDb
         MemoryRecord record,
         CancellationToken cancellationToken = default)
     {
+        index = this._indexNameHelper.Convert(index);
+
         record = record ?? throw new ArgumentNullException(nameof(record));
 
         var delResponse = await this._client.DeleteAsync<ElasticsearchMemoryRecord>(
-            ESIndexName.Convert(index),
+            index,
             record.Id,
             (delReq) =>
             {
@@ -155,10 +160,12 @@ public class ElasticsearchMemory : IMemoryDb
         MemoryRecord record,
         CancellationToken cancellationToken = default)
     {
+        index = this._indexNameHelper.Convert(index);
+
         var memRec = ElasticsearchMemoryRecord.FromMemoryRecord(record);
 
         var response = await this._client.UpdateAsync<ElasticsearchMemoryRecord, ElasticsearchMemoryRecord>(
-            ESIndexName.Convert(index),
+            index,
             memRec.Id,
             (updateReq) =>
             {
@@ -188,7 +195,7 @@ public class ElasticsearchMemory : IMemoryDb
         ICollection<MemoryFilter>? filters = null,
         double minRelevance = 0, int limit = 1, bool withEmbeddings = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        index = ESIndexName.Convert(index);
+        index = this._indexNameHelper.Convert(index);
 
         this._log.LogTrace("{MethodName}: Searching for '{Text}' on index '{IndexName}' with filters {Filters}. {MinRelevance} {Limit} {WithEmbeddings}",
                            nameof(GetSimilarListAsync), text, index, filters.ToDebugString(), minRelevance, limit, withEmbeddings);
@@ -209,7 +216,12 @@ public class ElasticsearchMemory : IMemoryDb
              cancellationToken)
             .ConfigureAwait(false);
 
-        foreach (var hit in resp.Hits)
+        if ((resp.HitsMetadata is null) || (resp.HitsMetadata.Hits is null))
+        {
+            yield break;
+        }
+
+        foreach (var hit in resp.HitsMetadata.Hits)
         {
             if (hit?.Source == null)
             {
@@ -233,7 +245,7 @@ public class ElasticsearchMemory : IMemoryDb
         this._log.LogTrace("{MethodName}: querying index '{IndexName}' with filters {Filters}. {Limit} {WithEmbeddings}",
                 nameof(GetListAsync), index, filters.ToDebugString(), limit, withEmbeddings);
 
-        index = ESIndexName.Convert(index);
+        index = this._indexNameHelper.Convert(index);
 
         var resp = await this._client.SearchAsync<ElasticsearchMemoryRecord>(s =>
             s.Index(index)
@@ -256,6 +268,8 @@ public class ElasticsearchMemory : IMemoryDb
             yield return hit.Source!.ToMemoryRecord();
         }
     }
+
+    //private string ConvertIndexName(string index) => ESIndexName.Convert(this._config.IndexPrefix + index);
 
     private QueryDescriptor<ElasticsearchMemoryRecord> ConvertTagFilters(
         QueryDescriptor<ElasticsearchMemoryRecord> qd,

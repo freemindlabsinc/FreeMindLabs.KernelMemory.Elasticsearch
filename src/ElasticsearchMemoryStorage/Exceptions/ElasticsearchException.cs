@@ -3,6 +3,7 @@
 using System;
 using Microsoft.KernelMemory;
 
+// TODO: I am not using the normal ns name given the folder... should I?
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
 /// <summary>

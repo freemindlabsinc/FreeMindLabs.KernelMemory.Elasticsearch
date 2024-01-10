@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="..\..\..\kernel-memory\service\Service\appsettings.Development.json" Link="Refs\appsettings.Development.json" />
+    <Content Include="..\..\..\kernel-memory\service\Service\appsettings.json" Link="Refs\appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.KernelMemory.Core" />    
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
     <PackageReference Include="Microsoft.KernelMemory.Abstractions" />
@@ -57,6 +62,10 @@
     <None Update="Data\file6-ANWC-image.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Refs\" />
   </ItemGroup>
 
 </Project>

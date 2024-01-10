@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.KernelMemory;
 
-namespace FreeMindLabs.KernelMemory.Elasticsearch;
+namespace FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
 
 /// <summary>
 /// TBC

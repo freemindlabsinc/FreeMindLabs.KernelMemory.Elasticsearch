@@ -7,8 +7,9 @@
         <RootNamespace>FreeMindLabs.KernelMemory.Elasticsearch</RootNamespace>
         <IsPackable>true</IsPackable>
         <PackageId>FreeMindLabs.KernelMemory.Elasticsearch</PackageId>
-        <NoWarn>CA1724,NU5104,CA1304,CA1311</NoWarn>
+        <NoWarn>CA1724,NU5104,CA1304,CA1311,IDE0130</NoWarn>
         <UserSecretsId>750ea0f7-073f-44fb-b791-08ce5fd978a2</UserSecretsId>
+        <ImplicitUsings>enable</ImplicitUsings>
         <DebugType>portable</DebugType>
         <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
