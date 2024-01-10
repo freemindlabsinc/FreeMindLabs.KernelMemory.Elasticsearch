@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using Elastic.Clients.Elasticsearch;
-using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory.MemoryStorage;
 
-namespace FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extensions for KernelMemoryBuilder and generic DI

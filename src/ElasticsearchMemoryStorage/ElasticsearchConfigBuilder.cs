@@ -103,22 +103,22 @@ public class ElasticsearchConfigBuilder
 
         if (string.IsNullOrWhiteSpace(this._config.Endpoint))
         {
-            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.Endpoint)}.");
+            throw new Exceptions(Prefix + $"{nameof(ElasticsearchConfig.Endpoint)}.");
         }
 
         if (string.IsNullOrWhiteSpace(this._config.UserName))
         {
-            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.UserName)}.");
+            throw new Exceptions(Prefix + $"{nameof(ElasticsearchConfig.UserName)}.");
         }
 
         if (string.IsNullOrWhiteSpace(this._config.Password))
         {
-            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.Password)}.");
+            throw new Exceptions(Prefix + $"{nameof(ElasticsearchConfig.Password)}.");
         }
 
         if (string.IsNullOrWhiteSpace(this._config.CertificateFingerPrint))
         {
-            throw new ElasticsearchConfigurationException(Prefix + $"{nameof(ElasticsearchConfig.CertificateFingerPrint)}");
+            throw new Exceptions(Prefix + $"{nameof(ElasticsearchConfig.CertificateFingerPrint)}");
         }
 
         return this;
@@ -136,7 +136,7 @@ public class ElasticsearchConfigBuilder
         var kmSvcEsSection = configuration.GetSection(SectionPath);
         if (!kmSvcEsSection.Exists())
         {
-            throw new ElasticsearchConfigurationException($"Missing configuration section {SectionPath}.");
+            throw new Exceptions($"Missing configuration section {SectionPath}.");
         }
 
         this._config = new ElasticsearchConfig();

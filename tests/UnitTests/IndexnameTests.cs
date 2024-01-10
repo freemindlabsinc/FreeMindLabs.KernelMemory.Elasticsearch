@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 using FreeMindLabs.KernelMemory.Elasticsearch;
-using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 using Xunit;
 using Xunit.Abstractions;
 

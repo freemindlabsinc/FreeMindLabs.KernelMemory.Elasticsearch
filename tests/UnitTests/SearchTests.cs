@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 using Elastic.Clients.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
-using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;
 using Microsoft.KernelMemory.MemoryStorage;

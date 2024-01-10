@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using Microsoft.KernelMemory;
-
-namespace FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
+namespace Microsoft.KernelMemory;
 
 /// <summary>
 /// TBC

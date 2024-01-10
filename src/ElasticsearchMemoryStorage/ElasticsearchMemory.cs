@@ -4,8 +4,6 @@ using System.Runtime.CompilerServices;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
-using FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
-using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.AI;

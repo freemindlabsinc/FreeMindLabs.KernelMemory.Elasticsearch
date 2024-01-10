@@ -3,7 +3,6 @@
 using System.Reflection;
 using Elastic.Clients.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch;
-using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
 
 namespace UnitTests;
 

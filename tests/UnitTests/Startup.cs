@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
 using System.Reflection;
 using Microsoft.KernelMemory.ContentStorage.DevTools;
-using FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
 using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.KernelMemory.FileSystem.DevTools;
 
@@ -34,7 +33,7 @@ public class Startup
         const string OpenAIKeyPath = "KernelMemory:Services:OpenAI:APIKey";
 
         // TODO: Uses only OpenAI API stuff for now. Make more flexible.
-        var openApiKey = this._configuration[OpenAIKeyPath] ?? throw new ElasticsearchConfigurationException($"OpenAI API key is required. [path: {OpenAIKeyPath}]");
+        var openApiKey = this._configuration[OpenAIKeyPath] ?? throw new Exceptions($"OpenAI API key is required. [path: {OpenAIKeyPath}]");
 
         // Kernel Memory with Elasticsearch
         IKernelMemoryBuilder kmBldr = new KernelMemoryBuilder(services)

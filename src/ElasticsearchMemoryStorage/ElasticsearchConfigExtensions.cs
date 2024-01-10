@@ -3,7 +3,7 @@
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 
-namespace FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
+namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
 /// <summary>
 /// Elasticsearch configuration extensions.
@@ -14,8 +14,6 @@ public static class ElasticsearchConfigExtensions
     /// Converts an ElasticsearchConfig to a ElasticsearchClientSettings that can be used
     /// to instantiate <see cref="ElasticsearchClient"/>.
     /// </summary>
-    /// <param name="config"></param>
-    /// <returns></returns>
     public static ElasticsearchClientSettings ToElasticsearchClientSettings(this ElasticsearchConfig config)
     {
         ArgumentNullException.ThrowIfNull(config, nameof(config));
