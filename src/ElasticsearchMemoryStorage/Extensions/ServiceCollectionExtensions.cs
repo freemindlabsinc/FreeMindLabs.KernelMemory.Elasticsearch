@@ -2,7 +2,6 @@
 
 using Elastic.Clients.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch;
-using Microsoft.Extensions.Configuration;
 using Microsoft.KernelMemory.MemoryStorage;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -13,31 +12,12 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Inject Elasticsearch as the default implementation of IVectorDb
+    /// Inject Elasticsearch as the default implementation of IMemoryDb
     /// </summary>
-    /// <param name="services">Service collection</param>
-    /// <param name="configuration">Configuration</param>"
-    public static IServiceCollection AddElasticsearchAsVectorDb(this IServiceCollection services, IConfiguration configuration)
-    {
-        configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-
-        // Reads the configuration from IConfiguration and validates it.
-        var esConfig = configuration
-            .GetRequiredSection(ElasticsearchConfigBuilder.DefaultSettingsSection)
-            .Get<ElasticsearchConfig>();
-
-        return services.AddElasticsearchAsVectorDb(esConfig!);
-    }
-
-    /// <summary>
-    /// Inject Elasticsearch as the default implementation of IVectorDb
-    /// </summary>
-    /// <param name="services">Service collection</param>
-    /// <param name="esConfig">Elasticsearch configuration</param>
     public static IServiceCollection AddElasticsearchAsVectorDb(this IServiceCollection services,
         ElasticsearchConfig esConfig)
     {
-        esConfig = esConfig ?? throw new ArgumentNullException(nameof(esConfig));
+        ArgumentNullException.ThrowIfNull(esConfig, nameof(esConfig));
 
         // The ElasticsearchClient type is thread-safe and can be shared and
         // reused across multiple threads in consuming applications. 
@@ -52,5 +32,19 @@ public static partial class ServiceCollectionExtensions
             .AddSingleton<IIndexNameHelper, IndexNameHelper>()
             .AddSingleton(esConfig)
             .AddSingleton<IMemoryDb, ElasticsearchMemory>();
+    }
+
+    /// <summary>
+    /// Inject Elasticsearch as the default implementation of IMemoryDb
+    /// </summary>
+    public static IServiceCollection AddElasticsearchAsVectorDb(this IServiceCollection services,
+               Action<ElasticsearchConfigBuilder> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure, nameof(configure));
+
+        var cfg = new ElasticsearchConfigBuilder();
+        configure(cfg);
+
+        return services.AddElasticsearchAsVectorDb(cfg.Build());
     }
 }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using FreeMindLabs.KernelMemory.Elasticsearch;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.KernelMemory;
@@ -11,6 +10,19 @@ namespace Microsoft.KernelMemory;
 /// </summary>
 public static partial class KernelMemoryBuilderExtensions
 {
+    /// <summary>
+    /// Kernel Memory Builder extension method to add the Elasticsearch memory connector.
+    /// </summary>
+    /// <param name="builder">The IKernelMemoryBuilder instance</param>
+    /// <param name="configuration">The application configuration</param>"
+    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder,
+        ElasticsearchConfig configuration)
+    {
+        builder.Services.AddElasticsearchAsVectorDb(configuration);
+
+        return builder;
+    }
+
     /// <summary>
     /// Extension method to add the Elasticsearch memory connector.
     /// </summary>
@@ -26,19 +38,6 @@ public static partial class KernelMemoryBuilderExtensions
         configure(cfg);
 
         builder.Services.AddElasticsearchAsVectorDb(cfg.Build());
-        return builder;
-    }
-
-    /// <summary>
-    /// Kernel Memory Builder extension method to add the Elasticsearch memory connector.
-    /// </summary>
-    /// <param name="builder">The IKernelMemoryBuilder instance</param>
-    /// <param name="configuration">The application configuration</param>"
-    public static IKernelMemoryBuilder WithElasticsearch(this IKernelMemoryBuilder builder,
-        IConfiguration configuration)
-    {
-        builder.Services.AddElasticsearchAsVectorDb(configuration);
-
         return builder;
     }
 }

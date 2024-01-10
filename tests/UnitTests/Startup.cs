@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
-using System.Reflection;
 using Microsoft.KernelMemory.ContentStorage.DevTools;
-using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.KernelMemory.FileSystem.DevTools;
 
 namespace UnitTests;
@@ -33,7 +32,7 @@ public class Startup
         const string OpenAIKeyPath = "KernelMemory:Services:OpenAI:APIKey";
 
         // TODO: Uses only OpenAI API stuff for now. Make more flexible.
-        var openApiKey = this._configuration[OpenAIKeyPath] ?? throw new Exceptions($"OpenAI API key is required. [path: {OpenAIKeyPath}]");
+        var openApiKey = this._configuration[OpenAIKeyPath] ?? throw new ArgumentException($"OpenAI API key is required. [path: {OpenAIKeyPath}]");
 
         // Kernel Memory with Elasticsearch
         IKernelMemoryBuilder kmBldr = new KernelMemoryBuilder(services)
@@ -49,9 +48,9 @@ public class Startup
                     // Alternatively we can use the other builder methods:                    
                     //esBldr.WithEndpoint(ElasticsearchConfigBuilder.DefaultEndpoint)
                     //      .WithIndexPrefix(ElasticsearchConfigBuilder.DefaultIndexPrefix)
-                    //      .WithCertificateFingerPrint(string.Empty)
-                    //      .WithUserNameAndPassword(ElasticsearchConfigBuilder.DefaultUserName, string.Empty)
-                    //      .WithIndexPrefix("km.");
+                    //      .WithCertificateFingerPrint("...")
+                    //      .WithUserNameAndPassword(ElasticsearchConfigBuilder.DefaultUserName, "...")
+                    //      .WithIndexPrefix("km-");
 
                 })
                 .WithOpenAIDefaults(apiKey: openApiKey);

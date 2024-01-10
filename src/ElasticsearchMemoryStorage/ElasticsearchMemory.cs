@@ -39,7 +39,7 @@ public class ElasticsearchMemory : IMemoryDb
         this._embeddingGenerator = embeddingGenerator ?? throw new ArgumentNullException(nameof(embeddingGenerator));
         this._indexNameHelper = indexNameHelper ?? throw new ArgumentNullException(nameof(indexNameHelper));
         this._config = config ?? throw new ArgumentNullException(nameof(config));
-        this._client = new ElasticsearchClient(this._config.ToElasticsearchClientSettings());
+        this._client = new ElasticsearchClient(this._config.ToElasticsearchClientSettings()); // TODO: inject
         this._log = log ?? DefaultLogger<ElasticsearchMemory>.Instance;
     }
 

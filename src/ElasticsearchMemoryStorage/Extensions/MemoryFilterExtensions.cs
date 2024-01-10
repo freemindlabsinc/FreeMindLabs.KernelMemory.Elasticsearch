@@ -3,12 +3,12 @@
 namespace Microsoft.KernelMemory;
 
 /// <summary>
-/// TBC
+/// Extensions methods for MemoryFilter.
 /// </summary>
 public static class MemoryFilterExtensions
 {
     /// <summary>
-    /// TBC
+    /// Displays the MemoryFilter in a human-readable format.
     /// </summary>
     /// <param name="filter"></param>
     /// <returns></returns>
@@ -25,7 +25,7 @@ public static class MemoryFilterExtensions
     }
 
     /// <summary>
-    /// TBC
+    /// Displays the MemoryFilter(s) in a human-readable format.
     /// </summary>
     /// <param name="filters"></param>
     /// <returns></returns>
