@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System;
 using Microsoft.KernelMemory;
 
 // TODO: I am not using the normal ns name given the folder... should I?

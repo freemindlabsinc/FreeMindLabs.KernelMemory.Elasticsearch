@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 

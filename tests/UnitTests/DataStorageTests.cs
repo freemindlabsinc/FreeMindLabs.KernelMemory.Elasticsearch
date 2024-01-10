@@ -18,7 +18,7 @@ public class DataStorageTests : ElasticsearchTestBase
         : base(output, client, indexNameHelper)
     {
         this.MemoryDb = memoryDb ?? throw new ArgumentNullException(nameof(memoryDb));
-        this.TextEmbeddingGenerator = textEmbeddingGenerator ?? throw new ArgumentNullException(nameof(textEmbeddingGenerator));        
+        this.TextEmbeddingGenerator = textEmbeddingGenerator ?? throw new ArgumentNullException(nameof(textEmbeddingGenerator));
     }
 
     public IMemoryDb MemoryDb { get; }

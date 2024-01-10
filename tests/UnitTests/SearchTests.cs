@@ -1,5 +1,4 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
-using System.Runtime.InteropServices;
 using Elastic.Clients.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch.Extensions;
 using FreeMindLabs.KernelMemory.Elasticsearch.Utils;

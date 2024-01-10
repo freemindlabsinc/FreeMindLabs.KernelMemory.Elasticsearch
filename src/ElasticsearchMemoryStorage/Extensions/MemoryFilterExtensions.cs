@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.KernelMemory;
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch.Extensions;

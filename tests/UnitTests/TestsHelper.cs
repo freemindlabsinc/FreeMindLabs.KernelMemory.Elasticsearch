@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Elastic.Clients.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch;
 using FreeMindLabs.KernelMemory.Elasticsearch.Utils;
