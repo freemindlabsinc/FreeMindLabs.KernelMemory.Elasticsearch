@@ -193,6 +193,11 @@ public class ElasticsearchMemory : IMemoryDb
         ICollection<MemoryFilter>? filters = null,
         double minRelevance = 0, int limit = 1, bool withEmbeddings = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        if (limit < 0)
+        {
+            limit = 10;
+        }
+
         index = this._indexNameHelper.Convert(index);
 
         this._log.LogTrace("{MethodName}: Searching for '{Text}' on index '{IndexName}' with filters {Filters}. {MinRelevance} {Limit} {WithEmbeddings}",
@@ -206,7 +211,7 @@ public class ElasticsearchMemory : IMemoryDb
              .Knn(qd =>
              {
                  qd.k(limit)
-                   .Filter(q => this.ConvertTagFilters(q, limit, filters))
+                   .Filter(q => this.ConvertTagFilters(q, filters))
                    .NumCandidates(limit + 100)
                    .Field(x => x.Vector)
                    .QueryVector(coll);
@@ -243,6 +248,11 @@ public class ElasticsearchMemory : IMemoryDb
         this._log.LogTrace("{MethodName}: querying index '{IndexName}' with filters {Filters}. {Limit} {WithEmbeddings}",
                 nameof(GetListAsync), index, filters.ToDebugString(), limit, withEmbeddings);
 
+        if (limit < 0)
+        {
+            limit = 10;
+        }
+
         index = this._indexNameHelper.Convert(index);
 
         var resp = await this._client.SearchAsync<ElasticsearchMemoryRecord>(s =>
@@ -250,7 +260,7 @@ public class ElasticsearchMemory : IMemoryDb
              .Size(limit)
              .Query(qd =>
              {
-                 this.ConvertTagFilters(qd, limit, filters);
+                 this.ConvertTagFilters(qd, filters);
              }),
              cancellationToken)
             .ConfigureAwait(false);
@@ -271,7 +281,6 @@ public class ElasticsearchMemory : IMemoryDb
 
     private QueryDescriptor<ElasticsearchMemoryRecord> ConvertTagFilters(
         QueryDescriptor<ElasticsearchMemoryRecord> qd,
-        int limit,
         ICollection<MemoryFilter>? filters = null)
     {
         if ((filters == null) || (filters.Count == 0))
