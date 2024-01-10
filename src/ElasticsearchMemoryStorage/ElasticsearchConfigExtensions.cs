@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 
@@ -12,44 +11,9 @@ namespace FreeMindLabs.KernelMemory.Elasticsearch;
 public static class ElasticsearchConfigExtensions
 {
     /// <summary>
-    /// Validates the Elasticsearch configuration.
-    /// </summary>
-    /// <exception cref="ArgumentNullException">If see <paramref name="config"/> is null.</exception>
-    /// <exception cref="ElasticsearchConfigurationException">If configuration values are invalid.</exception>
-    public static ElasticsearchConfig Validate(this ElasticsearchConfig? config)
-    {
-        // again 4
-        ArgumentNullException.ThrowIfNull(config, nameof(config));
-
-        if (string.IsNullOrWhiteSpace(config.Endpoint))
-        {
-            throw new ElasticsearchConfigurationException(
-                $"The {nameof(ElasticsearchConfig.Endpoint)} property is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(config.UserName))
-        {
-            throw new ElasticsearchConfigurationException(
-                $"The {nameof(ElasticsearchConfig.UserName)} property is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(config.Password))
-        {
-            throw new ElasticsearchConfigurationException(
-                $"The {nameof(ElasticsearchConfig.Password)} property is required.");
-        }
-
-        //TODO: validate certificate fingerprint? Add more validations?
-
-        return config;
-    }
-
-    /// <summary>
     /// Converts an ElasticsearchConfig to a ElasticsearchClientSettings that can be used
     /// to instantiate <see cref="ElasticsearchClient"/>.
     /// </summary>
-    /// <param name="config"></param>
-    /// <returns></returns>
     public static ElasticsearchClientSettings ToElasticsearchClientSettings(this ElasticsearchConfig config)
     {
         ArgumentNullException.ThrowIfNull(config, nameof(config));

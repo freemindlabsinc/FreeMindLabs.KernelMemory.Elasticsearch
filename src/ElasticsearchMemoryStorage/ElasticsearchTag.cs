@@ -1,6 +1,5 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
-using System;
 using System.Text.Json.Serialization;
 
 namespace FreeMindLabs.KernelMemory.Elasticsearch;

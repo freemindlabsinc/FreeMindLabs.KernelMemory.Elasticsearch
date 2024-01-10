@@ -11,8 +11,8 @@ namespace UnitTests;
 
 public class SearchTests : ElasticsearchTestBase
 {
-    public SearchTests(ITestOutputHelper output, IMemoryDb memoryDb, ITextEmbeddingGenerator textEmbeddingGenerator, ElasticsearchClient client)
-        : base(output, client)
+    public SearchTests(ITestOutputHelper output, IMemoryDb memoryDb, ITextEmbeddingGenerator textEmbeddingGenerator, ElasticsearchClient client, IIndexNameHelper indexNameHelper)
+        : base(output, client, indexNameHelper)
     {
         this.MemoryDb = memoryDb ?? throw new ArgumentNullException(nameof(memoryDb));
         this.TextEmbeddingGenerator = textEmbeddingGenerator ?? throw new ArgumentNullException(nameof(textEmbeddingGenerator));
@@ -48,7 +48,8 @@ public class SearchTests : ElasticsearchTestBase
         var expectedDocs = docIds.Count();
 
         // Waits for indexing to complete
-        await this.Client.WaitForDocumentsAsync(nameof(CanGetListWithTagsAsync), expectedDocuments: ExpectedTotalParagraphs)
+        var actualIndexName = this.IndexNameHelper.Convert(nameof(CanGetListWithTagsAsync));
+        await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: ExpectedTotalParagraphs)
                          .ConfigureAwait(false);
 
         // Gets documents that are similar to the word "carbon" .

@@ -1,59 +1,47 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
+using Elastic.Clients.Elasticsearch.Mapping;
+
 namespace FreeMindLabs.KernelMemory.Elasticsearch;
 
 /// <summary>
-/// TBC
+/// The configuration for the Elasticsearch connector.
+/// Use <see cref="ElasticsearchConfigBuilder"/> to instantiate and configure this class.
 /// </summary>
 public class ElasticsearchConfig
 {
-    /// <summary>
-    /// The default Elasticsearch endpoint.
-    /// </summary>
-    public static readonly string DefaultEndpoint = "https://localhost:9200";
+    /// <inheritdoc />
+    public ElasticsearchConfig()
+    { }
 
     /// <summary>
-    /// The name of the section that will contain the configuration for Elasticsearch
-    /// (e.g. appSettings.json, user secrets, etc.).
-    /// </summary>
-    public const string DefaultSettingsSection = "Elasticsearch";
+    /// The certificate fingerprint for the Elasticsearch instance.
+    /// See <see href="https://www.elastic.co/guide/en/elasticsearch/reference/current/configuring-stack-security.html#_use_the_ca_fingerprint_5"/>.
+    /// </summary>    
+    public string CertificateFingerPrint { get; set; } = string.Empty;
 
     /// <summary>
-    /// TBC
+    /// The Elasticsearch endpoint.
     /// </summary>
-    /// <param name="endpoint"></param>
-    /// <param name="userName"></param>
-    /// <param name="password"></param>
-    /// <param name="certificateFingerPrint"></param>
-    public ElasticsearchConfig(
-        string endpoint,
-        string userName,
-        string password,
-        string certificateFingerPrint)
-    {
-        this.Endpoint = endpoint;
-        this.UserName = userName;
-        this.Password = password;
-        this.CertificateFingerPrint = certificateFingerPrint;
-    }
+    public string Endpoint { get; set; } = string.Empty;
 
     /// <summary>
-    /// TBC
+    /// The username used to connect to Elasticsearch.
     /// </summary>
-    public string CertificateFingerPrint { get; init; }
+    public string UserName { get; set; } = string.Empty;
 
     /// <summary>
-    /// TBC
+    /// The password used to connect to Elasticsearch.
     /// </summary>
-    public string Endpoint { get; }
+    public string Password { get; set; } = string.Empty;
 
     /// <summary>
-    /// TBC
+    /// The prefix to be prepend to the index names in Elasticsearch.
     /// </summary>
-    public string UserName { get; }
+    public string IndexPrefix { get; set; } = string.Empty;
 
     /// <summary>
-    /// TBC
+    /// A delegate to configure the Elasticsearch index properties.
     /// </summary>
-    public string Password { get; }
+    public Action<PropertiesDescriptor<ElasticsearchMemoryRecord>>? ConfigureProperties { get; internal set; }
 }

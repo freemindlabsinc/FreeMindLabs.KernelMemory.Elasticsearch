@@ -9,8 +9,8 @@ namespace UnitTests;
 
 public class IndexManagementTests : ElasticsearchTestBase
 {
-    public IndexManagementTests(ITestOutputHelper output, IMemoryDb memoryDb, ElasticsearchClient client)
-        : base(output, client)
+    public IndexManagementTests(ITestOutputHelper output, IMemoryDb memoryDb, ElasticsearchClient client, IIndexNameHelper indexNameHelper)
+        : base(output, client, indexNameHelper)
     {
         this.MemoryDb = memoryDb ?? throw new ArgumentNullException(nameof(memoryDb));
     }
@@ -23,12 +23,12 @@ public class IndexManagementTests : ElasticsearchTestBase
         var indexName = nameof(CanCreateAndDeleteIndexAsync);
         var vectorSize = 1536;
 
-        // Creates the index using IMemoryDb
+        // Creates the index using IMemoryDb        
         await this.MemoryDb.CreateIndexAsync(indexName, vectorSize)
                            .ConfigureAwait(false);
 
         // Verifies the index is created using the ES client
-        var actualIndexName = ESIndexName.Convert(indexName);
+        var actualIndexName = this.IndexNameHelper.Convert(nameof(CanCreateAndDeleteIndexAsync));
         var resp = await this.Client.Indices.ExistsAsync(actualIndexName)
                                             .ConfigureAwait(false);
         Assert.True(resp.Exists);
@@ -50,8 +50,8 @@ public class IndexManagementTests : ElasticsearchTestBase
     {
         var indexNames = new[]
         {
-            $"{nameof(CanGetIndicesAsync)}-First",
-            $"{nameof(CanGetIndicesAsync)}-Second"
+            this.IndexNameHelper.Convert(nameof(CanGetIndicesAsync) + "-First"),
+            this.IndexNameHelper.Convert(nameof(CanGetIndicesAsync) + "-Second")
         };
 
         // Creates the indices using IMemoryDb

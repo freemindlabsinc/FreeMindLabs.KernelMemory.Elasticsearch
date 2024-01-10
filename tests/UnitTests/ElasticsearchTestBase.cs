@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 using Elastic.Clients.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,20 +14,26 @@ namespace UnitTests;
 /// </summary>
 public abstract class ElasticsearchTestBase : IAsyncLifetime
 {
-    protected ElasticsearchTestBase(ITestOutputHelper output, ElasticsearchClient client)
+    protected ElasticsearchTestBase(ITestOutputHelper output, ElasticsearchClient client, IIndexNameHelper indexNameHelper)
     {
         this.Output = output ?? throw new ArgumentNullException(nameof(output));
         this.Client = client ?? throw new ArgumentNullException(nameof(client));
+        this.IndexNameHelper = indexNameHelper ?? throw new ArgumentNullException(nameof(indexNameHelper));
     }
 
     public ITestOutputHelper Output { get; }
     public ElasticsearchClient Client { get; }
+    public IIndexNameHelper IndexNameHelper { get; }
+
     public async Task InitializeAsync()
     {
         // Within a single test class, the tests are executed sequentially by default so
         // there is no chance for a method to finish and delete indices of other methods before the next
         // method starts executing.
-        var indicesFound = await this.Client.DeleteIndicesOfTestAsync(this.GetType()).ConfigureAwait(false);
+        //var delIndexResponse = await this.Client.Indices.DeleteAsync(indices: this.con)
+        //                                                .ConfigureAwait(false);
+
+        var indicesFound = await this.Client.DeleteIndicesOfTestAsync(this.GetType(), this.IndexNameHelper).ConfigureAwait(false);
 
         if (indicesFound.Any())
         {
@@ -37,7 +44,7 @@ public abstract class ElasticsearchTestBase : IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        var indicesFound = await this.Client.DeleteIndicesOfTestAsync(this.GetType()).ConfigureAwait(false);
+        var indicesFound = await this.Client.DeleteIndicesOfTestAsync(this.GetType(), this.IndexNameHelper).ConfigureAwait(false);
 
         if (indicesFound.Any())
         {
