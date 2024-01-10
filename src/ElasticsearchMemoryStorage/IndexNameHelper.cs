@@ -19,7 +19,9 @@ public class IndexNameHelper : IIndexNameHelper
     /// <inheritdoc />
     public bool TryConvert(string indexName, out (string ActualIndexName, IEnumerable<string> Errors) result)
     {
-        indexName = (this.IndexPrefix + indexName).ToLower();
+        // Convert to lowercase and replace underscores with hyphens to
+        // have a consistent behavior with other storage types supported by Kernel Memory. (see #18)
+        indexName = (this.IndexPrefix + indexName).Replace("_", "-", StringComparison.Ordinal).ToLower();
 
         // Check for null or whitespace
         if (string.IsNullOrWhiteSpace(indexName))

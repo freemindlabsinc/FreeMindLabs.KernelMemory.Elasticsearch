@@ -33,7 +33,7 @@ public class IndexnameTests
     [Theory]
     // An index name cannot start with a hyphen (-) or underscore (_).
     //[InlineData("-test", 1)]
-    [InlineData("test_", 1)]
+    //[InlineData("test_", 1)]
     // An index name can only contain letters, digits, and hyphens (-).
     [InlineData("test space", 1)]
     [InlineData("test/slash", 1)]
@@ -55,7 +55,7 @@ public class IndexnameTests
     [InlineData(".", 1)]
     [InlineData("..", 1)]
     [InlineData("1.2.3", 1)]
-    [InlineData("_test", 1)]
+    //[InlineData("_test", 1)]
 
     public void BadIndexNamesAreRejected(string indexName, int errorCount)
     {
