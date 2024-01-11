@@ -265,6 +265,11 @@ public class ElasticsearchMemory : IMemoryDb
              cancellationToken)
             .ConfigureAwait(false);
 
+        if ((resp.HitsMetadata is null) || (resp.HitsMetadata.Hits is null))
+        {
+            yield break;
+        }
+
         foreach (var hit in resp.Hits)
         {
             if (hit?.Source == null)
@@ -284,6 +289,15 @@ public class ElasticsearchMemory : IMemoryDb
         ICollection<MemoryFilter>? filters = null)
     {
         if ((filters == null) || (filters.Count == 0))
+        {
+            qd.MatchAll();
+            return qd;
+        }
+
+        filters = filters.Where(f => f.Keys.Count > 0)
+                         .ToList(); // Remove empty filters
+
+        if (filters.Count == 0)
         {
             qd.MatchAll();
             return qd;
