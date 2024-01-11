@@ -72,5 +72,18 @@ public class SearchTests : ElasticsearchTestBase
 
         Assert.Equal(expected: ExpectedTotalParagraphs, actual: idx);
     }
+
+    [Fact]
+    public async Task CanGetListWithEmptyFiltersAsync()
+    {
+        await foreach (var result in this.MemoryDb.GetListAsync(
+            index: nameof(CanGetListWithTagsAsync),
+            filters: new[] { new MemoryFilter() }, // <-- KM has a test to make sure this works.
+            limit: 100,
+            withEmbeddings: false))
+        { };
+
+        // If it gets here, the test passed.
+    }
 }
 
