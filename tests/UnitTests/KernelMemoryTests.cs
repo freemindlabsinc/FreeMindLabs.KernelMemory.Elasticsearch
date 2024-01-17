@@ -18,6 +18,72 @@ public class KernelMemoryTests : ElasticsearchTestBase
 
     public IKernelMemory KernelMemory { get; }
 
+    private const string NotFound = "INFO NOT FOUND";
+
+    [Fact]
+    public async Task ItSupportsASingleFilterAsync()
+    {
+        string indexName = nameof(ItSupportsASingleFilterAsync);
+        const string Id = "ItSupportsASingleFilter-file1-NASA-news.pdf";
+        const string Found = "spacecraft";
+
+        this.Output.WriteLine("Uploading document");
+        await this.KernelMemory.ImportDocumentAsync(
+            new Document(Id)
+                .AddFile("data/file5-NASA-news.pdf")
+                .AddTag("type", "news")
+                .AddTag("user", "admin")
+                .AddTag("user", "owner"),
+            index: indexName,
+            steps: Constants.PipelineWithoutSummary).ConfigureAwait(false);
+
+        while (!await this.KernelMemory.IsDocumentReadyAsync(documentId: Id, index: indexName).ConfigureAwait(false))
+        {
+            this.Output.WriteLine("Waiting for memory ingestion to complete...");
+            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false); 
+        }
+
+        //await Task.Delay(TimeSpan.FromSeconds(4)).ConfigureAwait(false);
+
+        MemoryAnswer answer;
+        //// Simple filter: unknown user cannot see the memory        
+        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
+        //this.Output.WriteLine(answer.Result);
+        //Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        //// Simple filter: test AND logic: valid type + invalid user
+        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news").ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
+        //this.Output.WriteLine(answer.Result);
+        //Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        //// Simple filter: test AND logic: invalid type + valid user
+        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "fact").ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        //this.Output.WriteLine(answer.Result);
+        ////Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+        //Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        //// Simple filter: known user can see the memory
+        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "admin"), index: indexName).ConfigureAwait(false);
+        //this.Output.WriteLine(answer.Result);
+        //Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        //// Simple filter: known user can see the memory
+        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        //this.Output.WriteLine(answer.Result);
+        //Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Simple filter: test AND logic with correct values
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news").ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        this.Output.WriteLine("Deleting memories extracted from the document");
+        await this.KernelMemory.DeleteDocumentAsync(Id, index: indexName).ConfigureAwait(false);
+
+        this.Output.WriteLine("Deleting index");
+        await this.KernelMemory.DeleteIndexAsync(indexName).ConfigureAwait(false);
+    }
+
     [Fact]
     public async Task CanImportOneDocumentAndAskAsync()
     {

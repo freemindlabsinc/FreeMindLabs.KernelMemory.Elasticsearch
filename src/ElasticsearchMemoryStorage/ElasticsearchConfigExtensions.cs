@@ -25,7 +25,7 @@ public static class ElasticsearchConfigExtensions
 
             // TODO: this needs to be more flexible.
             .Authentication(new BasicAuthentication(config.UserName, config.Password))
-
+            .DisableDirectStreaming(true)
             // TODO: Not sure why I need this. Verify configuration maybe?
             .ServerCertificateValidationCallback((sender, certificate, chain, errors) => true)
             .CertificateFingerprint(config.CertificateFingerPrint)

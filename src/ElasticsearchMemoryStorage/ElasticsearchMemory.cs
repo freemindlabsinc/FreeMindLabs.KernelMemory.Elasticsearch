@@ -303,29 +303,36 @@ public class ElasticsearchMemory : IMemoryDb
             return qd;
         }
 
+
         qd.Nested(nqd =>
         {
             nqd.Path(ElasticsearchMemoryRecord.TagsField);
+
             nqd.Query(nq =>
             {
                 // Each filter is a tag collection.
                 foreach (MemoryFilter filter in filters)
                 {
+                    List<Query> all = new();
+
                     // Each tag collection is an element of a List<string, List<string?>>>
                     foreach (var tagName in filter.Keys)
                     {
-                        nq.Bool(bq =>
-                        {
-                            List<string?> tagValues = filter[tagName];
-                            List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
-                                                              .ToList();
+                        List<string?> tagValues = filter[tagName];
+                        List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
+                                                          .ToList();
+                        // ----------------                        
 
-                            bq.Must(
-                                t => t.Term(c => c.Field(ElasticsearchMemoryRecord.Tags_Name).Value(tagName)),
-                                t => t.Terms(c => c.Field(ElasticsearchMemoryRecord.Tags_Value).Terms(new TermsQueryField(terms)))
-                            );
-                        });
+                        Query newTagQuery = new TermQuery(ElasticsearchMemoryRecord.Tags_Name) { Value = tagName };
+                        newTagQuery &= new TermsQuery() {
+                            Field = ElasticsearchMemoryRecord.Tags_Value,
+                            Terms = new TermsQueryField(terms)
+                        };
+
+                        all.Add(newTagQuery);
                     }
+
+                    nq.Bool(bq => bq.Must(all.ToArray()));
                 }
             });
         });
