@@ -303,39 +303,66 @@ public class ElasticsearchMemory : IMemoryDb
             return qd;
         }
 
-
-        qd.Nested(nqd =>
+        foreach (MemoryFilter filter in filters)
         {
-            nqd.Path(ElasticsearchMemoryRecord.TagsField);
+            List<Query> all = new();
 
-            nqd.Query(nq =>
+            // Each tag collection is an element of a List<string, List<string?>>>
+            foreach (var tagName in filter.Keys)
             {
-                // Each filter is a tag collection.
-                foreach (MemoryFilter filter in filters)
+                List<string?> tagValues = filter[tagName];
+                List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
+                                                  .ToList();
+                // ----------------
+                Query newTagQuery = new TermQuery(ElasticsearchMemoryRecord.Tags_Name) { Value = tagName };
+                newTagQuery &= new TermsQuery()
                 {
-                    List<Query> all = new();
+                    Field = ElasticsearchMemoryRecord.Tags_Value,
+                    Terms = new TermsQueryField(terms)
+                };
+                var nestedQd = new NestedQuery();
+                nestedQd.Path = ElasticsearchMemoryRecord.TagsField;
+                nestedQd.Query = newTagQuery;
 
-                    // Each tag collection is an element of a List<string, List<string?>>>
-                    foreach (var tagName in filter.Keys)
-                    {
-                        List<string?> tagValues = filter[tagName];
-                        List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
-                                                          .ToList();
-                        // ----------------                        
+                all.Add(nestedQd);
+                qd.Bool(bq => bq.Must(all.ToArray()));
+            }
+        }
 
-                        Query newTagQuery = new TermQuery(ElasticsearchMemoryRecord.Tags_Name) { Value = tagName };
-                        newTagQuery &= new TermsQuery() {
-                            Field = ElasticsearchMemoryRecord.Tags_Value,
-                            Terms = new TermsQueryField(terms)
-                        };
+        // ---------------------
 
-                        all.Add(newTagQuery);
-                    }
+        //qd.Nested(nqd =>
+        //{
+        //    nqd.Path(ElasticsearchMemoryRecord.TagsField);
 
-                    nq.Bool(bq => bq.Must(all.ToArray()));
-                }
-            });
-        });
+        //    nqd.Query(nq =>
+        //    {
+        //        // Each filter is a tag collection.
+        //        foreach (MemoryFilter filter in filters)
+        //        {
+        //            List<Query> all = new();
+
+        //            // Each tag collection is an element of a List<string, List<string?>>>
+        //            foreach (var tagName in filter.Keys)
+        //            {
+        //                List<string?> tagValues = filter[tagName];
+        //                List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
+        //                                                  .ToList();
+        //                // ----------------                        
+
+        //                Query newTagQuery = new TermQuery(ElasticsearchMemoryRecord.Tags_Name) { Value = tagName };
+        //                newTagQuery &= new TermsQuery() {
+        //                    Field = ElasticsearchMemoryRecord.Tags_Value,
+        //                    Terms = new TermsQueryField(terms)
+        //                };
+
+        //                all.Add(newTagQuery);
+        //            }
+
+        //            nq.Bool(bq => bq.Must(all.ToArray()));
+        //        }
+        //    });
+        //});
 
         return qd;
     }

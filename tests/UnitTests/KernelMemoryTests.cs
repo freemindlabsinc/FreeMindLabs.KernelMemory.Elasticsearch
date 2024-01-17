@@ -46,31 +46,31 @@ public class KernelMemoryTests : ElasticsearchTestBase
         //await Task.Delay(TimeSpan.FromSeconds(4)).ConfigureAwait(false);
 
         MemoryAnswer answer;
-        //// Simple filter: unknown user cannot see the memory        
-        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
-        //this.Output.WriteLine(answer.Result);
-        //Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+        // Simple filter: unknown user cannot see the memory        
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
 
-        //// Simple filter: test AND logic: valid type + invalid user
-        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news").ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
-        //this.Output.WriteLine(answer.Result);
-        //Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+        // Simple filter: test AND logic: valid type + invalid user
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news").ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
 
-        //// Simple filter: test AND logic: invalid type + valid user
-        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "fact").ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
-        //this.Output.WriteLine(answer.Result);
-        ////Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
-        //Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
-
-        //// Simple filter: known user can see the memory
-        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "admin"), index: indexName).ConfigureAwait(false);
-        //this.Output.WriteLine(answer.Result);
+        // Simple filter: test AND logic: invalid type + valid user
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "fact").ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
         //Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
 
-        //// Simple filter: known user can see the memory
-        //answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
-        //this.Output.WriteLine(answer.Result);
-        //Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+        // Simple filter: known user can see the memory
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "admin"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Simple filter: known user can see the memory
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
 
         // Simple filter: test AND logic with correct values
         answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news").ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
