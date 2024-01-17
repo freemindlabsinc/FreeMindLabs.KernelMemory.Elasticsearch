@@ -21,6 +21,83 @@ public class KernelMemoryTests : ElasticsearchTestBase
     private const string NotFound = "INFO NOT FOUND";
 
     [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "<Pending>")]
+    public async Task ItSupportsMultipleFiltersAsync()
+    {
+        string indexName = nameof(ItSupportsMultipleFiltersAsync);
+        this.Output.WriteLine($"Index name: {indexName}");
+
+        const string Id = "ItSupportsMultipleFilters-file1-NASA-news.pdf";
+        const string Found = "spacecraft";
+
+        this.Output.WriteLine("Uploading document");
+        await this.KernelMemory.ImportDocumentAsync(
+            new Document(Id)
+                .AddFile("data/file5-NASA-news.pdf")
+                .AddTag("type", "news")
+                .AddTag("user", "admin")
+                .AddTag("user", "owner"),
+            index: indexName,
+            steps: Constants.PipelineWithoutSummary);
+
+        while (!await this.KernelMemory.IsDocumentReadyAsync(documentId: Id, index: indexName))
+        {
+            this.Output.WriteLine("Waiting for memory ingestion to complete...");
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        // Multiple filters: unknown users cannot see the memory
+        var answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1"),
+            MemoryFilters.ByTag("user", "someone2"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: unknown users cannot see the memory even if the type is correct (testing AND logic)
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1").ByTag("type", "news"),
+            MemoryFilters.ByTag("user", "someone2").ByTag("type", "news"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: AND + OR logic works
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1").ByTag("type", "news"),
+            MemoryFilters.ByTag("user", "admin").ByTag("type", "fact"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: OR logic works
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1"),
+            MemoryFilters.ByTag("user", "admin"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: OR logic works
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1").ByTag("type", "news"),
+            MemoryFilters.ByTag("user", "admin").ByTag("type", "news"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        await this.KernelMemory.DeleteDocumentAsync(Id, index: indexName);
+
+        this.Output.WriteLine("Deleting index");
+        await this.KernelMemory.DeleteIndexAsync(indexName);
+    }
+
+    [Fact]
     public async Task ItSupportsTagsAsync()
     {
         // This is an adaptation of the same test in Elasticsearch.FunctionalTests
