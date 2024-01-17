@@ -21,8 +21,77 @@ public class KernelMemoryTests : ElasticsearchTestBase
     private const string NotFound = "INFO NOT FOUND";
 
     [Fact]
+    public async Task ItSupportsTagsAsync()
+    {
+        // This is an adaptation of the same test in Elasticsearch.FunctionalTests
+
+        // Arrange
+        const string Id = "ItSupportTags-file1-NASA-news.pdf";
+        await this.KernelMemory.ImportDocumentAsync(
+            "data/file5-NASA-news.pdf",
+            documentId: Id,
+            tags: new TagCollection
+            {
+                { "type", "news" },
+                { "type", "test" },
+                { "ext", "pdf" }
+            },
+            steps: Constants.PipelineWithoutSummary).ConfigureAwait(false);
+
+        while (!await this.KernelMemory.IsDocumentReadyAsync(documentId: Id).ConfigureAwait(false))
+        {
+            this.Output.WriteLine("Waiting for memory ingestion to complete...");
+            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+        }
+
+        // Act
+        var defaultRetries = 0;// withRetries ? 4 : 0;
+
+        var retries = defaultRetries;
+        var answer1 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news")).ConfigureAwait(false);
+        this.Output.WriteLine("answer1: " + answer1.Result);
+        while (retries-- > 0 && !answer1.Result.Contains("spacecraft"))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            answer1 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news")).ConfigureAwait(false);
+            this.Output.WriteLine("answer1: " + answer1.Result);
+        }
+
+        retries = defaultRetries;
+        var answer2 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "test")).ConfigureAwait(false);
+        this.Output.WriteLine("answer2: " + answer2.Result);
+        while (retries-- > 0 && !answer2.Result.Contains("spacecraft"))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            answer2 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "test")).ConfigureAwait(false);
+            this.Output.WriteLine("answer2: " + answer2.Result);
+        }
+
+        retries = defaultRetries;
+        var answer3 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("ext", "pdf")).ConfigureAwait(false);
+        this.Output.WriteLine("answer3: " + answer3.Result);
+        while (retries-- > 0 && !answer3.Result.Contains("spacecraft"))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            answer3 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "test")).ConfigureAwait(false);
+            this.Output.WriteLine("answer3: " + answer3.Result);
+        }
+
+        var answer4 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("foo", "bar")).ConfigureAwait(false);
+        this.Output.WriteLine(answer4.Result);
+
+        // Assert
+        Assert.Contains("spacecraft", answer1.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("spacecraft", answer2.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("spacecraft", answer3.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("NOT FOUND", answer4.Result, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public async Task ItSupportsASingleFilterAsync()
     {
+        // This is an adaptation of the same test in Elasticsearch.FunctionalTests
+
         string indexName = nameof(ItSupportsASingleFilterAsync);
         const string Id = "ItSupportsASingleFilter-file1-NASA-news.pdf";
         const string Found = "spacecraft";
