@@ -40,8 +40,8 @@ public class DataStorageTests : ElasticsearchTestBase
 
         // Waits for indexing to complete
         var indexName = this.IndexNameHelper.Convert(nameof(CanUpsertOneTextDocumentAndDeleteAsync));
-        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 3)
-                         .ConfigureAwait(false);
+        //await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 3)
+        //                 .ConfigureAwait(false);
 
         // Deletes the document
         var deletes = docIds.Select(id => new MemoryRecord()
@@ -56,8 +56,11 @@ public class DataStorageTests : ElasticsearchTestBase
         }
 
         // Verfiies that the documents are gone
-        await this.Client.WaitForDocumentsAsync(nameof(CanUpsertOneTextDocumentAndDeleteAsync), expectedDocuments: 0)
+        var res = await this.Client.CountAsync(r => r.Index(indexName))
                          .ConfigureAwait(false);
+        Assert.Equal(0, res.Count);
+        //await this.Client.WaitForDocumentsAsync(nameof(CanUpsertOneTextDocumentAndDeleteAsync), expectedDocuments: 0)
+        //                 .ConfigureAwait(false);
     }
 
     [Fact]
@@ -76,8 +79,8 @@ public class DataStorageTests : ElasticsearchTestBase
 
         // Waits for the indexing to complete.
         var indexName = this.IndexNameHelper.Convert(nameof(CanUpsertTwoTextFilesAndGetSimilarListAsync));
-        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 4)
-                         .ConfigureAwait(false);
+        //await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 4)
+        //                 .ConfigureAwait(false);
 
 
         // Gets documents that are similar to the word "carbon" .

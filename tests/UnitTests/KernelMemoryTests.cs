@@ -250,8 +250,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
 
         // Waits for the documents to be saved
         var actualIndexName = this.IndexNameHelper.Convert(indexName);
-        await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 2)
-                  .ConfigureAwait(false);
+        //await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 2)
+        //          .ConfigureAwait(false);
 
         // Asks a question on the data we just inserted
         MemoryAnswer? answer = await this.TryToGetTopAnswerAsync(indexName, "What can carbon bond to?")
@@ -298,8 +298,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
 
         // Waits for the documents to be saved
         var actualIndexName = this.IndexNameHelper.Convert(indexName);
-        await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 10)
-                         .ConfigureAwait(false);
+        //await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 10)
+        //                 .ConfigureAwait(false);
 
         // This should return a citation to doc001
         var answer = await this.KernelMemory.AskAsync("What's E = m*c^2?", indexName)

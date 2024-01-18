@@ -148,6 +148,19 @@ public class ElasticsearchConfigBuilder
     }
 
     /// <summary>
+    /// Sets the number of shards and replicas to use for the Elasticsearch index.
+    /// </summary>
+    /// <param name="shards"></param>
+    /// <param name="replicas"></param>
+    /// <returns></returns>
+    public ElasticsearchConfigBuilder WithShardsAndReplicas(int shards, int replicas)
+    {
+        this._config.ShardCount = shards;
+        this._config.Replicas = replicas;
+        return this;
+    }
+
+    /// <summary>
     /// Builds the ElasticsearchConfig.
     /// </summary>
     /// <param name="skipValidation">Indicates if validation should be skipped.</param>

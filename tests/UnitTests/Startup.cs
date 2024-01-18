@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Free Mind Labs, Inc. All rights reserved.
 
 using System.Reflection;
+using Elastic.Clients.Elasticsearch;
+using FreeMindLabs.KernelMemory.Elasticsearch;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.KernelMemory;
@@ -33,6 +35,18 @@ public class Startup
 
         // TODO: Uses only OpenAI API stuff for now. Make more flexible.
         var openApiKey = this._configuration[OpenAIKeyPath] ?? throw new ArgumentException($"OpenAI API key is required. [path: {OpenAIKeyPath}]");
+
+        // Elasticsearch client
+        services.AddSingleton<ElasticsearchClient>(sp =>
+        {
+            var cfgBuilder = new ElasticsearchConfigBuilder()
+                .WithConfiguration(this._configuration);
+
+            var cfg = cfgBuilder.Build().ToElasticsearchClientSettings();
+
+            var client = new ElasticsearchClient(cfg);
+            return client;
+        });
 
         // Kernel Memory with Elasticsearch
         IKernelMemoryBuilder kmBldr = new KernelMemoryBuilder(services)

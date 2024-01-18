@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Core.Search;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Logging;
@@ -138,6 +139,7 @@ public class ElasticsearchMemory : IMemoryDb
             record.Id,
             (delReq) =>
             {
+                delReq.Refresh(Refresh.WaitFor);
             },
             cancellationToken)
             .ConfigureAwait(false);
@@ -167,6 +169,8 @@ public class ElasticsearchMemory : IMemoryDb
             memRec.Id,
             (updateReq) =>
             {
+                updateReq.Refresh(Refresh.WaitFor);
+
                 var memRec2 = memRec;
                 updateReq.Doc(memRec2);
                 updateReq.DocAsUpsert(true);
@@ -221,6 +225,7 @@ public class ElasticsearchMemory : IMemoryDb
 
         if ((resp.HitsMetadata is null) || (resp.HitsMetadata.Hits is null))
         {
+            this._log.LogWarning("The search returned a null result. Should retry?");
             yield break;
         }
 
