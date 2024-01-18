@@ -43,12 +43,12 @@ public class ElasticsearchConfig
     /// <summary>
     /// The number of shards to use for the Elasticsearch index.
     /// </summary>
-    public int ShardCount { get; set; } = 1;
+    public int? ShardCount { get; set; } = 1;
 
     /// <summary>
     /// The number of replicas to use for the Elasticsearch index.
     /// </summary>
-    public int Replicas { get; set; } = 0;
+    public int? ReplicaCount { get; set; } = 0;
 
     /// <summary>
     /// A delegate to configure the Elasticsearch index properties.

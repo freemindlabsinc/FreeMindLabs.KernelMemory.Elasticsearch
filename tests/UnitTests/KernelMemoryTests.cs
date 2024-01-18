@@ -24,6 +24,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "<Pending>")]
     public async Task ItSupportsMultipleFiltersAsync()
     {
+        // This is an adaptation of the same test in Elasticsearch.FunctionalTests
+
         string indexName = nameof(ItSupportsMultipleFiltersAsync);
         this.Output.WriteLine($"Index name: {indexName}");
 
@@ -186,7 +188,7 @@ public class KernelMemoryTests : ElasticsearchTestBase
         while (!await this.KernelMemory.IsDocumentReadyAsync(documentId: Id, index: indexName).ConfigureAwait(false))
         {
             this.Output.WriteLine("Waiting for memory ingestion to complete...");
-            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false); 
+            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
         }
 
         //await Task.Delay(TimeSpan.FromSeconds(4)).ConfigureAwait(false);
@@ -366,4 +368,3 @@ public class KernelMemoryTests : ElasticsearchTestBase
         return answer;
     }
 }
-

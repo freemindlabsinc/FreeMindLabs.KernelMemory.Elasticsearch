@@ -156,7 +156,7 @@ public class ElasticsearchConfigBuilder
     public ElasticsearchConfigBuilder WithShardsAndReplicas(int shards, int replicas)
     {
         this._config.ShardCount = shards;
-        this._config.Replicas = replicas;
+        this._config.ReplicaCount = replicas;
         return this;
     }
 

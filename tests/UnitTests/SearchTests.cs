@@ -47,11 +47,6 @@ public class SearchTests : ElasticsearchTestBase
 
         var expectedDocs = docIds.Count();
 
-        // Waits for indexing to complete
-        var actualIndexName = this.IndexNameHelper.Convert(nameof(CanGetListWithTagsAsync));
-        //await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: ExpectedTotalParagraphs)
-        //                 .ConfigureAwait(false);
-
         // Gets documents that are similar to the word "carbon" .
         var filter = new MemoryFilter();
         filter.Add("__file_type", "text/plain");

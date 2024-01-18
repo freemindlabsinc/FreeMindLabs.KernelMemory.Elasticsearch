@@ -2,7 +2,6 @@
 
 using System.Runtime.CompilerServices;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Core.Search;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Logging;
@@ -28,11 +27,13 @@ public class ElasticsearchMemory : IMemoryDb
     /// Create a new instance of Elasticsearch KM connector
     /// </summary>
     /// <param name="config">Elasticsearch configuration</param>
+    /// <param name="client">Elasticsearch client</param>
     /// <param name="log">Application logger</param>
     /// <param name="embeddingGenerator">Embedding generator</param>
     /// <param name="indexNameHelper">Index name helper</param>
     public ElasticsearchMemory(
         ElasticsearchConfig config,
+        ElasticsearchClient client,
         ITextEmbeddingGenerator embeddingGenerator,
         IIndexNameHelper indexNameHelper,
         ILogger<ElasticsearchMemory>? log = null)
@@ -40,7 +41,7 @@ public class ElasticsearchMemory : IMemoryDb
         this._embeddingGenerator = embeddingGenerator ?? throw new ArgumentNullException(nameof(embeddingGenerator));
         this._indexNameHelper = indexNameHelper ?? throw new ArgumentNullException(nameof(indexNameHelper));
         this._config = config ?? throw new ArgumentNullException(nameof(config));
-        this._client = new ElasticsearchClient(this._config.ToElasticsearchClientSettings()); // TODO: inject
+        this._client = client;// new ElasticsearchClient(this._config.ToElasticsearchClientSettings()); // TODO: inject
         this._log = log ?? DefaultLogger<ElasticsearchMemory>.Instance;
     }
 
@@ -59,7 +60,16 @@ public class ElasticsearchMemory : IMemoryDb
             return;
         }
 
-        var createIdxResponse = await this._client.Indices.CreateAsync(index, cancellationToken).ConfigureAwait(false);
+        var createIdxResponse = await this._client.Indices.CreateAsync(index,
+            cfg =>
+            {
+                cfg.Settings(setts =>
+                {
+                    setts.NumberOfShards(this._config.ShardCount);
+                    setts.NumberOfReplicas(this._config.ReplicaCount);
+                });
+            },
+            cancellationToken).ConfigureAwait(false);
 
         const int Dimensions = 1536; // TODO: make not hardcoded
 
