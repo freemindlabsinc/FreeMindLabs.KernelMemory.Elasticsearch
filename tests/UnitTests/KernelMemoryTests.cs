@@ -18,6 +18,220 @@ public class KernelMemoryTests : ElasticsearchTestBase
 
     public IKernelMemory KernelMemory { get; }
 
+    private const string NotFound = "INFO NOT FOUND";
+
+    [Fact]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "<Pending>")]
+    public async Task ItSupportsMultipleFiltersAsync()
+    {
+        // This is an adaptation of the same test in Elasticsearch.FunctionalTests
+
+        string indexName = nameof(ItSupportsMultipleFiltersAsync);
+        this.Output.WriteLine($"Index name: {indexName}");
+
+        const string Id = "ItSupportsMultipleFilters-file1-NASA-news.pdf";
+        const string Found = "spacecraft";
+
+        this.Output.WriteLine("Uploading document");
+        await this.KernelMemory.ImportDocumentAsync(
+            new Document(Id)
+                .AddFile("data/file5-NASA-news.pdf")
+                .AddTag("type", "news")
+                .AddTag("user", "admin")
+                .AddTag("user", "owner"),
+            index: indexName,
+            steps: Constants.PipelineWithoutSummary);
+
+        while (!await this.KernelMemory.IsDocumentReadyAsync(documentId: Id, index: indexName))
+        {
+            this.Output.WriteLine("Waiting for memory ingestion to complete...");
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        // Multiple filters: unknown users cannot see the memory
+        var answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1"),
+            MemoryFilters.ByTag("user", "someone2"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: unknown users cannot see the memory even if the type is correct (testing AND logic)
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1").ByTag("type", "news"),
+            MemoryFilters.ByTag("user", "someone2").ByTag("type", "news"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: AND + OR logic works
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1").ByTag("type", "news"),
+            MemoryFilters.ByTag("user", "admin").ByTag("type", "fact"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: OR logic works
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1"),
+            MemoryFilters.ByTag("user", "admin"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Multiple filters: OR logic works
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filters: new List<MemoryFilter>
+        {
+            MemoryFilters.ByTag("user", "someone1").ByTag("type", "news"),
+            MemoryFilters.ByTag("user", "admin").ByTag("type", "news"),
+        }, index: indexName);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        await this.KernelMemory.DeleteDocumentAsync(Id, index: indexName);
+
+        this.Output.WriteLine("Deleting index");
+        await this.KernelMemory.DeleteIndexAsync(indexName);
+    }
+
+    [Fact]
+    public async Task ItSupportsTagsAsync()
+    {
+        // This is an adaptation of the same test in Elasticsearch.FunctionalTests
+
+        // Arrange
+        const string Id = "ItSupportTags-file1-NASA-news.pdf";
+        await this.KernelMemory.ImportDocumentAsync(
+            "data/file5-NASA-news.pdf",
+            documentId: Id,
+            tags: new TagCollection
+            {
+                { "type", "news" },
+                { "type", "test" },
+                { "ext", "pdf" }
+            },
+            steps: Constants.PipelineWithoutSummary).ConfigureAwait(false);
+
+        while (!await this.KernelMemory.IsDocumentReadyAsync(documentId: Id).ConfigureAwait(false))
+        {
+            this.Output.WriteLine("Waiting for memory ingestion to complete...");
+            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+        }
+
+        // Act
+        var defaultRetries = 0;// withRetries ? 4 : 0;
+
+        var retries = defaultRetries;
+        var answer1 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news")).ConfigureAwait(false);
+        this.Output.WriteLine("answer1: " + answer1.Result);
+        while (retries-- > 0 && !answer1.Result.Contains("spacecraft"))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            answer1 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news")).ConfigureAwait(false);
+            this.Output.WriteLine("answer1: " + answer1.Result);
+        }
+
+        retries = defaultRetries;
+        var answer2 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "test")).ConfigureAwait(false);
+        this.Output.WriteLine("answer2: " + answer2.Result);
+        while (retries-- > 0 && !answer2.Result.Contains("spacecraft"))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            answer2 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "test")).ConfigureAwait(false);
+            this.Output.WriteLine("answer2: " + answer2.Result);
+        }
+
+        retries = defaultRetries;
+        var answer3 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("ext", "pdf")).ConfigureAwait(false);
+        this.Output.WriteLine("answer3: " + answer3.Result);
+        while (retries-- > 0 && !answer3.Result.Contains("spacecraft"))
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1)).ConfigureAwait(false);
+            answer3 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "test")).ConfigureAwait(false);
+            this.Output.WriteLine("answer3: " + answer3.Result);
+        }
+
+        var answer4 = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("foo", "bar")).ConfigureAwait(false);
+        this.Output.WriteLine(answer4.Result);
+
+        // Assert
+        Assert.Contains("spacecraft", answer1.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("spacecraft", answer2.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("spacecraft", answer3.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("NOT FOUND", answer4.Result, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task ItSupportsASingleFilterAsync()
+    {
+        // This is an adaptation of the same test in Elasticsearch.FunctionalTests
+
+        string indexName = nameof(ItSupportsASingleFilterAsync);
+        const string Id = "ItSupportsASingleFilter-file1-NASA-news.pdf";
+        const string Found = "spacecraft";
+
+        this.Output.WriteLine("Uploading document");
+        await this.KernelMemory.ImportDocumentAsync(
+            new Document(Id)
+                .AddFile("data/file5-NASA-news.pdf")
+                .AddTag("type", "news")
+                .AddTag("user", "admin")
+                .AddTag("user", "owner"),
+            index: indexName,
+            steps: Constants.PipelineWithoutSummary).ConfigureAwait(false);
+
+        while (!await this.KernelMemory.IsDocumentReadyAsync(documentId: Id, index: indexName).ConfigureAwait(false))
+        {
+            this.Output.WriteLine("Waiting for memory ingestion to complete...");
+            await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+        }
+
+        //await Task.Delay(TimeSpan.FromSeconds(4)).ConfigureAwait(false);
+
+        MemoryAnswer answer;
+        // Simple filter: unknown user cannot see the memory        
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Simple filter: test AND logic: valid type + invalid user
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news").ByTag("user", "someone"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Simple filter: test AND logic: invalid type + valid user
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "fact").ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        //Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(NotFound, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Simple filter: known user can see the memory
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "admin"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Simple filter: known user can see the memory
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        // Simple filter: test AND logic with correct values
+        answer = await this.KernelMemory.AskAsync("What is Orion?", filter: MemoryFilters.ByTag("type", "news").ByTag("user", "owner"), index: indexName).ConfigureAwait(false);
+        this.Output.WriteLine(answer.Result);
+        Assert.Contains(Found, answer.Result, StringComparison.OrdinalIgnoreCase);
+
+        this.Output.WriteLine("Deleting memories extracted from the document");
+        await this.KernelMemory.DeleteDocumentAsync(Id, index: indexName).ConfigureAwait(false);
+
+        this.Output.WriteLine("Deleting index");
+        await this.KernelMemory.DeleteIndexAsync(indexName).ConfigureAwait(false);
+    }
+
     [Fact]
     public async Task CanImportOneDocumentAndAskAsync()
     {
@@ -38,8 +252,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
 
         // Waits for the documents to be saved
         var actualIndexName = this.IndexNameHelper.Convert(indexName);
-        await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 2)
-                  .ConfigureAwait(false);
+        //await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 2)
+        //          .ConfigureAwait(false);
 
         // Asks a question on the data we just inserted
         MemoryAnswer? answer = await this.TryToGetTopAnswerAsync(indexName, "What can carbon bond to?")
@@ -86,8 +300,8 @@ public class KernelMemoryTests : ElasticsearchTestBase
 
         // Waits for the documents to be saved
         var actualIndexName = this.IndexNameHelper.Convert(indexName);
-        await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 10)
-                         .ConfigureAwait(false);
+        //await this.Client.WaitForDocumentsAsync(actualIndexName, expectedDocuments: 10)
+        //                 .ConfigureAwait(false);
 
         // This should return a citation to doc001
         var answer = await this.KernelMemory.AskAsync("What's E = m*c^2?", indexName)
@@ -154,4 +368,3 @@ public class KernelMemoryTests : ElasticsearchTestBase
         return answer;
     }
 }
-

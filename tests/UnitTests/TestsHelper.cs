@@ -50,43 +50,45 @@ internal static class TestsHelper
         return result;
     }
 
-    /// <summary>
-    /// Queries the given index for documents until the expected number of documents is found
-    /// or the max number of retries is reached.
-    /// It throws an exception if the expected number of documents is not found.
-    /// </summary>
-    public static async Task WaitForDocumentsAsync(this ElasticsearchClient client, string realIndexName, int expectedDocuments, int maxRetries = 3, int msDelay = 500)
-    {
-        ArgumentNullException.ThrowIfNull(client);
-        ArgumentNullException.ThrowIfNull(realIndexName);
+    ///// <summary>
+    ///// Queries the given index for documents until the expected number of documents is found
+    ///// or the max number of retries is reached.
+    ///// It throws an exception if the expected number of documents is not found.
+    ///// </summary>
+    //public static async Task WaitForDocumentsAsync(this ElasticsearchClient client, string realIndexName, int expectedDocuments, int maxRetries = 3, int msDelay = 500)
+    //{
+    //    ArgumentNullException.ThrowIfNull(client);
+    //    ArgumentNullException.ThrowIfNull(realIndexName);
 
-        var foundCount = 0;
-        for (int i = 0; i < maxRetries; i++)
-        {
-            // We search for all documents
-            var results = await client
-                .SearchAsync<ElasticsearchMemoryRecord>(sr =>
-                {
-                    sr.Index(realIndexName)
-                      .Query(q => q.MatchAll());
-                })
-                .ConfigureAwait(false);
+    //    return;
 
-            foundCount = results?.HitsMetadata?.Hits?.Count ?? 0;
+    //    var foundCount = 0;
+    //    for (int i = 0; i < maxRetries; i++)
+    //    {
+    //        // We search for all documents
+    //        var results = await client
+    //            .SearchAsync<ElasticsearchMemoryRecord>(sr =>
+    //            {
+    //                sr.Index(realIndexName)
+    //                  .Query(q => q.MatchAll());
+    //            })
+    //            .ConfigureAwait(false);
 
-            // If we found all documents, we can return
-            if ((expectedDocuments == 0) && (foundCount == 0))
-            {
-                return;
-            }
-            else if (foundCount >= expectedDocuments)
-            {
-                return;
-            }
+    //        foundCount = results?.HitsMetadata?.Hits?.Count ?? 0;
 
-            await Task.Delay(msDelay).ConfigureAwait(false);
-        }
+    //        // If we found all documents, we can return
+    //        if ((expectedDocuments == 0) && (foundCount == 0))
+    //        {
+    //            return;
+    //        }
+    //        else if (foundCount >= expectedDocuments)
+    //        {
+    //            return;
+    //        }
 
-        throw new InvalidOperationException($"It should have inserted {expectedDocuments} documents but only {foundCount}...");
-    }
+    //        await Task.Delay(msDelay).ConfigureAwait(false);
+    //    }
+
+    //    throw new InvalidOperationException($"It should have inserted {expectedDocuments} documents but only {foundCount}...");
+    //}
 }

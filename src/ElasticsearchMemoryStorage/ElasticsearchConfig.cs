@@ -41,6 +41,16 @@ public class ElasticsearchConfig
     public string IndexPrefix { get; set; } = string.Empty;
 
     /// <summary>
+    /// The number of shards to use for the Elasticsearch index.
+    /// </summary>
+    public int? ShardCount { get; set; } = 1;
+
+    /// <summary>
+    /// The number of replicas to use for the Elasticsearch index.
+    /// </summary>
+    public int? ReplicaCount { get; set; } = 0;
+
+    /// <summary>
     /// A delegate to configure the Elasticsearch index properties.
     /// </summary>
     public Action<PropertiesDescriptor<ElasticsearchMemoryRecord>>? ConfigureProperties { get; internal set; }

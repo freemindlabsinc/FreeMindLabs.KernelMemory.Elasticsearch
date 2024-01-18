@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{6EF76FD8-4
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		CONFIGURATION.md = CONFIGURATION.md
 		CONTRIBUTING.md = CONTRIBUTING.md
-		DIARY.md = DIARY.md
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		icon.png = icon.png
@@ -22,7 +21,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{6EF76FD8-4
 		NUGET.md = NUGET.md
 		README.md = README.md
 		SECURITY.md = SECURITY.md
-		TODO.md = TODO.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{98E1758C-113A-41F4-85A3-1C8EFFA6CEC2}"

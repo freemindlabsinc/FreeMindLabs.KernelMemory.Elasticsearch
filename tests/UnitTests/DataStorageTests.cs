@@ -38,11 +38,6 @@ public class DataStorageTests : ElasticsearchTestBase
                "Data/file1-Wikipedia-Carbon.txt"
            }).ConfigureAwait(false);
 
-        // Waits for indexing to complete
-        var indexName = this.IndexNameHelper.Convert(nameof(CanUpsertOneTextDocumentAndDeleteAsync));
-        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 3)
-                         .ConfigureAwait(false);
-
         // Deletes the document
         var deletes = docIds.Select(id => new MemoryRecord()
         {
@@ -55,9 +50,11 @@ public class DataStorageTests : ElasticsearchTestBase
                                .ConfigureAwait(false);
         }
 
-        // Verfiies that the documents are gone
-        await this.Client.WaitForDocumentsAsync(nameof(CanUpsertOneTextDocumentAndDeleteAsync), expectedDocuments: 0)
+        // Verfies that the documents are gone
+        var indexName = this.IndexNameHelper.Convert(nameof(CanUpsertOneTextDocumentAndDeleteAsync));
+        var res = await this.Client.CountAsync(r => r.Index(indexName))
                          .ConfigureAwait(false);
+        Assert.Equal(0, res.Count);
     }
 
     [Fact]
@@ -73,12 +70,6 @@ public class DataStorageTests : ElasticsearchTestBase
                "Data/file1-Wikipedia-Carbon.txt",
                "Data/file2-Wikipedia-Moon.txt"
            }).ConfigureAwait(false);
-
-        // Waits for the indexing to complete.
-        var indexName = this.IndexNameHelper.Convert(nameof(CanUpsertTwoTextFilesAndGetSimilarListAsync));
-        await this.Client.WaitForDocumentsAsync(indexName, expectedDocuments: 4)
-                         .ConfigureAwait(false);
-
 
         // Gets documents that are similar to the word "carbon" .
         var foundSomething = false;

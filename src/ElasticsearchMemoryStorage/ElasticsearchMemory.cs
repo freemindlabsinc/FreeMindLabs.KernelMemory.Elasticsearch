@@ -27,11 +27,13 @@ public class ElasticsearchMemory : IMemoryDb
     /// Create a new instance of Elasticsearch KM connector
     /// </summary>
     /// <param name="config">Elasticsearch configuration</param>
+    /// <param name="client">Elasticsearch client</param>
     /// <param name="log">Application logger</param>
     /// <param name="embeddingGenerator">Embedding generator</param>
     /// <param name="indexNameHelper">Index name helper</param>
     public ElasticsearchMemory(
         ElasticsearchConfig config,
+        ElasticsearchClient client,
         ITextEmbeddingGenerator embeddingGenerator,
         IIndexNameHelper indexNameHelper,
         ILogger<ElasticsearchMemory>? log = null)
@@ -39,7 +41,7 @@ public class ElasticsearchMemory : IMemoryDb
         this._embeddingGenerator = embeddingGenerator ?? throw new ArgumentNullException(nameof(embeddingGenerator));
         this._indexNameHelper = indexNameHelper ?? throw new ArgumentNullException(nameof(indexNameHelper));
         this._config = config ?? throw new ArgumentNullException(nameof(config));
-        this._client = new ElasticsearchClient(this._config.ToElasticsearchClientSettings()); // TODO: inject
+        this._client = client;// new ElasticsearchClient(this._config.ToElasticsearchClientSettings()); // TODO: inject
         this._log = log ?? DefaultLogger<ElasticsearchMemory>.Instance;
     }
 
@@ -58,7 +60,16 @@ public class ElasticsearchMemory : IMemoryDb
             return;
         }
 
-        var createIdxResponse = await this._client.Indices.CreateAsync(index, cancellationToken).ConfigureAwait(false);
+        var createIdxResponse = await this._client.Indices.CreateAsync(index,
+            cfg =>
+            {
+                cfg.Settings(setts =>
+                {
+                    setts.NumberOfShards(this._config.ShardCount);
+                    setts.NumberOfReplicas(this._config.ReplicaCount);
+                });
+            },
+            cancellationToken).ConfigureAwait(false);
 
         const int Dimensions = 1536; // TODO: make not hardcoded
 
@@ -138,6 +149,7 @@ public class ElasticsearchMemory : IMemoryDb
             record.Id,
             (delReq) =>
             {
+                delReq.Refresh(Refresh.WaitFor);
             },
             cancellationToken)
             .ConfigureAwait(false);
@@ -167,6 +179,8 @@ public class ElasticsearchMemory : IMemoryDb
             memRec.Id,
             (updateReq) =>
             {
+                updateReq.Refresh(Refresh.WaitFor);
+
                 var memRec2 = memRec;
                 updateReq.Doc(memRec2);
                 updateReq.DocAsUpsert(true);
@@ -221,6 +235,7 @@ public class ElasticsearchMemory : IMemoryDb
 
         if ((resp.HitsMetadata is null) || (resp.HitsMetadata.Hits is null))
         {
+            this._log.LogWarning("The search returned a null result. Should retry?");
             yield break;
         }
 
@@ -303,32 +318,66 @@ public class ElasticsearchMemory : IMemoryDb
             return qd;
         }
 
-        qd.Nested(nqd =>
+        foreach (MemoryFilter filter in filters)
         {
-            nqd.Path(ElasticsearchMemoryRecord.TagsField);
-            nqd.Query(nq =>
-            {
-                // Each filter is a tag collection.
-                foreach (MemoryFilter filter in filters)
-                {
-                    // Each tag collection is an element of a List<string, List<string?>>>
-                    foreach (var tagName in filter.Keys)
-                    {
-                        nq.Bool(bq =>
-                        {
-                            List<string?> tagValues = filter[tagName];
-                            List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
-                                                              .ToList();
+            List<Query> all = new();
 
-                            bq.Must(
-                                t => t.Term(c => c.Field(ElasticsearchMemoryRecord.Tags_Name).Value(tagName)),
-                                t => t.Terms(c => c.Field(ElasticsearchMemoryRecord.Tags_Value).Terms(new TermsQueryField(terms)))
-                            );
-                        });
-                    }
-                }
-            });
-        });
+            // Each tag collection is an element of a List<string, List<string?>>>
+            foreach (var tagName in filter.Keys)
+            {
+                List<string?> tagValues = filter[tagName];
+                List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
+                                                  .ToList();
+                // ----------------
+                Query newTagQuery = new TermQuery(ElasticsearchMemoryRecord.Tags_Name) { Value = tagName };
+                newTagQuery &= new TermsQuery()
+                {
+                    Field = ElasticsearchMemoryRecord.Tags_Value,
+                    Terms = new TermsQueryField(terms)
+                };
+                var nestedQd = new NestedQuery();
+                nestedQd.Path = ElasticsearchMemoryRecord.TagsField;
+                nestedQd.Query = newTagQuery;
+
+                all.Add(nestedQd);
+                qd.Bool(bq => bq.Must(all.ToArray()));
+            }
+        }
+
+        // ---------------------
+
+        //qd.Nested(nqd =>
+        //{
+        //    nqd.Path(ElasticsearchMemoryRecord.TagsField);
+
+        //    nqd.Query(nq =>
+        //    {
+        //        // Each filter is a tag collection.
+        //        foreach (MemoryFilter filter in filters)
+        //        {
+        //            List<Query> all = new();
+
+        //            // Each tag collection is an element of a List<string, List<string?>>>
+        //            foreach (var tagName in filter.Keys)
+        //            {
+        //                List<string?> tagValues = filter[tagName];
+        //                List<FieldValue> terms = tagValues.Select(x => (FieldValue)(x ?? FieldValue.Null))
+        //                                                  .ToList();
+        //                // ----------------                        
+
+        //                Query newTagQuery = new TermQuery(ElasticsearchMemoryRecord.Tags_Name) { Value = tagName };
+        //                newTagQuery &= new TermsQuery() {
+        //                    Field = ElasticsearchMemoryRecord.Tags_Value,
+        //                    Terms = new TermsQueryField(terms)
+        //                };
+
+        //                all.Add(newTagQuery);
+        //            }
+
+        //            nq.Bool(bq => bq.Must(all.ToArray()));
+        //        }
+        //    });
+        //});
 
         return qd;
     }

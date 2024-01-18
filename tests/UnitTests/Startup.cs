@@ -47,6 +47,7 @@ public class Startup
 
                     // Alternatively we can use the other builder methods:                    
                     //esBldr.WithEndpoint(ElasticsearchConfigBuilder.DefaultEndpoint)
+                    //      .WithShardsAndReplicas(1, 0)
                     //      .WithIndexPrefix(ElasticsearchConfigBuilder.DefaultIndexPrefix)
                     //      .WithCertificateFingerPrint("...")
                     //      .WithUserNameAndPassword(ElasticsearchConfigBuilder.DefaultUserName, "...")
