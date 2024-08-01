@@ -1,3 +1,7 @@
+⚠️ The Elasticsearch connector for Kernel Memory has been incorporated in Microsoft Kernel Memory and this this repository 
+has been archived.
+You can find the latest source code [here](https://github.com/microsoft/kernel-memory/tree/main/extensions/Elasticsearch/Elasticsearch).
+
 # Kernel Memory with Elasticsearch
 
 
